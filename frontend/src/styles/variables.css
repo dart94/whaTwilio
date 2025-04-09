@@ -1,0 +1,44 @@
+:root {
+
+  .layout {
+    /* Posicionamiento y display */
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+    
+    /* Visual */
+    background-color: var(--color-background);
+    color: var(--color-text);
+  }
+  
+  .content {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+  }
+
+      /* Colores básicos */
+  --color-background: #e5e7eb;
+  --color-text: #fff;
+  --color-border: #444;
+  --color-input-bg: #333;
+  --color-label: #555;
+  --color-border: #ccc;
+  --color-negro:#000;
+  --color-contador: #888;
+  --color-success: #4CAF50;
+  --color-button-sc: #f3f4f6;
+  
+  
+  /* Colores de secciones */
+  --color-left-bg: #51368D;
+  --color-button-bg: #493F91;
+  
+  /* Colores de acento */
+  --color-subtitle: #ccc;
+  --color-error: red;
+
+  /* Fuentes */
+  --font-family-sans: 'Maven Pro', sans-serif;
+}

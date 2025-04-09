@@ -1,0 +1,166 @@
+@import './variables.css';
+
+/* Contenedor principal */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Encabezados */
+.heading {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.hr {
+  border-top: 2px solid #ccc;
+  margin-bottom: 1rem;
+}
+
+.subHeading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+/* Grupos de campos */
+.fieldGroup {
+  margin-bottom: 1.5rem;
+}
+
+/* Etiqueta */
+.label {
+  display: block;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+/* Grupo de inputs y botones */
+.inputGroup {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Input y Select */
+.input, .select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #000;
+}
+
+/* Option */
+.option {
+  color: black;
+  font-weight: bold;
+}
+
+/* Contenedor de asociaciones de credenciales */
+.credentialAssociation {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+/* Contenedor para el select de credencial */
+.inputWrapper {
+  flex: 1;
+}
+
+/* Botones pequeños para agregar/quitar */
+.buttonGroupSmall {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.smallButton {
+  padding: 0.5rem;
+  background-color: var(--color-button-bg);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  color: var(--color-text)
+}
+
+.smallButton:hover {
+  background-color: var( --color-left-bg)
+}
+
+.plus,
+.minus {
+  font-size: 1.25rem;
+}
+
+/* Botón de asociación de credenciales */
+.buttonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.customToast {
+  margin-top: 3.5rem
+}
+
+.submitButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-button-bg);
+  color: var(--color-text);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+  background-color:  var( --color-left-bg)
+}
+
+.icon {
+  font-size: 1rem;
+}
+
+/* Mensajes */
+.error {
+  color: var(--color-error);
+  margin-top: 1rem;
+}
+
+.success {
+  color: green;
+  margin-top: 1rem;
+}
+
+.button {
+    padding: 0.5rem 1rem;
+    background-color: var(--color-button-sc);
+    border: 1px solid var(--color-button-border);;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    color: #000;
+  }
+
+/* Textarea */
+.textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  color: var(--color-label);
+  height: 5rem; 
+}

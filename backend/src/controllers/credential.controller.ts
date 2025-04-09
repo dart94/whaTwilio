@@ -184,3 +184,46 @@ export const updateCredential = async (req: Request, res: Response): Promise<voi
     res.status(500).json({ message: 'Error al actualizar la credencial.' });
   }
 };
+
+// Ruta para obtener las credenciales asociadas al usuario
+export const getUserCredentials = async (req: Request, res: Response): Promise<void> => {
+  const { email } = req.params; // Si el email se envía como parámetro en la URL
+
+  if (!email) {
+    res.status(400).json({ message: 'Email es requerido.' });
+    return;
+  }
+
+  try {
+    // Primero obtenemos el ID del usuario mediante su email
+    const [userResults] = await connection.promise().query(
+      'SELECT id FROM users WHERE email = ?',
+      [email]
+    ) as [any[], any];
+
+    if (userResults.length === 0) {
+      res.status(404).json({ message: 'Usuario no encontrado.' });
+      return;
+    }
+
+    const userId = userResults[0].id;
+
+    // Luego obtenemos las credenciales asociadas a ese usuario
+    const [results] = await connection.promise().query(`
+      SELECT
+        id,
+        user_id AS Usuario,
+        name AS Nombre,
+        json,
+        DATE_FORMAT(created_at, '%d/%m/%Y, %H:%i:%s') AS Creado,
+        DATE_FORMAT(updated_at, '%d/%m/%Y, %H:%i:%s') AS Actualizado
+      FROM
+        credentials
+    `, [userId]);
+
+    res.status(200).json(results);
+  } catch (err) {
+    console.error('Error al ejecutar la consulta:', err);
+    res.status(500).json({ message: 'Error al obtener las credenciales del usuario.' });
+  }
+};

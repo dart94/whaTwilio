@@ -3,7 +3,9 @@ import { getCredentials,
         postCredentials,
         associateCredentialsToSubAccount,
         deleteCredential,
-        updateCredential
+        updateCredential,
+        getUserCredentials
+
         } from '../controllers/credential.controller';
 
 const router = Router();
@@ -22,5 +24,10 @@ router.delete('/credentials/delete', deleteCredential);
 
 // Ruta para actualizar una credencial
 router.put('/credentials/:id', updateCredential);       
+
+// Ruta para obtener las credenciales asociadas al usuario
+router.get('/credentials/user/:email', getUserCredentials);
+
+
 
 export default router;

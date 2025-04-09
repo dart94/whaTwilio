@@ -86,15 +86,14 @@ export const getCampaignsBySubAccount = async (req: Request, res: Response): Pro
 export const createCampaign = async (req: Request, res: Response): Promise<void> => {
   console.log("✅ Recibida petición POST en /createCampaign");
   console.log("🔍 Request Body:", req.body);
-
   const { name, description, sub_account_id, credential_sheet_id, credential_template_id } = req.body;
-
+  
   if (!name || !sub_account_id || !credential_sheet_id || !credential_template_id) {
     console.log("❌ Falta un parámetro obligatorio.");
     res.status(400).json({ message: 'Nombre, subcuenta y credenciales son requeridos.' });
     return;
   }
-
+  
   try {
     // Verificar que la subcuenta existe
     console.log(`🔎 Buscando subcuenta con ID: ${sub_account_id}`);
@@ -102,44 +101,57 @@ export const createCampaign = async (req: Request, res: Response): Promise<void>
       'SELECT id FROM sub_accounts WHERE id = ?',
       [sub_account_id]
     ) as [any[], any];
-    
+   
     console.log("🔍 Resultado subcuenta:", subAccountResults);
     if (subAccountResults.length === 0) {
       console.log("❌ Subcuenta no encontrada.");
       res.status(404).json({ message: 'Subcuenta no encontrada.' });
       return;
     }
-
+    
     // Verificar que las credenciales existen
     console.log(`🔎 Buscando credencial para Google Sheets con ID: ${credential_sheet_id}`);
     const [sheetCredentialResults] = await connection.promise().query(
       'SELECT id FROM credentials WHERE id = ?',
       [credential_sheet_id]
     ) as [any[], any];
-
+    
     console.log("🔍 Resultado credencial de Google Sheets:", sheetCredentialResults);
     if (sheetCredentialResults.length === 0) {
       console.log("❌ Credencial para Google Sheets no encontrada.");
       res.status(404).json({ message: 'Credencial para Google Sheets no encontrada.' });
       return;
     }
-
+    
     console.log(`🔎 Buscando credencial para mensajes con ID: ${credential_template_id}`);
     const [templateCredentialResults] = await connection.promise().query(
       'SELECT id FROM credentials WHERE id = ?',
       [credential_template_id]
     ) as [any[], any];
-
+    
     console.log("🔍 Resultado credencial para mensajes:", templateCredentialResults);
     if (templateCredentialResults.length === 0) {
       console.log("❌ Credencial para mensajes no encontrada.");
       res.status(404).json({ message: 'Credencial para mensajes no encontrada.' });
       return;
     }
-
+    
     console.log("✅ La credencial para mensajes existe. Creando campaña...");
-    res.status(200).json({ message: "Campaña creada correctamente." });
-
+    
+    // Insertar la campaña en la base de datos
+    const [result] = await connection.promise().query(
+      'INSERT INTO campaign (name, description, sub_account_id, credential_sheet_id, credential_template_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
+      [name, description, sub_account_id, credential_sheet_id, credential_template_id]
+    ) as [any, any];
+    
+    console.log("✅ Campaña insertada con éxito:", result);
+    
+    // SOLO UNA RESPUESTA al final del try
+    res.status(201).json({ 
+      message: "Campaña creada correctamente.",
+      campaignId: result.insertId 
+    });
+    
   } catch (err) {
     console.error('❌ Error en la consulta:', err);
     res.status(500).json({ message: 'Error al crear la campaña.', error: err });
