@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
-import styles from '../../styles/NumeroTelefonicoView.module.css';
+import styles from '../../styles/SubcuentasView.module.css';
 import { crearNumeroTelefonico } from '../../services/numertoTelefonicoService';
 
 const NumeroTelefonicoView: React.FC = () => {
@@ -95,18 +95,6 @@ const NumeroTelefonicoView: React.FC = () => {
         >
           Crear número telefónico <FaPencilAlt className={styles.icon} />
         </button>
-        <ToastContainer 
-        position="top-right"  
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        toastClassName={styles.customToast} 
-      />
       </div>
 
       {mensaje.texto && (

@@ -4,7 +4,7 @@
   /* Display & Dimensions */
   display: flex;
   align-items: center;
-  width: 100%;
+  /* width: 100%; */
   
   /* Visual */
   background-color: var(--color-left-bg);
@@ -17,8 +17,7 @@
   cursor: pointer;
   
   /* Espaciado */
-  margin-right: 1rem;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem ;
   
   /* Visual */
   border-radius: 5px;

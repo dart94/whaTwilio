@@ -146,18 +146,16 @@ export const updateCredential = async (req: Request, res: Response): Promise<voi
     }
 
     // Validar que el JSON sea válido
-    try {
-      // Verificar si ya es un string JSON o es un objeto
-      let jsonString = json;
-      if (typeof json === 'object') {
-        jsonString = JSON.stringify(json);
-      } else {
-        // Verificar que es un JSON válido tratando de parsearlo
-        JSON.parse(json);
+    let jsonString = json;
+    if (typeof json === 'object') {
+      jsonString = JSON.stringify(json);
+    } else {
+      try {
+        JSON.parse(json); // valida que sea string JSON válido
+      } catch (e) {
+        res.status(400).json({ message: 'El formato JSON no es válido.' });
+        return;
       }
-    } catch (e) {
-      res.status(400).json({ message: 'El formato JSON no es válido.' });
-      return 
     }
 
     // Actualizar los datos de la credencial
@@ -168,13 +166,12 @@ export const updateCredential = async (req: Request, res: Response): Promise<voi
         json = ?,
         updated_at = NOW()
       WHERE id = ?
-    `, [name, json, credentialId]);
+    `, [name, jsonString, credentialId]);
 
     if ((result as any).affectedRows === 0) {
       res.status(500).json({ message: 'No se pudo actualizar la credencial.' });
       return 
     }
-
     res.status(200).json({
       message: 'Credencial actualizada exitosamente.',
       credentialId: credentialId
@@ -184,6 +181,7 @@ export const updateCredential = async (req: Request, res: Response): Promise<voi
     res.status(500).json({ message: 'Error al actualizar la credencial.' });
   }
 };
+
 
 // Ruta para obtener las credenciales asociadas al usuario
 export const getUserCredentials = async (req: Request, res: Response): Promise<void> => {

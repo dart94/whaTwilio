@@ -1,5 +1,15 @@
 import { BASE_URL } from "../config/apiConfig";
 
+//** Interface para el modelo de número telefónico */
+export interface NumeroTelefonico {
+  id: number;
+  numero: string;
+  nombre: string;
+  compania: string;
+  creado: string;
+  actualizado: string;
+}
+
 //*** Función para crear un número telefónico ***
 export async function crearNumeroTelefonico(formData: {
   number: string;
@@ -54,5 +64,31 @@ export async function obtenerNumerosTelefonicos() {
       throw new Error(`Error ${response.status}: ${response.statusText}`);
     }
   }
+  return response.json();
+}
+
+
+/** Actualizar un número telefónico */
+export async function actualizarNumeroTelefonico(numeroTelefonico: NumeroTelefonico) {
+  const response = await fetch(`${BASE_URL}/api/number_phones/${numeroTelefonico.id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(numeroTelefonico),
+  });
+
+  if (!response.ok) {
+    const contentType = response.headers.get('content-type');
+    
+    if (contentType && contentType.includes('application/json')) {
+      const errorData = await response.json();
+      console.log('Error del servidor:', errorData);
+      throw new Error(errorData.message || 'Error desconocido');
+    } else {
+      const errorText = await response.text();
+      console.log('Error del servidor:', errorText);
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+  }
+
   return response.json();
 }

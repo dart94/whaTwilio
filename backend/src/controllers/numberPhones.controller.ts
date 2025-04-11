@@ -149,11 +149,11 @@ export const getNumberPhonesBySubAccount = async (req: Request, res: Response): 
 // Actualizar número de teléfono
 export const updateNumberPhone = async (req: Request, res: Response): Promise<void> => {
   const phoneId = req.params.id;
-  const { name, company, number } = req.body;
+  const { nombre: name, compania: company, numero: number } = req.body;
 
-  if (!phoneId) {
-    res.status(400).json({ message: 'ID de número telefónico es requerido.' });
-    return 
+  if (!name || !company || !number) {
+    res.status(400).json({ message: 'Todos los campos son obligatorios.' });
+    return;
   }
 
   try {

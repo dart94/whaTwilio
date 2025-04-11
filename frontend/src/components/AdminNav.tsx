@@ -15,9 +15,10 @@ const mainNavItems = [
 
 const secondaryNavItems = [
   { label: "Usuarios", route: "/admin/usuarios" },
-  { label: "Usuarios", route: "/admin/usuarios" },
-  { label: "Usuarios", route: "/admin/usuarios" },
-  { label: "Usuarios", route: "/admin/usuarios" },
+  { label: "Subcuentas Admin", route: "/admin/subcuentasAdmin" },
+  { label: "Números Tel Admin", route: "/admin/numerosAdmin" },
+  { label: "Credenciales Admin", route: "/admin/credencialesAdmin" },
+  { label: "Campañas Admin", route: "/admin/campanasAdmin" },
 ];
 
 const AdminNav: React.FC = () => {

@@ -1,5 +1,14 @@
 import { BASE_URL } from "../config/apiConfig";
 
+export interface Credencial {
+  id: number;
+  name: string;
+  json: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// función para crear una nueva credencial
 export async function crearCredencial(name: string, json: string) {
     if (!name || !json) {
       throw new Error('Nombre y JSON son requeridos');
@@ -34,6 +43,7 @@ export async function obtenerCredenciales() {
   return response.json();
 }
 
+//Función para obtener credenciales por usuario
 export async function getUserCredentials(email: string) {
   if (!email) {
     throw new Error('Debe ingresar un correo electrónico');
@@ -41,6 +51,22 @@ export async function getUserCredentials(email: string) {
   const response = await fetch(`${BASE_URL}/api/credentials`);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return response.json();
+}
+
+
+// función para actualizar una credencial
+export async function actualizarCredencial(credencial: Credencial) {
+  const response = await fetch(`${BASE_URL}/api/credentials/${credencial.id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(credencial)
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || `Error al actualizar credencial (HTTP ${response.status})`);
   }
   return response.json();
 }

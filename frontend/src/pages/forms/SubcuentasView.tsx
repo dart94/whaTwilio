@@ -5,6 +5,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import styles from '../../styles/SubcuentasView.module.css';
 import { buscarSubcuentasPorUsuario, crearSubcuenta } from '../../services/subcuentaService';
 
+
+
 const SubcuentasView: React.FC = () => {
   const [email, setEmail] = useState('');
   const [nombreSubcuenta, setNombreSubcuenta] = useState('');
@@ -85,18 +87,7 @@ const SubcuentasView: React.FC = () => {
           Crear subcuenta <FaPencilAlt className={styles.icon} />
         </button>
       </div>
-      <ToastContainer 
-        position="top-right"  
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        toastClassName={styles.customToast}
-      />
+      
     </div>
   );
 };

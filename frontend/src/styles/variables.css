@@ -1,22 +1,5 @@
 :root {
 
-  .layout {
-    /* Posicionamiento y display */
-    display: flex;
-    min-height: 100vh;
-    position: relative;
-    z-index: 1;
-    
-    /* Visual */
-    background-color: var(--color-background);
-    color: var(--color-text);
-  }
-  
-  .content {
-    flex: 1;
-    position: relative;
-    z-index: 1;
-  }
 
       /* Colores básicos */
   --color-background: #e5e7eb;
@@ -41,4 +24,19 @@
 
   /* Fuentes */
   --font-family-sans: 'Maven Pro', sans-serif;
+
+  .layout {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+    background-color: var(--color-background);
+    color: var(--color-text);
+  }
+  
+  .content {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+  }
 }

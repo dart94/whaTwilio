@@ -187,19 +187,6 @@ const CampaignView: React.FC = () => {
           Crear campaña <FaPencilAlt className={styles.icon} />
         </button>
       </div>
-
-      <ToastContainer 
-        position="top-right"  
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        toastClassName={styles.customToast} 
-      />
     </div>
   );
 };
