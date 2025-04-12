@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getSheetHeadersById, getSheetsByCampaign } from '../controllers/sheet.controller';
+import { getSheetHeadersById, getSheetsByCampaign, addSheet } from '../controllers/sheet.controller';
 
 const router = Router();
 
@@ -8,6 +8,9 @@ router.get('/sheets/:id/headers', getSheetHeadersById);
 
 // Ruta para obtener hojas de cálculo por campaña
 router.get('/sheets/campaign/:campaign_id', getSheetsByCampaign);
+
+// Ruta para agregar una nueva hoja de cálculo
+router.post('/sheets', addSheet);
 
 export default router;
 

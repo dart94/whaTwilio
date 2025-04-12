@@ -10,6 +10,7 @@ const mainNavItems = [
   { label: "Asociar número", route: "/admin/AsociarNumero" },
   { label: "Asociar credenciales", route: "/admin/AsociarCredencial" },
   { label: "Crear campaña", route: "/admin/crearCampana" },
+  { label: "Hojas de cálculo", route: "/admin/hojas" },
   { label: "Asociar campos", route: "/admin/AsociarCampos" },
 ];
 

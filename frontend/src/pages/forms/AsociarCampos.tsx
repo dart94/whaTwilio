@@ -21,7 +21,7 @@ const AsociarCampos: React.FC = () => {
   const [mostrarCamposVariables, setMostrarCamposVariables] = useState(false);
   const [showPlantillaContent, setShowPlantillaContent] = useState(false);
   const [credentials, setCredentials] = useState<any[]>([]);
-    const [campains, setCampains] = useState<any[]>([]);
+    const [Campaigns, setCampains] = useState<any[]>([]);
     
     const handleBuscarCredencial = async () => {
       try {
@@ -74,6 +74,7 @@ const AsociarCampos: React.FC = () => {
         <BuscarCampaign
           onCampaignsEncontradas={setCampains}
           onCampaignChange={setSelectedCampaign}
+          Campaigns={Campaigns}
         />
       </div>
       

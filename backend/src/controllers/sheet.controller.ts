@@ -89,3 +89,35 @@ export const getSheetsByCampaign = async (req: Request, res: Response): Promise<
       res.status(500).json({ message: 'Error al obtener las hojas de la campaña' });
     }
   };
+
+// ✅ Agregar una nueva hoja a la base de datos
+export const addSheet = async (req: Request, res: Response): Promise<void> => {
+  try {
+      const {
+          sheet_id,
+          sheet_sheet,
+          sheet_range,
+          field_blacklist,
+          field_status,
+          field_contact,
+          campaign_id
+      } = req.body;
+
+      if (!sheet_id || !sheet_sheet || !sheet_range || !campaign_id) {
+          res.status(400).json({ success: false, error: 'Faltan datos obligatorios' });
+          return
+      }
+
+      const query = `
+          INSERT INTO sheets (sheet_id, sheet_sheet, sheet_range, field_blacklist, field_status, field_contact, campaign_id, created_at, updated_at)
+  VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+      `;
+
+      await connection.execute(query, [sheet_id, sheet_sheet, sheet_range, field_blacklist, field_status, field_contact, campaign_id]);
+
+      res.status(201).json({ success: true, message: 'Hoja agregada correctamente' });
+  } catch (error) {
+      console.error('Error al agregar hoja:', error);
+      res.status(500).json({ success: false, error: 'Error al agregar hoja' });
+  }
+};

@@ -32,6 +32,14 @@
   margin-bottom: 1.5rem;
 }
 
+.formgrid {
+  margin-bottom: 1rem;
+}
+
+.formField{
+  margin-bottom: 0.5rem;
+}
+
 /* Etiqueta */
 .label {
   display: block;
