@@ -20,14 +20,16 @@
   padding: 0.5rem ;
   
   /* Visual */
-  border-radius: 5px;
+  /* border-radius: 5px; */
   transition: background-color 0.3s ease;
 }
 
 .navItem:hover {
-  background-color: var(--color-button-bg);
+  background-color: var(--color-background);
+  color: var(--color-negro);
 }
 
 .active {
-  background-color: var(--color-button-bg);
+  background-color: var(--color-background);
+  color: var(--color-negro);
 }

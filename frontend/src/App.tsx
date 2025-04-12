@@ -10,6 +10,7 @@ import AsociarNumeroView from './pages/forms/AsociarNumerosView';
 import AsociarCredencialesView from './pages/forms/AsociarCredencialesView';
 import CampaignView from './pages/forms/CampaignView';
 import UsuariosView from './pages/admin/UsuariosAdminView';
+import AsociarCampos from './pages/forms/AsociarCampos';
 import SubcuentasAdminView from './pages/admin/SubcuentasAdminView';
 import NumeroTelefonicoAdminView from './pages/admin/NumeroTelefonicoAdminView';
 import CredencialAdminView from './pages/admin/CredencialAdminView';
@@ -30,6 +31,7 @@ const App: React.FC = () => {
               <Route path="AsociarNumero" element={<AsociarNumeroView />} />
               <Route path="AsociarCredencial" element={<AsociarCredencialesView />} />
               <Route path="crearCampana" element={<CampaignView />} />
+              <Route path="AsociarCampos" element={<AsociarCampos />} />
               <Route path="usuarios" element={<UsuariosView />} />
               <Route path="subcuentasAdmin" element={<SubcuentasAdminView />} />
               <Route path="numerosAdmin" element={<NumeroTelefonicoAdminView />} />

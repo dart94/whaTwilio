@@ -4,8 +4,8 @@ import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify';
 import styles from '../../styles/AsociarCredencialesView.module.css';
 import { crearCampana, obtenerCampanas } from '../../services/campaignService';
-import { buscarSubcuentasPorUsuario } from '../../services/subcuentaService';
 import { obtenerCredenciales } from '../../services/credentialService';
+import BuscarUsuario from '../../components/forms/BuscarUsuario';
 
 const CampaignView: React.FC = () => {
   const [nombreCampana, setNombreCampana] = useState('');
@@ -34,25 +34,7 @@ const CampaignView: React.FC = () => {
     }
   };
 
-  const handleBuscarUsuario = async () => {
-    console.log("handleBuscarUsuario ejecutado");
-    try {
-      const data = await buscarSubcuentasPorUsuario(email);
-      setUserSubcuentas(data);
-  
-      if (data.length === 0) {
-        toast.error('No se encontró ninguna subcuenta para este usuario');
-      } else {
-        toast.success(`Se encontró ${data.length} subcuenta(s) para este usuario`);
-      }
 
-      // Llamar a buscar credenciales después de buscar las subcuentas
-      await handleBuscarCredencial();
-    } catch (error: any) {
-      console.error("Error al buscar subcuentas:", error);
-      toast.error('Error al buscar subcuentas para este usuario');
-    }
-  };
 
   const handleCrearCampana = async () => {
     try {
@@ -64,14 +46,13 @@ const CampaignView: React.FC = () => {
         credentialTemplateId
       );
       toast.success('Campaña creada exitosamente');
-      // Reiniciar campos tras la creación
+
       setNombreCampana('');
       setDescripcionCampana('');
       setSubcuenta(0);
       setCredentialSheetId(0);
       setCredentialTemplateId(0);
 
-      // Opcional: actualizar la lista de campañas
       const data = await obtenerCampanas();
       setCampaigns(data);
     } catch (error: any) {
@@ -83,8 +64,8 @@ const CampaignView: React.FC = () => {
   return (
     <div className={styles.container}>
       <h2 className={styles.heading}>Crear Campaña</h2>
-      
-      {/* Nombre de la campaña */}
+
+      {/* Nombre y descripción */}
       <div className={styles.fieldGroup}>
         <label className={styles.label}>Nombre de la campaña</label>
         <input
@@ -96,7 +77,6 @@ const CampaignView: React.FC = () => {
         />
       </div>
 
-      {/* Descripción de la campaña */}
       <div className={styles.fieldGroup}>
         <label className={styles.label}>Descripción</label>
         <textarea
@@ -107,25 +87,13 @@ const CampaignView: React.FC = () => {
         />
       </div>
 
-      {/* Usuario y búsqueda de subcuenta */}
-      <div className={styles.fieldGroup}>
-        <label className={styles.label}>Usuario</label>
-        <div className={styles.inputGroup}>
-          <input
-            type="email"
-            placeholder="Correo del usuario"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={styles.input}
-          />
-          <button className={styles.button} onClick={handleBuscarUsuario}>
-            Buscar
-          </button>
-          <button className={styles.button}>Lista de usuarios</button>
-        </div>
-      </div>
+      {/* Usuario */}
+      <BuscarUsuario
+      onSubcuentasEncontradas={setUserSubcuentas}
+      handleBuscarCredencial={handleBuscarCredencial}
+      />
 
-      {/* Selección de subcuenta */}
+      {/* Subcuenta */}
       <div className={styles.fieldGroup}>
         <label className={styles.label}>Subcuenta</label>
         <select
@@ -143,7 +111,7 @@ const CampaignView: React.FC = () => {
         </select>
       </div>
 
-      {/* Credencial para Google Sheets */}
+      {/* Credenciales */}
       <div className={styles.fieldGroup}>
         <label className={styles.label}>Credencial para Google Sheets</label>
         <select
@@ -161,7 +129,6 @@ const CampaignView: React.FC = () => {
         </select>
       </div>
 
-      {/* Credencial para mensajes y plantillas */}
       <div className={styles.fieldGroup}>
         <label className={styles.label}>Credencial para mensajes y plantillas</label>
         <select
@@ -177,8 +144,7 @@ const CampaignView: React.FC = () => {
               <option key={cred.id} value={cred.id}>
                 {cred.name}
               </option>
-            ))
-          }
+            ))}
         </select>
       </div>
 

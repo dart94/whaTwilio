@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { Credencial, actualizarCredencial, obtenerCredenciales } from '../../services/credentialService';
 import CredencialEditModal from '../../modals/CredencialEditModal';
 import styles from '../../styles/subcuentasView.module.css';
+import BuscarUsuario from '../../components/forms/BuscarUsuario';
 
 interface CredencialViewProps {
   credentials: Credencial[];

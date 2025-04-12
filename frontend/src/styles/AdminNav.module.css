@@ -3,8 +3,8 @@
   align-items: flex-start;
   justify-content: space-between  ;
   gap: 2rem;
-  width: 100%;
-  padding: 1rem;
+  /* width: 100%; */
+  /* padding: 1rem; */
   background-color: var(--color-left-bg);
 }
 
@@ -19,7 +19,7 @@
   align-items: center;
   cursor: pointer;
   padding: 0.5rem 1rem;
-  border-radius: 5px;
+  /* border-radius: 5px; */
   transition: background-color 0.3s ease;
 }
 
@@ -28,5 +28,5 @@
 }
 
 .active {
-  background-color: var(--color-button-bg);
+  background-color: var(--color-background);
 }

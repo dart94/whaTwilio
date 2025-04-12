@@ -10,6 +10,7 @@ const mainNavItems = [
   { label: "Asociar número", route: "/admin/AsociarNumero" },
   { label: "Asociar credenciales", route: "/admin/AsociarCredencial" },
   { label: "Crear campaña", route: "/admin/crearCampana" },
+  { label: "Asociar campos", route: "/admin/AsociarCampos" },
 ];
 
 
@@ -19,6 +20,8 @@ const secondaryNavItems = [
   { label: "Números Tel Admin", route: "/admin/numerosAdmin" },
   { label: "Credenciales Admin", route: "/admin/credencialesAdmin" },
   { label: "Campañas Admin", route: "/admin/campanasAdmin" },
+  
+  
 ];
 
 const AdminNav: React.FC = () => {

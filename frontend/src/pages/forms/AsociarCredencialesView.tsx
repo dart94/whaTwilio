@@ -6,6 +6,8 @@ import { associateCredentials } from '../../services/credentialAssociationServic
 import { buscarSubcuentasPorUsuario } from '../../services/subcuentaService';
 import { getUserCredentials } from '../../services/credentialService';
 import { toast, ToastContainer } from 'react-toastify';
+import BuscarUsuario from '../../components/forms/BuscarUsuario';
+import SubcuentaSelector from '../../components/forms/SubcuentaSelector';
 
 
 
@@ -98,6 +100,30 @@ const AsociarCredencialesView: React.FC = () => {
     }
   };
 
+  const handleSubcuentasEncontradas = (subcuentas: any[]) => {
+    setUserSubcuentas(subcuentas);
+    if (subcuentas.length === 0) {
+      toast.error('No se encontró ninguna subcuenta para este usuario');
+    } else {
+      toast.success(`Se encontró ${subcuentas.length} subcuenta(s) para este usuario`);
+    }
+  };
+
+  const handleBuscarCredencial = async (email: string) => {
+    try {
+      const credencialesData = await getUserCredentials(email);
+      console.log('Credenciales:', credencialesData);
+      setUserCredentials(credencialesData);
+      
+      if (credencialesData.length === 0) {
+        toast.warn('El usuario no tiene credenciales asignadas');
+      }
+    } catch (error) {
+      console.error("Error al buscar credenciales:", error);
+      toast.error('Error al buscar credenciales del usuario');
+    }
+  };
+
   const handleAssociateCredentials = async () => {
     if (!subcuentaSeleccionada) {
       toast.error('Debe seleccionar una subcuenta');
@@ -157,22 +183,11 @@ const AsociarCredencialesView: React.FC = () => {
       </div>
 
       {/* Sección de Subcuenta */}
-      <div className={styles.fieldGroup}>
-        <label className={styles.label}>Subcuenta</label>
-        <select
-          value={subcuentaSeleccionada}
-          onChange={(e) => setSubcuentaSeleccionada(Number(e.target.value))}
-          className={styles.select}
-          disabled={userSubcuentas.length === 0}
-        >
-          <option value={0} className={styles.option}>Seleccionar compañía</option>
-          {userSubcuentas.map((subcuenta) => (
-            <option key={subcuenta.id} value={subcuenta.id} className={styles.option}>
-              {subcuenta.Nombre}
-            </option>
-          ))}
-        </select>
-      </div>
+      <SubcuentaSelector
+        userSubcuentas={userSubcuentas}
+        subcuentaSeleccionada={subcuentaSeleccionada}
+        onSubcuentaChange={setSubcuentaSeleccionada}
+      />
 
       <hr className={styles.hr} />
       <h3 className={styles.subHeading}>Credenciales</h3>
@@ -204,18 +219,7 @@ const AsociarCredencialesView: React.FC = () => {
           {mensaje.texto}
         </div>
       )}
-        <ToastContainer 
-        position="top-right"  
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        toastClassName={styles.customToast}
-      />
+
     </div>
   );
 };

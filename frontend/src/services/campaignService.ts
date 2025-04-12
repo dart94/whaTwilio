@@ -50,7 +50,7 @@ export async function crearCampana(
 }
 
 
-//** Actualizar una campaña */
+//** obtener una campaña */
 export async function obtenerCampanas() {
   const response = await fetch(`${BASE_URL}/api/campaigns`);
   if (!response.ok) {
@@ -73,3 +73,5 @@ export async function actualizarCampana(campana: CampaignData) {
   }
   return response.json();
 }
+
+
