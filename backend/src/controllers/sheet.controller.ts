@@ -121,3 +121,50 @@ export const addSheet = async (req: Request, res: Response): Promise<void> => {
       res.status(500).json({ success: false, error: 'Error al agregar hoja' });
   }
 };
+
+// Obtener hojas de cálculo por ID
+export const getSheetById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Cambia esto para que coincida con el nombre del parámetro en la ruta
+    const sheetId = req.params.sheetID; // Nota: ahora es sheetID, no id
+    
+    if (!sheetId) {
+      res.status(400).json({ success: false, error: 'ID de hoja no proporcionado' });
+      return;
+    }
+   
+    console.log('SheetId recibido:', sheetId);
+   
+    // El resto de tu código está bien, buscando por sheet_id
+    const rows = await new Promise<any[]>((resolve, reject) => {
+      connection.execute(
+        'SELECT sheet_id, sheet_sheet, sheet_range, field_blacklist, field_status, field_contact, campaign_id FROM sheets WHERE sheet_id = ?',
+        [sheetId],
+        (err, results) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(results as any[]);
+          }
+        }
+      );
+    });
+   
+    // Verificar si se encontró la hoja
+    if (rows.length === 0) {
+      res.status(404).json({ success: false, error: 'Hoja no encontrada' });
+      return;
+    }
+   
+    // Devolver los datos encontrados
+    res.status(200).json({ success: true, data: rows[0] });
+   
+  } catch (error: unknown) {
+    console.error('Error completo:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error al obtener hojas',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+};

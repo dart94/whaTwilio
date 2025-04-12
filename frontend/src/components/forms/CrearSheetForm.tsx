@@ -45,7 +45,20 @@ const CrearSheetForm: React.FC<CrearSheetFormProps> = ({ onCrearSheet, campaigns
       console.error('Error al crear hoja:', error);
       toast.error(`Error al crear hoja: ${error.message}`);
     }
+    const handleSheetEncontrado = (sheet: any) => {
+      setSheetData((prev) => ({
+        ...prev,
+        sheet_id: sheet.sheet_id,
+        sheet_sheet: sheet.sheet_sheet,
+        sheet_range: sheet.sheet_range,
+        field_blacklist: sheet.field_blacklist,
+        field_status: sheet.field_status,
+        field_contact: sheet.field_contact,
+        campaign_id: sheet.campaign_id || 0
+      }));
+    };
   };
+
 
   return (
     <div className={styles.formContainer}>

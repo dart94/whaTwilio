@@ -29,3 +29,15 @@ export async function crearSheet(sheet: Sheet): Promise<Sheet> {
   return response.json();
 }
 
+// Obtener una hoja de cálculo por ID de Google Sheets
+export async function obtenerSheetPorId(sheet_id: string) {
+  const encodedId = encodeURIComponent(sheet_id);
+  const response = await fetch(`${BASE_URL}/api/sheets/${encodedId}`);
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  return response.json();
+}
+

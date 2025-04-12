@@ -7,6 +7,7 @@ import BuscarUsuario from '../../components/forms/BuscarUsuario';
 import { obtenerCredenciales } from '../../services/credentialService';
 import { obtenerCampanas } from '../../services/campaignService';
 import BuscarCampaign from '../../components/forms/BuscarCampaing';
+import BuscarSheet from '../../components/forms/BuscarSheet';
 
 
 
@@ -21,7 +22,9 @@ const AsociarCampos: React.FC = () => {
   const [mostrarCamposVariables, setMostrarCamposVariables] = useState(false);
   const [showPlantillaContent, setShowPlantillaContent] = useState(false);
   const [credentials, setCredentials] = useState<any[]>([]);
-    const [Campaigns, setCampains] = useState<any[]>([]);
+  const [Campaigns, setCampains] = useState<any[]>([]);
+  const [sheetId, setSheetId] = useState('');
+
     
     const handleBuscarCredencial = async () => {
       try {
@@ -76,6 +79,17 @@ const AsociarCampos: React.FC = () => {
           onCampaignChange={setSelectedCampaign}
           Campaigns={Campaigns}
         />
+
+        <hr className={styles.hr} />
+
+        {/* Sheets */}
+        <BuscarSheet
+          onSheetEncontrado={(sheet: any) => {
+            setSheetId(sheet.sheet_id);
+            setSheetHeaders(sheet.headers);
+            toast.success('Hoja encontrada');
+          }}
+          />
       </div>
       
   );
