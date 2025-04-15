@@ -9,6 +9,9 @@ import { obtenerCampanas } from '../../services/campaignService';
 import BuscarCampaign from '../../components/forms/BuscarCampaing';
 import BuscarSheet from '../../components/forms/BuscarSheet';
 import CrearSheetForm from '../../components/forms/CrearSheetForm';
+import BuscarPlantilla from '../../components/forms/BuscarPlantilla';
+import CredentialSelector from '../../components/forms/CredentialPlantilla';
+
 
 
 
@@ -25,6 +28,12 @@ const AsociarCampos: React.FC = () => {
   const [credentials, setCredentials] = useState<any[]>([]);
   const [Campaigns, setCampains] = useState<any[]>([]);
   const [sheetId, setSheetId] = useState('');
+  const [plantillas, setPlantillas] = useState<any[]>([]);
+  const [selectedCredential, setSelectedCredential] = useState('');
+
+    const handleSelectCredential = (credential: any) => {
+      console.log('Seleccionado:', credential);
+    };
 
     
     const handleBuscarCredencial = async () => {
@@ -53,6 +62,15 @@ const AsociarCampos: React.FC = () => {
         toast.error('Error al buscar credenciales para este usuario');
       }
     };
+
+  const handleTemplateSelect = (templates: any[]): void => {
+    if (templates && templates.length > 0) {
+      setPlantillas(templates);
+      toast.success(`Se encontraron ${templates.length} plantilla(s)`);
+    } else {
+      toast.warn('No se encontraron plantillas');
+    }
+  };
 
   return(
     <div className={styles.container}>
@@ -83,6 +101,17 @@ const AsociarCampos: React.FC = () => {
           }}
           campaigns={Campaigns}
         />
+        <hr className={styles.hr} />
+        
+        {/*Credentials*/}
+        <CredentialSelector
+          credentials={credentials}
+          selectedCredential={selectedCredential}
+          onCredentialChange={setSelectedCredential}
+          onTemplatesEncontradas={handleTemplateSelect}
+        />
+
+
       </div>
       
   );

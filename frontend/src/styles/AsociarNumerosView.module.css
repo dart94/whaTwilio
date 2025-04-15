@@ -93,7 +93,7 @@
 }
 
 /* Contenedor de asociaciones telefónicas */
-.phoneAssociation {
+.phoneAssociation, .credentialAssociation {
   display: flex;
   gap: 1rem;
   margin-bottom: 1rem;

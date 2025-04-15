@@ -1,7 +1,7 @@
 // src/pages/admin/AsociarCredencialesView.tsx
 import React, { useState } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
-import styles from '../../styles/AsociarCredencialesView.module.css';
+import styles from '../../styles/AsociarNumerosView.module.css';
 import { associateCredentials } from '../../services/credentialAssociationService';
 import { buscarSubcuentasPorUsuario } from '../../services/subcuentaService';
 import { getUserCredentials } from '../../services/credentialService';
@@ -54,7 +54,11 @@ const CredentialAssociationRow: React.FC<CredentialAssociationRowProps> = ({
       </select>
     </div>
     <div className={styles.buttonGroupSmall}>
-      <button className={styles.smallButton} onClick={onAdd} disabled={disabled}>
+      <button
+      className={styles.smallButton}
+      onClick={onAdd}
+      disabled={disabled}
+      >
         <span className={styles.plus}>+</span>
       </button>
       <button

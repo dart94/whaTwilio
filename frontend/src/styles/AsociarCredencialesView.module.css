@@ -27,6 +27,13 @@
   margin-bottom: 1rem;
 }
 
+/* Botones pequeños para agregar/quitar */
+.buttonGroupSmall {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
 /* Grupos de campos */
 .fieldGroup {
   margin-bottom: 1.5rem;
@@ -44,6 +51,8 @@
   margin-bottom: 1.5rem;
   border-bottom: 1px solid #eee;
   padding-bottom: 1rem;
+  display: grid;
+  
 }
 
 /* Etiqueta */
@@ -83,6 +92,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: var(--color-background);
+  display: grid;
 }
 
 .subTitle {
@@ -147,6 +157,14 @@
   gap: 0.3rem;
 }
 
+
+/* Contenedor de asociaciones telefónicas */
+.credentialAssociation {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
 .smallButton {
   font-size: 0.7rem;
   padding: 0.2rem 0.4rem;
