@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import { connection } from '../config/db.config';
 
-// Ruta para crear subcuenta
-export const createSubAccount = (req: Request, res: Response): void => {
+export const createSubAccount = async (req: Request, res: Response): Promise<void> => {
   const { email, nombreSubcuenta } = req.body;
 
   if (!email || !nombreSubcuenta) {
@@ -10,40 +9,39 @@ export const createSubAccount = (req: Request, res: Response): void => {
     return;
   }
 
-  // Buscar el ID del usuario basado en el correo electrónico
-  const findUserQuery = 'SELECT id FROM users WHERE email = ?';
-  connection.query(findUserQuery, [email], (findUserErr, findUserResults: any[]) => {
-    if (findUserErr) {
-      console.error('Error al buscar el usuario:', findUserErr);
-      res.status(500).json({ message: 'Error al buscar el usuario.' });
-      return;
-    }
+  try {
+    // Buscar el ID del usuario basado en el correo electrónico
+    const [userResults] = await connection.query<any[]>(
+      'SELECT id FROM users WHERE email = ?',
+      [email]
+    );
 
-    if (findUserResults.length === 0) {
+    if (userResults.length === 0) {
       res.status(404).json({ message: 'No se encontró ningún usuario con ese correo electrónico.' });
       return;
     }
 
-    const userId = findUserResults[0].id;
-    // Insertar la nueva subcuenta con el ID del usuario
-    const insertSubcuentaQuery = 'INSERT INTO sub_accounts (name, created_at, updated_at, user_id) VALUES (?, NOW(), NOW(), ?)';
-    connection.query(insertSubcuentaQuery, [nombreSubcuenta, userId], (insertErr, insertResults: any) => {
-      if (insertErr) {
-        console.error('Error al crear la subcuenta:', insertErr);
-        res.status(500).json({ message: 'Error al crear la subcuenta.' });
-        return;
-      }
+    const userId = userResults[0].id;
 
-      console.log('Subcuenta creada con ID:', insertResults.insertId);
-      res.status(201).json({ message: 'Subcuenta creada exitosamente.' });
-    });
-  });
+    // Insertar la nueva subcuenta con el ID del usuario
+    const [insertResults] = await connection.query<any>(
+      'INSERT INTO sub_accounts (name, created_at, updated_at, user_id) VALUES (?, NOW(), NOW(), ?)',
+      [nombreSubcuenta, userId]
+    );
+
+    console.log('Subcuenta creada con ID:', insertResults.insertId);
+    res.status(201).json({ message: 'Subcuenta creada exitosamente.' });
+
+  } catch (error) {
+    console.error('Error al crear la subcuenta:', error);
+    res.status(500).json({ message: 'Error al crear la subcuenta.', error: (error as Error).message });
+  }
 };
 
 // Ruta para obtener subcuentas
 export const getSubAccounts = async (req: Request, res: Response): Promise<void> => {
   try {
-    const [results, fields] = await connection.promise().query(`
+    const [results, fields] = await connection.query(`
       SELECT
           id,
           user_id AS Usuario,
@@ -72,7 +70,7 @@ export const getSubAccountsByUserId = async (req: Request, res: Response): Promi
 
   try {
     // Primero obtenemos el ID del usuario
-    const [userResults] = await connection.promise().query('SELECT id FROM users WHERE email = ?', [email]) as [any[], any];
+    const [userResults] = await connection.query('SELECT id FROM users WHERE email = ?', [email]) as [any[], any];
 
     if (userResults.length === 0) {
       res.status(404).json({ message: 'Usuario no encontrado.' });
@@ -82,7 +80,7 @@ export const getSubAccountsByUserId = async (req: Request, res: Response): Promi
     const userId = userResults[0].id;
 
     // Luego obtenemos las subcuentas de ese usuario
-    const [results] = await connection.promise().query(`
+    const [results] = await connection.query(`
       SELECT
           id,
           user_id AS Usuario,
@@ -114,7 +112,7 @@ export const updateSubAccount = async (req: Request, res: Response): Promise<voi
 
   try {
     // Verificar que la subcuenta existe
-    const [subcuentaResults] = await connection.promise().query('SELECT id FROM sub_accounts WHERE id = ?', [subcuentaId]) as [any[], any];
+    const [subcuentaResults] = await connection.query('SELECT id FROM sub_accounts WHERE id = ?', [subcuentaId]) as [any[], any];
 
     if (subcuentaResults.length === 0) {
       res.status(404).json({ message: 'Subcuenta no encontrada.' });
@@ -122,7 +120,7 @@ export const updateSubAccount = async (req: Request, res: Response): Promise<voi
     }
 
     // Actualizar solo el nombre de la subcuenta
-    const [result] = await connection.promise().query<any>(`
+    const [result] = await connection.query<any>(`
       UPDATE sub_accounts
       SET 
         name = ?,

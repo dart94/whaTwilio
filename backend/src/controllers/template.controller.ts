@@ -1,5 +1,7 @@
-import { Request, Response } from 'express';
+import { Request, Response, RequestHandler } from 'express';
 import { connection } from '../config/db.config';
+import { getContentTemplates, getTemplateDetails } from '../controllers/twilio.controller';
+import twilioCredentialsModel from '../models/TwilioCredentials';
 
 // Obtener plantillas asociadas a una campaña
 export const getTemplatesByCampaign = async (req: Request, res: Response): Promise<void> => {
@@ -28,7 +30,7 @@ export const getTemplatesByCampaign = async (req: Request, res: Response): Promi
           t.id DESC;
       `;
   
-      const [results] = await connection.promise().query(sql);
+      const [results] = await connection.query(sql);
       res.status(200).json(results);  // Devolver los resultados
     } catch (err) {
       console.error('Error al obtener las plantillas:', err);
@@ -48,7 +50,7 @@ export const getTemplateFields = async (req: Request, res: Response): Promise<vo
   }
 
   try {
-    const [results] = await connection.promise().query<any[]>(`
+    const [results] = await connection.query<any[]>(`
       SELECT id, name, associated_fields, sid
       FROM Templates
       WHERE id = ?
@@ -102,7 +104,7 @@ export const associateFieldsToTemplate = async (req: Request, res: Response): Pr
 
   try {
     // 1. Actualizar la tabla Sheets con la información de los campos
-    await connection.promise().query(`
+    await connection.query(`
       UPDATE Sheets
       SET field_blacklist = JSON_ARRAY(?),
           field_status = ?,
@@ -115,7 +117,7 @@ export const associateFieldsToTemplate = async (req: Request, res: Response): Pr
     // Convertir el objeto field_mappings a JSON string
     const associated_fields_json = JSON.stringify(field_mappings);
 
-    await connection.promise().query(`
+    await connection.query(`
       UPDATE Templates
       SET associated_fields = ?,
           updated_at = NOW()
@@ -145,7 +147,7 @@ export const getTemplateFieldsByCampaignId = async (req: Request, res: Response)
   }
 
   try {
-    const [results] = await connection.promise().query(`
+    const [results] = await connection.query(`
       SELECT id, name, associated_fields, sid
       FROM Templates
       WHERE campaign_id = ?
@@ -157,4 +159,99 @@ export const getTemplateFieldsByCampaignId = async (req: Request, res: Response)
     res.status(500).json({ message: 'Error al obtener las plantillas de la campaña' });
   }
 };
+
+// Obtener plantillas asociadas a una campaña Twilio
+export const getTemplates: RequestHandler = async (req, res) => {
+  try {
+    const { name } = req.query;
+
+    if (!name) {
+      res.status(400).json({ message: 'El parámetro "name" es requerido.' });
+      return; 
+    }
+
+    console.log(`📌 Buscando credencial con name: ${name}`);
+    const credentials = await twilioCredentialsModel.findByName(name as string);
+
+    if (!credentials) {
+      res.status(404).json({ message: `No se encontró una credencial con el nombre "${name}".` });
+      return;
+    }
+
+    // Extraer y parsear la columna "json"
+    const { json } = credentials;
+    const parsedCredentials = typeof json === 'string' ? JSON.parse(json) : json;
+    
+    
+    const { account_sid, auth_token } = parsedCredentials;
+    console.log('✅ Credenciales obtenidas:', { account_sid, auth_token: '***' });
+
+    const twilioUrl = 'https://content.twilio.com/v1/Content';
+    console.log(`📡 Realizando solicitud a Twilio a la URL: ${twilioUrl} con credencial id: ${name}`);
+
+    // Obtener plantillas desde Twilio usando las credenciales dinámicas
+    const templates = await getContentTemplates(account_sid, auth_token);
+
+    const filteredTemplates = templates.map((template: any) => ({
+      sid: template.sid,
+      friendly_name: template.friendly_name,
+      body: template.types?.['twilio/quick-reply']?.body || '',
+      variables: template.variables || {} 
+    }));
+
+    res.json(filteredTemplates);
+  } catch (error) {
+    console.error('❌ Error obteniendo plantillas:', error);
+    res.status(500).json({ error: 'Error al obtener plantillas' });
+  }
+};
+
+// Obtener detalles de una plantilla
+export const getTemplateById: RequestHandler = async (req, res) => {
+  try {
+    const { name } = req.query;
+    const { id } = req.params;
+
+    if (!name) {
+      res.status(400).json({ message: 'El parámetro "name" es requerido.' });
+      return;
+    }
+
+    console.log(`📌 Buscando credencial con name: ${name}`);
+    const credentials = await twilioCredentialsModel.findByName(name as string);
+
+    if (!credentials) {
+      res.status(404).json({ message: `No se encontró una credencial con el nombre "${name}".` });
+      return;
+    }
+
+    // Extraer y parsear la columna "json"
+    const { json } = credentials;
+    const parsedCredentials = JSON.parse(json);
+    
+    const { account_sid, auth_token } = parsedCredentials;
+    console.log('✅ Credenciales obtenidas:', { account_sid, auth_token: '***' });
+
+    // Obtener detalles de la plantilla
+    const template = await getTemplateDetails(account_sid, auth_token, id);
+
+    res.json(template);
+  } catch (error) {
+    console.error('❌ Error obteniendo detalles de la plantilla:', error);
+    res.status(500).json({ error: 'Error al obtener detalles de la plantilla' });
+  }
+};
+
+// Obtener plantillas desde Twilio Content
+export async function findTemplateBySid(accountSid: string, authToken: string, sid: string) {
+  console.log("📡 Buscando plantillas desde Twilio Content...");
+  const templates = await getContentTemplates(accountSid, authToken);
+  console.log("📦 Plantillas obtenidas:", templates.length);
+
+  const selected = templates.find((t) => t.sid === sid);
+  console.log("🎯 Plantilla seleccionada:", selected);
+
+  return selected;
+}
+
 

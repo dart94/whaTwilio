@@ -41,3 +41,22 @@ export async function obtenerSheetPorId(sheet_id: string) {
   return response.json();
 }
 
+
+// Obtener encabezados directamente por ID de Google Sheets
+export async function obtenerHeadersPorGoogleSheetId(googleSheetId: string, sheetName?: string) {
+  try {
+    const encodedId = encodeURIComponent(googleSheetId);
+    const queryParams = sheetName ? `?sheetName=${encodeURIComponent(sheetName)}` : '';
+    
+    const response = await fetch(`${BASE_URL}/api/sheets/google/${encodedId}/headers${queryParams}`);
+  
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  
+    return response.json();
+  } catch (error) {
+    console.error("Error obteniendo encabezados por Google Sheet ID:", error);
+    throw error;
+  }
+}

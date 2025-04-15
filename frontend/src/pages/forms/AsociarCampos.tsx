@@ -8,6 +8,7 @@ import { obtenerCredenciales } from '../../services/credentialService';
 import { obtenerCampanas } from '../../services/campaignService';
 import BuscarCampaign from '../../components/forms/BuscarCampaing';
 import BuscarSheet from '../../components/forms/BuscarSheet';
+import CrearSheetForm from '../../components/forms/CrearSheetForm';
 
 
 
@@ -73,23 +74,15 @@ const AsociarCampos: React.FC = () => {
 
         <hr className={styles.hr} />
 
-        {/* Campañas */}
-        <BuscarCampaign
-          onCampaignsEncontradas={setCampains}
-          onCampaignChange={setSelectedCampaign}
-          Campaigns={Campaigns}
-        />
-
-        <hr className={styles.hr} />
 
         {/* Sheets */}
-        <BuscarSheet
-          onSheetEncontrado={(sheet: any) => {
-            setSheetId(sheet.sheet_id);
-            setSheetHeaders(sheet.headers);
-            toast.success('Hoja encontrada');
+        <CrearSheetForm
+          onCrearSheet={(sheetData) => {
+            // Handle sheet creation here
+            console.log(sheetData);
           }}
-          />
+          campaigns={Campaigns}
+        />
       </div>
       
   );

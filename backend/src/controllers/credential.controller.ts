@@ -5,7 +5,7 @@ import { ResultSetHeader } from 'mysql2';
 // Ruta para obtener credenciales
 export const getCredentials = async (req: Request, res: Response): Promise<void> => {
     try {
-        const [results, fields] = await connection.promise().query(`
+        const [results, fields] = await connection.query(`
           SELECT
               id,
               name,
@@ -32,15 +32,22 @@ export const postCredentials = async (req: Request, res: Response): Promise<void
     }
   
     const insertCredentialQuery = 'INSERT INTO credentials (name, json, created_at, updated_at) VALUES (?, ?, NOW(), NOW())';
-    connection.query(insertCredentialQuery, [name, json], (insertErr, insertResults: ResultSetHeader) => {
-      if (insertErr) {
-        console.error('Error al crear la credencial:', insertErr);
-        return res.status(500).json({ message: 'Error al crear la credencial.' });
-      }
-  
+    interface CredentialInsertResult extends ResultSetHeader {
+      insertId: number;
+    }
+
+    try {
+      const [insertResults] = await connection.query<CredentialInsertResult>(
+        insertCredentialQuery,
+        [name, json]
+      );
+
       console.log('Credencial creada con ID:', insertResults.insertId);
       res.status(201).json({ message: 'Credencial creada exitosamente.' });
-    });
+    } catch (err) {
+      console.error('Error al crear la credencial:', err);
+      res.status(500).json({ message: 'Error al crear la credencial.' });
+    }
   };
 
 // Ruta para asociar las credenciales a una subcuenta
@@ -55,7 +62,7 @@ export const associateCredentialsToSubAccount = async (req: Request, res: Respon
 
   try {
     // Verificar que la subcuenta existe
-    const [subAccountResults] = await connection.promise().query(
+    const [subAccountResults] = await connection.query(
       'SELECT id FROM sub_accounts WHERE id = ?', [sub_account_id]
     ) as any[];
 
@@ -65,7 +72,7 @@ export const associateCredentialsToSubAccount = async (req: Request, res: Respon
     }
 
     // Verificar que la credencial existe
-    const [credentialsResults] = await connection.promise().query(
+    const [credentialsResults] = await connection.query(
       'SELECT id FROM credentials WHERE id = ?', [credentials_id]
     ) as any[];
 
@@ -75,7 +82,7 @@ export const associateCredentialsToSubAccount = async (req: Request, res: Respon
     }
 
     // Asociar credencial a subcuenta
-    await connection.promise().query(`
+    await connection.query(`
       INSERT INTO sub_account_credentials (sub_account_id, credentials_id, created_at, updated_at)
       VALUES (?, ?, NOW(), NOW())
     `, [sub_account_id, credentials_id]);
@@ -108,7 +115,7 @@ export const deleteCredential = async (req: Request, res: Response): Promise<voi
       params.push(name);
     }
 
-    const [result] = await connection.promise().query(query, params) as [ResultSetHeader, any];
+    const [result] = await connection.query(query, params) as [ResultSetHeader, any];
 
     if (result.affectedRows === 0) {
       res.status(404).json({ message: 'No se encontró la credencial a eliminar.' });
@@ -138,7 +145,7 @@ export const updateCredential = async (req: Request, res: Response): Promise<voi
 
   try {
     // Verificar que la credencial existe
-    const [credentialResults] = await connection.promise().query<any[]>('SELECT id FROM credentials WHERE id = ?', [credentialId]);
+    const [credentialResults] = await connection.query<any[]>('SELECT id FROM credentials WHERE id = ?', [credentialId]);
 
     if (credentialResults.length === 0) {
       res.status(404).json({ message: 'Credencial no encontrada.' });
@@ -159,7 +166,7 @@ export const updateCredential = async (req: Request, res: Response): Promise<voi
     }
 
     // Actualizar los datos de la credencial
-    const [result] = await connection.promise().query(`
+    const [result] = await connection.query(`
       UPDATE credentials
       SET 
         name = ?,
@@ -194,7 +201,7 @@ export const getUserCredentials = async (req: Request, res: Response): Promise<v
 
   try {
     // Primero obtenemos el ID del usuario mediante su email
-    const [userResults] = await connection.promise().query(
+    const [userResults] = await connection.query(
       'SELECT id FROM users WHERE email = ?',
       [email]
     ) as [any[], any];
@@ -207,7 +214,7 @@ export const getUserCredentials = async (req: Request, res: Response): Promise<v
     const userId = userResults[0].id;
 
     // Luego obtenemos las credenciales asociadas a ese usuario
-    const [results] = await connection.promise().query(`
+    const [results] = await connection.query(`
       SELECT
         id,
         user_id AS Usuario,

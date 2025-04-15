@@ -2,7 +2,8 @@ import Router from 'express';
 import { getTemplatesByCampaign,
          getTemplateFields,
          associateFieldsToTemplate,
-         getTemplateFieldsByCampaignId
+         getTemplateFieldsByCampaignId,
+         getTemplates
         } from "../controllers/template.controller";
  
 const router = Router();
@@ -18,5 +19,8 @@ router.post('/templates/campaign-fields', associateFieldsToTemplate);
 
 // Ruta para obtener los campos de una plantilla específica por ID de campaña
 router.get('/templates/campaign/:campaign_id/fields', getTemplatesByCampaign);
+
+// Ruta para obtener los campos de una plantilla específica
+router.get('/templates', getTemplates);
 
 export default router;

@@ -4,7 +4,7 @@ import { connection } from '../config/db.config';
 //ruta para obtener campañas
 export const getCampaigns = async (req: Request, res: Response): Promise<void> => {
   try {
-    const [results, fields] = await connection.promise().query(`
+    const [results, fields] = await connection.execute(`
       SELECT 
         c.id AS ID,
         c.name AS Nombre,
@@ -73,7 +73,7 @@ export const getCampaignsBySubAccount = async (req: Request, res: Response): Pro
       ORDER BY 
         c.id DESC;
     `;
-    const [results] = await connection.promise().query(sql);
+    const [results] = await connection.query(sql);
     res.status(200).json(results);
   } catch (err) {
     console.error('Error al ejecutar la consulta:', err);
@@ -97,7 +97,7 @@ export const createCampaign = async (req: Request, res: Response): Promise<void>
   try {
     // Verificar que la subcuenta existe
     console.log(`🔎 Buscando subcuenta con ID: ${sub_account_id}`);
-    const [subAccountResults] = await connection.promise().query(
+    const [subAccountResults] = await connection.query(
       'SELECT id FROM sub_accounts WHERE id = ?',
       [sub_account_id]
     ) as [any[], any];
@@ -111,7 +111,7 @@ export const createCampaign = async (req: Request, res: Response): Promise<void>
     
     // Verificar que las credenciales existen
     console.log(`🔎 Buscando credencial para Google Sheets con ID: ${credential_sheet_id}`);
-    const [sheetCredentialResults] = await connection.promise().query(
+    const [sheetCredentialResults] = await connection.query(
       'SELECT id FROM credentials WHERE id = ?',
       [credential_sheet_id]
     ) as [any[], any];
@@ -124,7 +124,7 @@ export const createCampaign = async (req: Request, res: Response): Promise<void>
     }
     
     console.log(`🔎 Buscando credencial para mensajes con ID: ${credential_template_id}`);
-    const [templateCredentialResults] = await connection.promise().query(
+    const [templateCredentialResults] = await connection.query(
       'SELECT id FROM credentials WHERE id = ?',
       [credential_template_id]
     ) as [any[], any];
@@ -139,7 +139,7 @@ export const createCampaign = async (req: Request, res: Response): Promise<void>
     console.log("✅ La credencial para mensajes existe. Creando campaña...");
     
     // Insertar la campaña en la base de datos
-    const [result] = await connection.promise().query(
+    const [result] = await connection.query(
       'INSERT INTO campaign (name, description, sub_account_id, credential_sheet_id, credential_template_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
       [name, description, sub_account_id, credential_sheet_id, credential_template_id]
     ) as [any, any];

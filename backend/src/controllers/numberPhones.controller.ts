@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
 import { connection } from '../config/db.config';
+import { ResultSetHeader } from 'mysql2';
 
 // Obtener todos los números de teléfono
 export const getNumberPhones = async (req: Request, res: Response): Promise<void> => {
   try {
-    const [results, fields] = await connection.promise().query(`
+    const [results, fields] = await connection.query(`
       SELECT
           id,
           name AS nombre,
@@ -27,7 +28,7 @@ export const getNumberPhones = async (req: Request, res: Response): Promise<void
 // Obtener todos los números de teléfono formateados
 export const getNumberPhonesFormatted = async (req: Request, res: Response): Promise<void> => {
   try {
-    const [results, fields] = await connection.promise().query(`
+    const [results, fields] = await connection.query(`
       SELECT
           id,
           name AS nombre,
@@ -48,8 +49,7 @@ export const getNumberPhonesFormatted = async (req: Request, res: Response): Pro
   }
 };
 
-// Crear un nuevo número de teléfono
-export const createNumberPhone = (req: Request, res: Response): void => {
+export const createNumberPhone = async (req: Request, res: Response): Promise<void> => {
   const { name, company, number } = req.body;
 
   if (!name || !company || !number) {
@@ -57,18 +57,23 @@ export const createNumberPhone = (req: Request, res: Response): void => {
     return;
   }
 
-  const insertNumberPhoneQuery = 'INSERT INTO number_phones (name, company, number, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())';
+  const insertNumberPhoneQuery = `
+    INSERT INTO number_phones (name, company, number, created_at, updated_at)
+    VALUES (?, ?, ?, NOW(), NOW())
+  `;
 
-  connection.query(insertNumberPhoneQuery, [name, company, number], (insertErr, insertResults: any) => {
-    if (insertErr) {
-      console.error('Error al crear el número telefónico:', insertErr);
-      res.status(500).json({ message: 'Error al crear el número telefónico.' });
-      return;
-    }
+  try {
+    const [result] = await connection.query<ResultSetHeader>(
+      insertNumberPhoneQuery,
+      [name, company, number]
+    );
 
-    console.log('Número telefónico creado con ID:', insertResults.insertId);
+    console.log('Número telefónico creado con ID:', result.insertId);
     res.status(201).json({ message: 'Número telefónico creado exitosamente.' });
-  });
+  } catch (insertErr) {
+    console.error('Error al crear el número telefónico:', insertErr);
+    res.status(500).json({ message: 'Error al crear el número telefónico.' });
+  }
 };
 
 
@@ -83,7 +88,7 @@ export const associateNumberPhonesToSubAccount = async (req: Request, res: Respo
 
   try {
     // Verificar que la subcuenta existe
-    const [subAccountResults] = await connection.promise().query('SELECT id FROM sub_accounts WHERE id = ?', [sub_account_id]) as any[];
+    const [subAccountResults] = await connection.query('SELECT id FROM sub_accounts WHERE id = ?', [sub_account_id]) as any[];
 
     if (subAccountResults.length === 0) {
       res.status(404).json({ message: 'Subcuenta no encontrada.' });
@@ -91,7 +96,7 @@ export const associateNumberPhonesToSubAccount = async (req: Request, res: Respo
     }
 
     // Verificar que el número telefónico existe
-    const [numberPhoneResults] = await connection.promise().query('SELECT id FROM number_phones WHERE id = ?', [number_phone_id]) as any[];
+    const [numberPhoneResults] = await connection.query('SELECT id FROM number_phones WHERE id = ?', [number_phone_id]) as any[];
 
     if (numberPhoneResults.length === 0) {
       res.status(404).json({ message: 'Número telefónico no encontrado.' });
@@ -99,7 +104,7 @@ export const associateNumberPhonesToSubAccount = async (req: Request, res: Respo
     }
 
     // Crear la asociación en la tabla correspondiente (asumiendo que existe una tabla para esta relación)
-    const [result] = await connection.promise().query(`
+    const [result] = await connection.query(`
       INSERT INTO sub_account_number_phones (sub_account_id, number_phone_id, created_at, updated_at)
       VALUES (?, ?, NOW(), NOW())
     `, [sub_account_id, number_phone_id]);
@@ -122,7 +127,7 @@ export const getNumberPhonesBySubAccount = async (req: Request, res: Response): 
   }
 
   try {
-    const [results] = await connection.promise().query(`
+    const [results] = await connection.query(`
       SELECT
           np.id,
           np.name AS nombre,
@@ -158,7 +163,7 @@ export const updateNumberPhone = async (req: Request, res: Response): Promise<vo
 
   try {
     // Verificar que el número telefónico existe
-    const [phoneResults] = await connection.promise().query<any[]>('SELECT id FROM number_phones WHERE id = ?', [phoneId] );
+    const [phoneResults] = await connection.query<any[]>('SELECT id FROM number_phones WHERE id = ?', [phoneId] );
 
     if (phoneResults.length === 0) {
       res.status(404).json({ message: 'Número telefónico no encontrado.' });
@@ -166,7 +171,7 @@ export const updateNumberPhone = async (req: Request, res: Response): Promise<vo
     }
 
     // Actualizar los datos del número telefónico
-    const [result] = await connection.promise().query(`
+    const [result] = await connection.query(`
       UPDATE number_phones
       SET 
         name = ?,

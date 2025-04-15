@@ -36,8 +36,14 @@
   margin-bottom: 1rem;
 }
 
-.formField{
+.formField {
   margin-bottom: 0.5rem;
+}
+
+.formSection {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
 }
 
 /* Etiqueta */
@@ -70,43 +76,112 @@
   font-weight: bold;
 }
 
-/* Contenedor de asociaciones de credenciales */
-.credentialAssociation {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  overflow-x: auto;
+/* Contenedor de resultados */
+.resultsContainer {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: var(--color-background);
 }
 
-/* Contenedor para el select de credencial */
-.inputWrapper {
-  flex: 1;
+.subTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.5rem;
 }
 
-/* Botones pequeños para agregar/quitar */
-.buttonGroupSmall {
+/* Grid para la información del sheet */
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+/* Estilos para el contenedor de encabezados */
+.headersContainer {
   display: flex;
-  gap: 0.5rem;
-  align-items: flex-end;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+.headerItem {
+  background-color: #f9f9f9;
+  padding: 0.5rem;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #eee;
+  color: var(--color-negro);
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+.infoLabel {
+  font-weight:600;
+  color: #666;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.3rem;
 }
 
 .smallButton {
-  padding: 0.5rem;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
   background-color: var(--color-button-bg);
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  color: var(--color-text);
+  border: none;
+  border-radius: 3px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  color: var(--color-text)
 }
 
 .smallButton:hover {
-  background-color: var( --color-left-bg)
+  background-color: var(--color-left-bg);
 }
 
-.plus,
-.minus {
-  font-size: 1.25rem;
+.inputGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Para los botones específicos de cada tipo de campo */
+.smallButton[title="Usar como campo de lista negra"] {
+  background-color: #ff6b6b;
+}
+
+.smallButton[title="Usar como campo de estado"] {
+  background-color: #4d96ff;
+}
+
+.smallButton[title="Usar como campo de contacto"] {
+  background-color: #6bcb77;
+}
+
+.infoValue {
+  color: #333;
+  font-weight: 400;
 }
 
 /* Botón de asociación de credenciales */
@@ -131,10 +206,11 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-top: .5rem;
 }
 
 .submitButton:hover {
-  background-color:  var( --color-left-bg)
+  background-color: var(--color-left-bg)
 }
 
 .icon {
@@ -153,14 +229,14 @@
 }
 
 .button {
-    padding: 0.5rem 1rem;
-    background-color: var(--color-button-sc);
-    border: 1px solid var(--color-button-border);;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    color: #000;
-  }
+  padding: 0.5rem 1rem;
+  background-color: var(--color-button-sc);
+  border: 1px solid var(--color-button-border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  color: #000;
+}
 
 /* Textarea */
 .textarea {
@@ -170,5 +246,5 @@
   border-radius: 4px;
   margin-bottom: 0.5rem;
   color: var(--color-label);
-  height: 5rem; 
+  height: 5rem;
 }
