@@ -140,10 +140,10 @@ const CrearSheetForm: React.FC<CrearSheetFormProps> = ({ onCrearSheet, campaigns
             </button>
           </div>
         </div>
-
-        {availableSheets.length > 0 && (
-          <div className={styles.formField}>
-            <label className={styles.label}>Nombre del sheet</label>
+  
+        <div className={styles.formField}>
+          <label className={styles.label}>Nombre del sheet</label>
+          {availableSheets.length > 0 ? (
             <select
               name="sheet_sheet"
               value={sheetData.sheet_sheet}
@@ -157,12 +157,7 @@ const CrearSheetForm: React.FC<CrearSheetFormProps> = ({ onCrearSheet, campaigns
                 </option>
               ))}
             </select>
-          </div>
-        )}
-        
-        {!availableSheets.length && (
-          <div className={styles.formField}>
-            <label className={styles.label}>Nombre del sheet</label>
+          ) : (
             <input
               name="sheet_sheet"
               placeholder="Ej: Hoja1"
@@ -170,9 +165,9 @@ const CrearSheetForm: React.FC<CrearSheetFormProps> = ({ onCrearSheet, campaigns
               onChange={handleChange}
               className={styles.input}
             />
-          </div>
-        )}
-
+          )}
+        </div>
+  
         <div className={styles.formField}>
           <label className={styles.label}>Rango</label>
           <input
@@ -184,74 +179,86 @@ const CrearSheetForm: React.FC<CrearSheetFormProps> = ({ onCrearSheet, campaigns
             disabled={!sheetData.sheet_sheet}
           />
         </div>
-
-        {mostrarHeaders && headers.length > 0 && (
-          <div className={`${styles.formField} ${styles.fullWidth}`}>
-            <label className={styles.label}>Encabezados encontrados</label>
-            <div className={styles.headersContainer}>
-              {headers.map((header, index) => (
-                <div key={index} className={styles.headerItem}>
-                  <span className={styles.headerText}>{header}</span>
-                  <div className={styles.headerActions}>
-                    <button 
-                      onClick={() => handleSelectHeader(header, 'field_blacklist')}
-                      className={`${styles.smallButton} ${styles.blacklistButton}`}
-                      title="Usar como campo de lista negra"
-                    >
-                      Lista Negra
-                    </button>
-                    <button 
-                      onClick={() => handleSelectHeader(header, 'field_status')}
-                      className={`${styles.smallButton} ${styles.statusButton}`}
-                      title="Usar como campo de estado"
-                    >
-                      Estado
-                    </button>
-                    <button 
-                      onClick={() => handleSelectHeader(header, 'field_contact')}
-                      className={`${styles.smallButton} ${styles.contactButton}`}
-                      title="Usar como campo de contacto"
-                    >
-                      Contacto
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
+  
         <div className={styles.formField}>
           <label className={styles.label}>Campo de lista negra</label>
-          <input
-            name="field_blacklist"
-            placeholder="Nombre del campo"
-            value={sheetData.field_blacklist}
-            onChange={handleChange}
-            className={styles.input}
-          />
+          {headers.length > 0 ? (
+            <select
+              name="field_blacklist"
+              value={sheetData.field_blacklist}
+              onChange={handleChange}
+              className={styles.select}
+            >
+              <option value="">Selecciona un campo</option>
+              {headers.map((header, index) => (
+                <option key={index} value={header}>
+                  {header}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              name="field_blacklist"
+              placeholder="Nombre del campo"
+              value={sheetData.field_blacklist}
+              onChange={handleChange}
+              className={styles.input}
+            />
+          )}
         </div>
-
+  
         <div className={styles.formField}>
           <label className={styles.label}>Campo de estado</label>
-          <input
-            name="field_status"
-            placeholder="Nombre del campo"
-            value={sheetData.field_status}
-            onChange={handleChange}
-            className={styles.input}
-          />
+          {headers.length > 0 ? (
+            <select
+              name="field_status"
+              value={sheetData.field_status}
+              onChange={handleChange}
+              className={styles.select}
+            >
+              <option value="">Selecciona un campo</option>
+              {headers.map((header, index) => (
+                <option key={index} value={header}>
+                  {header}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              name="field_status"
+              placeholder="Nombre del campo"
+              value={sheetData.field_status}
+              onChange={handleChange}
+              className={styles.input}
+            />
+          )}
         </div>
-
+  
         <div className={styles.formField}>
           <label className={styles.label}>Campo de contacto</label>
-          <input
-            name="field_contact"
-            placeholder="Nombre del campo"
-            value={sheetData.field_contact}
-            onChange={handleChange}
-            className={styles.input}
-          />
+          {headers.length > 0 ? (
+            <select
+              name="field_contact"
+              value={sheetData.field_contact}
+              onChange={handleChange}
+              className={styles.select}
+            >
+              <option value="">Selecciona un campo</option>
+              {headers.map((header, index) => (
+                <option key={index} value={header}>
+                  {header}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              name="field_contact"
+              placeholder="Nombre del campo"
+              value={sheetData.field_contact}
+              onChange={handleChange}
+              className={styles.input}
+            />
+          )}
         </div>
 
         <BuscarCampaign

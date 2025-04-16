@@ -39,20 +39,67 @@
   margin-bottom: 1.5rem;
 }
 
-.formgrid {
-  margin-bottom: 1rem;
+.formContainer {
+  /* max-width: 800px; */
+  margin: 1rem auto;
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.formTitle {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  color: #333;
+  text-align: center;
+}
+
+/* Mejora del grid para asegurar elementos en múltiples columnas */
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Fuerza 2 columnas */
+  gap: 1.5rem; /* Aumenta el espacio entre elementos */
+  margin-bottom: 1.5rem; /* Espacio al final del grid */
+}
+
+/* Estilos para pantallas pequeñas - vuelve a una columna */
+@media (max-width: 640px) {
+  .formGrid {
+    grid-template-columns: 1fr; /* Una columna en pantallas pequeñas */
+  }
 }
 
 .formField {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem; /* Reducido para mejorar el espaciado en el grid */
+  display: flex;
+  flex-direction: column;
 }
 
-.formSection {
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 1rem;
-  display: grid;
-  
+/* Estilo opcional para las etiquetas del formulario */
+.formField label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+}
+
+/* Estilo opcional para los inputs */
+.formField input, 
+.formField select, 
+.formField textarea {
+  /* padding: 0.75rem; */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 100%;
+}
+
+/* Estilo para botones de acción al final del formulario */
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 /* Etiqueta */
@@ -265,4 +312,57 @@
   margin-bottom: 0.5rem;
   color: var(--color-label);
   height: 5rem;
+}
+
+
+/* Tooltip */
+.tooltipContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #333;
+}
+
+/* Contenedor del icono + tooltip */
+.tooltipWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  position: fixed;
+  bottom: 10px;
+  transform: translateX(-50%);
+  background-color: #222;
+  color: #fff;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  z-index: 9999;
+  white-space: pre-wrap;
+  max-width: 300px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
+}
+
+/* Scrollbar personalizado */
+.tooltip::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tooltip::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 3px;
+}
+
+.tooltip::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
 }

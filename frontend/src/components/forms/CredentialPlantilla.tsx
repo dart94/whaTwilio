@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { getContentTemplates } from '../../services/Twilio';
 import styles from '../../styles/AsociarCredencialesView.module.css';
+import TooltipSMS from './Body';
 
 interface Credential {
   id: string;
@@ -13,6 +14,7 @@ interface Template {
   id?: string;
   name: string;
   friendly_name?: string;
+  body: string;
 }
 
 interface CredentialSelectorProps {
@@ -124,6 +126,7 @@ const CredentialSelector: React.FC<CredentialSelectorProps> = ({
                 </option>
               ))}
             </select>
+            <TooltipSMS body={templatesFound.find(t => t.id === selectedTemplate || t.friendly_name === selectedTemplate)?.body || ''} />
           </div>
         </div>
       )}
