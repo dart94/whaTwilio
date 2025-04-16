@@ -1,21 +1,16 @@
+// frontend/src/components/AsociarCampos.tsx
 import React, { useState } from 'react';
-import { FaPencilAlt } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import styles from '../../styles/AsociarCredencialesView.module.css';
 import SubcuentaSelector from '../../components/forms/SubcuentaSelector';
 import BuscarUsuario from '../../components/forms/BuscarUsuario';
 import { obtenerCredenciales } from '../../services/credentialService';
 import { obtenerCampanas } from '../../services/campaignService';
-import BuscarCampaign from '../../components/forms/BuscarCampaing';
-import BuscarSheet from '../../components/forms/BuscarSheet';
 import CrearSheetForm from '../../components/forms/CrearSheetForm';
-import BuscarPlantilla from '../../components/forms/BuscarPlantilla';
 import CredentialSelector from '../../components/forms/CredentialPlantilla';
 
-
-
-
 const AsociarCampos: React.FC = () => {
+  // Estados
   const [email, setEmail] = useState('');
   const [subcuentaSeleccionada, setSubcuentaSeleccionada] = useState<number>(0);
   const [selectedCampaign, setSelectedCampaign] = useState<number>(0);
@@ -26,43 +21,44 @@ const AsociarCampos: React.FC = () => {
   const [mostrarCamposVariables, setMostrarCamposVariables] = useState(false);
   const [showPlantillaContent, setShowPlantillaContent] = useState(false);
   const [credentials, setCredentials] = useState<any[]>([]);
-  const [Campaigns, setCampains] = useState<any[]>([]);
+  const [campaigns, setCampaigns] = useState<any[]>([]);
   const [sheetId, setSheetId] = useState('');
   const [plantillas, setPlantillas] = useState<any[]>([]);
   const [selectedCredential, setSelectedCredential] = useState('');
 
-    const handleSelectCredential = (credential: any) => {
-      console.log('Seleccionado:', credential);
-    };
+  // Maneja la búsqueda de credenciales y campañas
+  const handleBuscarCredencial = async () => {
+    try {
+      const data = await obtenerCredenciales();
+      setCredentials(data);
 
-    
-    const handleBuscarCredencial = async () => {
-      try {
-        const data = await obtenerCredenciales();
-        setCredentials(data);
+      const campaignData = await obtenerCampanas();
+      setCampaigns(campaignData);
 
-        const campaingData = await obtenerCampanas();
-        setCampains(campaingData);
-
-        if (data.length === 0) {
-          toast.error('No se encontró ninguna credencial para este usuario');
-        }else{
-            toast.success(`Se encontró ${data.length} credencial(es) para este usuario`);
-        }
-
-        if (campaingData.length === 0) {
-          toast.warn('El usuario no tiene campañas asignadas');
-            }else{
-                toast.success(`Se encontró ${campaingData.length} campaña(s) para este usuario`);
-            }
-  
-
-      } catch (error: any) {
-        console.error("Error al buscar credenciales:", error);
-        toast.error('Error al buscar credenciales para este usuario');
+      if (data.length === 0) {
+        toast.error('No se encontró ninguna credencial para este usuario');
+      } else {
+        toast.success(`Se encontró ${data.length} credencial(es) para este usuario`);
       }
-    };
 
+      if (campaignData.length === 0) {
+        toast.warn('El usuario no tiene campañas asignadas');
+      } else {
+        toast.success(`Se encontró ${campaignData.length} campaña(s) para este usuario`);
+      }
+    } catch (error: any) {
+      console.error("Error al buscar credenciales:", error);
+      toast.error('Error al buscar credenciales para este usuario');
+    }
+  };
+
+  // Función para manejar el mapeo de variables (necesaria para CredentialSelector)
+  const handleVariableMapping = (mapping: any) => {
+    console.log('Variable mapping:', mapping);
+    // Puedes actualizar el estado u otro proceso aquí según necesites
+  };
+
+  // Función para manejar la selección de plantillas que retorna el componente CredentialSelector
   const handleTemplateSelect = (templates: any[]): void => {
     if (templates && templates.length > 0) {
       setPlantillas(templates);
@@ -72,48 +68,45 @@ const AsociarCampos: React.FC = () => {
     }
   };
 
-  return(
+  return (
     <div className={styles.container}>
-        <h2 className={styles.heading}>Asociar Campos</h2>
-        <hr className={styles.hr} />
+      <h2 className={styles.heading}>Asociar Campos</h2>
+      <hr className={styles.hr} />
 
-        {/* Sección Usuario */}
-        <BuscarUsuario
-          onSubcuentasEncontradas={setUserSubcuentas}
-          handleBuscarCredencial={handleBuscarCredencial}
-          />
-        
-        {/* Sección Subcuenta */}
-        <SubcuentaSelector
-          userSubcuentas={userSubcuentas}
-          subcuentaSeleccionada={subcuentaSeleccionada}
-          onSubcuentaChange={setSubcuentaSeleccionada}
-        />
+      {/* Sección Usuario */}
+      <BuscarUsuario
+        onSubcuentasEncontradas={setUserSubcuentas}
+        handleBuscarCredencial={handleBuscarCredencial}
+      />
 
-        <hr className={styles.hr} />
+      {/* Sección Subcuenta */}
+      <SubcuentaSelector
+        userSubcuentas={userSubcuentas}
+        subcuentaSeleccionada={subcuentaSeleccionada}
+        onSubcuentaChange={setSubcuentaSeleccionada}
+      />
 
+      <hr className={styles.hr} />
 
-        {/* Sheets */}
-        <CrearSheetForm
-          onCrearSheet={(sheetData) => {
-            // Handle sheet creation here
-            console.log(sheetData);
-          }}
-          campaigns={Campaigns}
-        />
-        <hr className={styles.hr} />
-        
-        {/*Credentials*/}
-        <CredentialSelector
-          credentials={credentials}
-          selectedCredential={selectedCredential}
-          onCredentialChange={setSelectedCredential}
-          onTemplatesEncontradas={handleTemplateSelect}
-        />
+      {/* Sheets */}
+      <CrearSheetForm
+        onCrearSheet={(sheetData) => {
+          console.log(sheetData);
+        }}
+        campaigns={campaigns}
+      />
+      <hr className={styles.hr} />
 
-
-      </div>
-      
+      {/* Selector de Credenciales y Plantillas */}
+      <CredentialSelector
+        credentials={credentials}
+        selectedCredential={selectedCredential}
+        onCredentialChange={setSelectedCredential}
+        onTemplatesEncontradas={handleTemplateSelect}
+        headers={sheetHeaders}
+        onVariableMappingChange={handleVariableMapping}
+      />
+    </div>
   );
 };
 

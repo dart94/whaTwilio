@@ -1,5 +1,5 @@
 // frontend/src/components/CredentialSelector.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { getContentTemplates } from '../../services/Twilio';
 import styles from '../../styles/AsociarCredencialesView.module.css';
@@ -15,6 +15,11 @@ interface Template {
   name: string;
   friendly_name?: string;
   body: string;
+  variables?: string[];
+}
+
+interface VariableMapping {
+  [variable: string]: string;
 }
 
 interface CredentialSelectorProps {
@@ -22,17 +27,31 @@ interface CredentialSelectorProps {
   selectedCredential: string;
   onCredentialChange: (newValue: string) => void;
   onTemplatesEncontradas?: (templates: Template[]) => void;
+  headers?: string[];
+  onVariableMappingChange?: (mapping: VariableMapping) => void;
 }
 
 const CredentialSelector: React.FC<CredentialSelectorProps> = ({
   credentials,
   selectedCredential,
   onCredentialChange,
-  onTemplatesEncontradas
+  onTemplatesEncontradas,
+  headers = [],
+  onVariableMappingChange
 }) => {
-  // Estado para las plantillas encontradas y la plantilla seleccionada
   const [templatesFound, setTemplatesFound] = useState<Template[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<string>('');
+  const [templateVariables, setTemplateVariables] = useState<string[]>([]);
+  const [variableMapping, setVariableMapping] = useState<VariableMapping>({});
+
+  // Función para extraer variables con el patrón {{variable}} del cuerpo de la plantilla
+  const extractVariables = (templateBody: string): string[] => {
+    if (!templateBody) return [];
+    const regex = /{{([^{}]+)}}/g;
+    const matches = templateBody.match(regex) || [];
+    const variables = matches.map(match => match.replace(/{{|}}/g, ''));
+    return [...new Set(variables)]; // Elimina duplicados
+  };
 
   const handleBuscarPlantilla = async () => {
     if (!selectedCredential) {
@@ -41,7 +60,6 @@ const CredentialSelector: React.FC<CredentialSelectorProps> = ({
     }
 
     try {
-      // Se busca la credencial seleccionada para utilizar su nombre en la búsqueda
       const credentialSelected = credentials.find(cred => cred.name === selectedCredential);
       if (!credentialSelected) {
         toast.error('Credencial no encontrada');
@@ -56,8 +74,12 @@ const CredentialSelector: React.FC<CredentialSelectorProps> = ({
         return;
       }
       
-      // Guardar las plantillas en el estado local y pasarlas al componente padre si corresponde
+      // Actualizar estados y notificar al componente padre
       setTemplatesFound(templates);
+      setSelectedTemplate('');
+      setTemplateVariables([]);
+      setVariableMapping({});
+      
       if (onTemplatesEncontradas) {
         onTemplatesEncontradas(templates);
       }
@@ -70,6 +92,35 @@ const CredentialSelector: React.FC<CredentialSelectorProps> = ({
     } catch (error) {
       console.error("Error al buscar plantillas:", error);
       toast.error('Error al buscar plantillas');
+    }
+  };
+
+  // Efecto: actualizar las variables de la plantilla seleccionada
+  useEffect(() => {
+    if (selectedTemplate) {
+      const selectedTemplateObj = templatesFound.find(
+        t => t.id === selectedTemplate || t.friendly_name === selectedTemplate
+      );
+      
+      if (selectedTemplateObj?.body) {
+        const variables = extractVariables(selectedTemplateObj.body);
+        setTemplateVariables(variables);
+        setVariableMapping({});
+      } else {
+        setTemplateVariables([]);
+      }
+    } else {
+      setTemplateVariables([]);
+    }
+  }, [selectedTemplate, templatesFound]);
+
+  // Manejar el cambio de mapeo para cada variable
+  const handleVariableMapping = (variable: string, header: string) => {
+    const newMapping = { ...variableMapping, [variable]: header };
+    setVariableMapping(newMapping);
+    
+    if (onVariableMappingChange) {
+      onVariableMappingChange(newMapping);
     }
   };
 
@@ -105,7 +156,7 @@ const CredentialSelector: React.FC<CredentialSelectorProps> = ({
         </div>
       </div>
       
-      {/* Selector de Plantillas, mostrado sólo si se encontraron plantillas */}
+      {/* Selector de Plantillas */}
       {templatesFound.length > 0 && (
         <div className={styles.fieldGroup}>
           <label className={styles.label}>Plantillas encontradas</label>
@@ -127,6 +178,38 @@ const CredentialSelector: React.FC<CredentialSelectorProps> = ({
               ))}
             </select>
             <TooltipSMS body={templatesFound.find(t => t.id === selectedTemplate || t.friendly_name === selectedTemplate)?.body || ''} />
+          </div>
+        </div>
+      )}
+      
+      {/* Visualización de variables extraídas de la plantilla */}
+      {templateVariables.length > 0 && (
+        <div className={styles.fieldGroup}>
+          <label className={styles.label}>Variables de la plantilla</label>
+          <div className={styles.variablesGrid}>
+            {templateVariables.map((variable, index) => (
+              <div key={index} className={styles.variableItem}>
+                <div className={styles.variableHeader}>
+                  <span className={styles.variableName}>{"{{" + variable + "}}"}</span>
+                </div>
+                <select
+                  className={styles.variableSelect}
+                  value={variableMapping[variable] || ''}
+                  onChange={(e) => handleVariableMapping(variable, e.target.value)}
+                >
+                  <option value="">Seleccionar campo</option>
+                  {headers.length > 0 ? (
+                    headers.map((header, headerIndex) => (
+                      <option key={headerIndex} value={header}>
+                        {header}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">No hay campos disponibles</option>
+                  )}
+                </select>
+              </div>
+            ))}
           </div>
         </div>
       )}
