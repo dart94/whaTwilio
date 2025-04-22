@@ -167,24 +167,11 @@ const AsociarCredencialesView: React.FC = () => {
       <hr className={styles.hr} />
 
       {/* Sección de Usuario */}
-      <div className={styles.fieldGroup}>
-        <label className={styles.label}>Usuario</label>
-        <div className={styles.inputGroup}>
-          <input
-            type="email"
-            placeholder="Correo"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={styles.input}
-          />
-          <button className={styles.button} onClick={handleBuscarUsuario}>
-            Buscar
-          </button>
-          <button className={styles.button}>
-            Lista de usuarios
-          </button>
-        </div>
-      </div>
+      <BuscarUsuario
+        onSubcuentasEncontradas={handleSubcuentasEncontradas}
+        handleBuscarCredencial={handleBuscarCredencial}
+        
+      />
 
       {/* Sección de Subcuenta */}
       <SubcuentaSelector

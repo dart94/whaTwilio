@@ -9,7 +9,7 @@ interface CrearSheetFormProps {
   campaigns: any[];
 }
 
-const CrearSheetForm: React.FC<CrearSheetFormProps> = ({ onCrearSheet, campaigns }) => {
+const Headers: React.FC<CrearSheetFormProps> = ({ onCrearSheet, campaigns }) => {
   const [sheetData, setSheetData] = useState<Omit<Sheet, 'id' | 'created_at' | 'updated_at'>>({
     sheet_id: '',
     sheet_sheet: '',
@@ -272,12 +272,16 @@ const CrearSheetForm: React.FC<CrearSheetFormProps> = ({ onCrearSheet, campaigns
       </div>
       
       <div className={styles.buttonContainer}>
-        <button onClick={handleCrearSheet} className={styles.submitButton}>
-          Crear hoja
-        </button>
+        <button
+            type="button"
+            onClick={handleCrearSheet}
+            className={styles.submitButton}
+          >
+            Mapear encabezados
+          </button>
       </div>
     </div>
   );
 };
 
-export default CrearSheetForm;
+export default Headers;

@@ -12,12 +12,30 @@ const BuscarUsuario: React.FC<BuscarUsuarioProps> = ({
   onSubcuentasEncontradas,
   handleBuscarCredencial
 }) => {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(localStorage.getItem('userEmail') || '');
 
   const handleBuscarUsuario = async () => {
-    console.log("handleBuscarUsuario ejecutado");
+    // Validación y limpieza del email
+    let userEmail = email.trim();
+    
+    if (!userEmail) {
+      userEmail = localStorage.getItem('userEmail') || '';
+      if (!userEmail) {
+        toast.error('Por favor ingresa un correo electrónico válido');
+        return;
+      }
+      setEmail(userEmail); // Actualiza el estado si usamos el del localStorage
+    }
+
+    // Validación básica de formato email
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail)) {
+      toast.error('Por favor ingresa un correo electrónico válido');
+      return;
+    }
+
     try {
-      const data = await buscarSubcuentasPorUsuario(email);
+      console.log("Buscando subcuentas para:", userEmail);
+      const data = await buscarSubcuentasPorUsuario(userEmail);
       onSubcuentasEncontradas(data);
 
       if (data.length === 0) {
@@ -26,15 +44,17 @@ const BuscarUsuario: React.FC<BuscarUsuarioProps> = ({
         toast.success(`Se encontró ${data.length} subcuenta(s) para este usuario`);
       }
 
-      await handleBuscarCredencial(email);
+      await handleBuscarCredencial(userEmail);
+      
+      // Guardar en localStorage si es un nuevo email válido
+      if (userEmail !== localStorage.getItem('userEmail')) {
+        localStorage.setItem('userEmail', userEmail);
+      }
     } catch (error) {
       console.error("Error al buscar subcuentas:", error);
       toast.error('Error al buscar subcuentas para este usuario');
     }
   };
-
-
-
 
   return (
     <div className={styles.fieldGroup}>

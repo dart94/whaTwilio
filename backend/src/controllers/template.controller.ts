@@ -255,3 +255,55 @@ export async function findTemplateBySid(accountSid: string, authToken: string, s
 }
 
 
+
+
+export const postTemplates: RequestHandler = async (req, res): Promise<void> => {
+
+  const { name, associated_fields, sid, campaign_id } = req.body;
+
+    if (!name || !sid || !campaign_id || !associated_fields) {
+      console.error('❌ Datos inválidos:', { name, sid, campaign_id, associated_fields });
+      res.status(400).json({ message: 'Faltan campos requeridos o están vacíos.', name, sid, campaign_id, associated_fields });
+      
+      return;
+    }
+
+  try {
+    console.log('✅ Datos de la plantilla:', { name, sid, campaign_id, associated_fields });
+    // 1) Insertamos a la base de datos
+    const [result]: any = await connection.execute(
+      `
+      INSERT INTO Templates
+        (name, associated_fields, sid, campaign_id, created_at, updated_at)
+      VALUES (?, ?, ?, ?, NOW(), NOW())
+      `,
+      [
+        name,
+        JSON.stringify(associated_fields), 
+        sid,
+        Number(campaign_id),
+      ]
+    );
+
+
+    if (result.affectedRows === 1) {
+      const [rows]: any = await connection.execute(
+        `SELECT * FROM Templates WHERE id = ?`,
+        [result.insertId]
+      );
+
+      res.status(201).json({ data: rows[0] });
+      console.log("✅ Plantilla creada exitosamente");
+    } else {
+      res
+        .status(500)
+        .json({ message: 'No se insertó la plantilla.' });
+    }
+  } catch (err) {
+    console.error('Error al crear la plantilla:', err);
+    res
+      .status(500)
+      .json({ message: 'Error interno al crear la plantilla.' });
+  }
+};
+

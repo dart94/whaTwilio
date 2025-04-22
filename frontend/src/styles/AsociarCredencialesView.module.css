@@ -60,7 +60,6 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* Fuerza 2 columnas */
   gap: 1.5rem; /* Aumenta el espacio entre elementos */
-  margin-bottom: 1.5rem; /* Espacio al final del grid */
 }
 
 /* Estilos para pantallas pequeñas - vuelve a una columna */
@@ -253,7 +252,6 @@
 .buttonContainer {
   display: flex;
   justify-content: flex-end;
-  margin-top: 1rem;
 }
 
 .customToast {
