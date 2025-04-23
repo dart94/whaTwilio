@@ -13,7 +13,7 @@ interface SubcuentaSelectorProps {
   onSubcuentaChange: (newValue: number) => void;
 }
 
-const SubcuentaSelector: React.FC<SubcuentaSelectorProps> = ({
+const SubcuentaSelector: React.FC<SubcuentaSelectorProps>= ({
   userSubcuentas,
   subcuentaSeleccionada,
   onSubcuentaChange,

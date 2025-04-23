@@ -2,7 +2,7 @@
 import { BASE_URL } from "../config/apiConfig";
 
 // Interfaz de Campana
-export interface CampaignData{
+export interface CampaignData {
   id: number;
   Nombre: string;
   Descripción: string;
@@ -15,8 +15,6 @@ export interface CampaignData{
   Actualizado: string;
 }
 
-
-
 //** Crear una campaña */
 export async function crearCampana(
   nombre: string,
@@ -26,29 +24,28 @@ export async function crearCampana(
   credential_template_id: number
 ) {
   if (!nombre || !descripcion || !sub_account_id) {
-    throw new Error('Nombre, descripción y subcuenta son requeridos');
+    throw new Error("Nombre, descripción y subcuenta son requeridos");
   }
-  
+
   const response = await fetch(`${BASE_URL}/api/campaigns`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ 
-      name: nombre, 
-      description: descripcion, 
-      sub_account_id, 
-      credential_sheet_id, 
-      credential_template_id 
-    })
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: nombre,
+      description: descripcion,
+      sub_account_id,
+      credential_sheet_id,
+      credential_template_id,
+    }),
   });
-  
+
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || 'Error desconocido');
+    throw new Error(errorData.message || "Error desconocido");
   }
-  
+
   return response.json();
 }
-
 
 //** obtener una campaña */
 export async function obtenerCampanas() {
@@ -62,16 +59,28 @@ export async function obtenerCampanas() {
 //** actualizar una campaña */
 export async function actualizarCampana(campana: CampaignData) {
   const response = await fetch(`${BASE_URL}/api/campaigns/${campana.id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(campana)
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(campana),
   });
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || `Error al actualizar campaña (HTTP ${response.status})`);
+    throw new Error(
+      errorData.message ||
+        `Error al actualizar campaña (HTTP ${response.status})`
+    );
   }
   return response.json();
 }
 
-
+//** Obtener campañas por numero de subcuenta */
+export async function obtenerCampanasPorSubcuenta(sub_account_id: number) {
+  const response = await fetch(
+    `${BASE_URL}/api/campaigns/sub_account/${sub_account_id}`
+  );
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return response.json();
+}

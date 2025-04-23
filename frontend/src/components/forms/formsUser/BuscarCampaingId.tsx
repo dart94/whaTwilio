@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../../styles/AsociarCredencialesView.module.css';
+import styles from '../../../styles/AsociarCredencialesView.module.css';
 
 interface Campaign {
   ID: number;
@@ -12,7 +12,7 @@ interface BuscarCampaignSelectorProps {
   onCampaignChange: (newValue: number) => void;
 }
 
-const BuscarCampaign: React.FC<BuscarCampaignSelectorProps> = ({
+const BuscarCampaignId: React.FC<BuscarCampaignSelectorProps> = ({
   Campaigns,
   onCampaignChange,
 }) => {
@@ -31,6 +31,7 @@ const BuscarCampaign: React.FC<BuscarCampaignSelectorProps> = ({
     className={styles.select}
     value={selectedCampaign}
     onChange={handleChange}
+    disabled={Campaigns.length === 0}
   >
     <option value={0}>Seleccione una campaña</option>
     {Campaigns.map(campaign => (
@@ -43,4 +44,4 @@ const BuscarCampaign: React.FC<BuscarCampaignSelectorProps> = ({
   );
 };
 
-export default BuscarCampaign;
+export default BuscarCampaignId;

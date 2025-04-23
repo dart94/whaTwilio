@@ -16,7 +16,7 @@ const Sidebar: React.FC = () => {
       </div>
       <nav className={styles.nav}>
         <NavigationItem label="Monitor" route="/monitor" icon={<CiMonitor size={20} />} />
-        <NavigationItem label="Mensaje" route="/home" icon={<FontAwesomeIcon icon={faWhatsapp} className="w-5 h-5 text-white" />} />
+        <NavigationItem label="Mensaje" route="/mesaje" icon={<FontAwesomeIcon icon={faWhatsapp} />} />
         <NavigationItem label="Admin" route="/admin" icon={<MdAdminPanelSettings size={20} />} />
       </nav>
     </div>

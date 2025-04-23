@@ -16,6 +16,7 @@ import SubcuentasAdminView from './pages/admin/SubcuentasAdminView';
 import NumeroTelefonicoAdminView from './pages/admin/NumeroTelefonicoAdminView';
 import CredencialAdminView from './pages/admin/CredencialAdminView';
 import CampaignsAdminView from './pages/admin/CampaignAdminView';
+import Mesaje from './pages/mesaje';
 import 'react-toastify/dist/ReactToastify.css';
 
 const App: React.FC = () => {
@@ -40,9 +41,10 @@ const App: React.FC = () => {
               <Route path="credencialesAdmin" element={<CredencialAdminView credentials={[]} />} />
               <Route path="campanasAdmin" element={<CampaignsAdminView />} />
             </Route>
+            <Route path="/mesaje" element={<Mesaje />} />
           </Route>
           <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="*" element={<div>Página no encontrada</div>} />
+          <Route path="*" element={<Mesaje />} />
         </Routes>
       </BrowserRouter>
 

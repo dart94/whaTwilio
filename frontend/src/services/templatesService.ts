@@ -27,3 +27,14 @@ export async function insertTemplate(template: TemplateData) {
   
   return response.json();
 }
+
+//Obtener plantilla por campaña
+export async function getTemplatesByCampaign(campaign_id: number) {
+  const response = await fetch(`${BASE_URL}/api/templates/campaign/${campaign_id}`);
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  return response.json();
+}
