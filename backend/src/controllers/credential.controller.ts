@@ -232,3 +232,42 @@ export const getUserCredentials = async (req: Request, res: Response): Promise<v
     res.status(500).json({ message: 'Error al obtener las credenciales del usuario.' });
   }
 };
+
+
+//Ruta para obtener las credenciales por id
+export const getCredentialById = async (req: Request, res: Response): Promise<void> => {
+  const { credential_id } = req.params;
+
+  if (!credential_id) {
+    res.status(400).json({ message: 'ID de credencial es requerido.' });
+    return 
+  }
+
+  try {
+    // Verificar que la credencial existe
+    const [credentialResults] = await connection.query<any[]>('SELECT id FROM credentials WHERE id = ?', [credential_id]);
+
+    if (credentialResults.length === 0) {
+      res.status(404).json({ message: 'Credencial no encontrada.' });
+      return 
+    }
+
+    // Obtener los detalles de la credencial
+    const [results] = await connection.query(`
+      SELECT
+        id,
+        name,
+        json,
+        DATE_FORMAT(created_at, '%d/%m/%Y, %H:%i:%s') AS created_at,
+        DATE_FORMAT(updated_at, '%d/%m/%Y, %H:%i:%s') AS updated_at
+      FROM
+        credentials
+      WHERE id = ?
+    `, [credential_id]) as [any[], any];
+
+    res.status(200).json(results[0]);
+  } catch (err) {
+    console.error('Error al ejecutar la consulta:', err);
+    res.status(500).json({ message: 'Error al obtener la credencial.' });
+  }
+};

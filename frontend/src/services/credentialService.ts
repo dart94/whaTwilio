@@ -70,3 +70,12 @@ export async function actualizarCredencial(credencial: Credencial) {
   }
   return response.json();
 }
+
+//OBtener credencial por ID
+export async function getCredencialById(id: number) {
+  const response = await fetch(`${BASE_URL}/api/credentials/${id}`);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return response.json();
+}

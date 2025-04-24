@@ -2,18 +2,16 @@ import React from "react";
 import styles from "../../../styles/AsociarCredencialesView.module.css";
 
 interface Template {
-  ID: number;
-  Nombre: string;
+  sid: string;
+  friendly_name: string;
   body: string;
 }
 
 interface TemplateSelectorProps {
   Templates: Template[];
-  value: number | null;
-  onTemplatesEncontradas?: (templates: Template[]) => void;
-  onTemplateChange: (newValue: number) => void;
+  value: string | null; 
+  onTemplateChange: (newValue: string) => void; 
   campañaSeleccionada: number | null;
-  
 }
 
 const TemplateSelectorId: React.FC<TemplateSelectorProps> = ({
@@ -23,8 +21,9 @@ const TemplateSelectorId: React.FC<TemplateSelectorProps> = ({
   campañaSeleccionada,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newValue = Number(e.target.value);
+    const newValue = e.target.value; 
     onTemplateChange(newValue);
+    console.log("Plantilla seleccionada:", newValue); 
   };
 
   return (
@@ -42,21 +41,21 @@ const TemplateSelectorId: React.FC<TemplateSelectorProps> = ({
             : "Disponible al seleccionar la campaña"}
         </span>
       </div>
-      
+
       <label className={styles.label} htmlFor="template-select">
         Seleccionar Plantilla:
       </label>
       <select
         id="template-select"
         className={styles.select}
-        value={value ?? 0}
+        value={value || ""} 
         onChange={handleChange}
         disabled={Templates.length === 0}
       >
-        <option value={0}>Seleccione una plantilla</option>
+        <option value="">Seleccione una plantilla</option>
         {Templates.map((template) => (
-          <option key={template.ID} value={template.ID}>
-            {template.Nombre}
+          <option key={template.sid} value={template.sid}>
+            {template.friendly_name}
           </option>
         ))}
       </select>

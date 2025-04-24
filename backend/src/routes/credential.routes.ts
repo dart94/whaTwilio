@@ -4,7 +4,8 @@ import { getCredentials,
         associateCredentialsToSubAccount,
         deleteCredential,
         updateCredential,
-        getUserCredentials
+        getUserCredentials,
+        getCredentialById
 
         } from '../controllers/credential.controller';
 
@@ -27,6 +28,9 @@ router.put('/credentials/:id', updateCredential);
 
 // Ruta para obtener las credenciales asociadas al usuario
 router.get('/credentials/user/:email', getUserCredentials);
+
+// Ruta para obtener una credencial por ID
+router.get('/credentials/:credential_id', getCredentialById);
 
 
 

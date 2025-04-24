@@ -11,6 +11,8 @@ import DestinatariosId from "../components/forms/formsUser/DestinatariosId";
 import TemplateSelectorId from "../components/forms/formsUser/TemplateId";
 import NumeroSelectorId from "../components/forms/formsUser/NumeroId";
 import WhatsAppPreview from "../components/preview/WhatsAppPreview";
+import { getContentTemplates } from "../services/Twilio";
+import { getCredencialById } from "../services/credentialService";
 
 interface Campaign {
   id: number;
@@ -19,8 +21,9 @@ interface Campaign {
 }
 
 interface Template {
-  ID: number;
-  Nombre: string;
+  sid: string;
+  friendly_name: string;
+  body: string;
 }
 
 interface Number {
@@ -40,8 +43,9 @@ const Mesaje: React.FC = () => {
   const [campañaSeleccionada, setCampañaSeleccionada] =
     useState<Campaign | null>(null);
   const [plantillaSeleccionada, setPlantillaSeleccionada] = useState<
-    number | null
+    string | null
   >(null);
+
   const [rangeStart, setRangeStart] = useState<number | null>(null);
   const [rangeEnd, setRangeEnd] = useState<number | null>(null);
   const [numeros, setNumeros] = useState<Number[]>([]);
@@ -49,9 +53,9 @@ const Mesaje: React.FC = () => {
     null
   );
   const selectedTemplate = plantillas.find(
-    (p) => p.ID === plantillaSeleccionada
+    (p) => p.sid === plantillaSeleccionada
   );
- 
+
   useEffect(() => {
     const fetchCampañas = async () => {
       if (!subcuentaSeleccionada) return;
@@ -65,22 +69,47 @@ const Mesaje: React.FC = () => {
     };
     fetchCampañas();
   }, [subcuentaSeleccionada]);
-  
+
   //Fetch para la plantilla por campaña
+  // Fetch para la plantilla por campaña
   useEffect(() => {
     const fetchTemplates = async () => {
       if (!campañaSeleccionada) return;
+
       try {
-        const data = await getTemplatesByCampaign(campañaSeleccionada.id);
+        // Obtenemos el credential_template_id de la campaña seleccionada
+        const credentialTemplateId = campañaSeleccionada.credential_template_id;
+        console.log("credential_template_id:", credentialTemplateId);
+
+        // Primero, necesitamos obtener las credenciales usando credential_template_id
+        const credentialDetails = await getCredencialById(credentialTemplateId);
+        console.log("Credenciales obtenidas:", credentialDetails);
+
+        // Ahora obtenemos el name de las credenciales
+        const templateName = credentialDetails.name;
+
+        if (!templateName) {
+          console.error(
+            "No se encontró el nombre de la plantilla en las credenciales"
+          );
+          return;
+        }
+
+        // Usamos el name para obtener las plantillas
+        const data = await getContentTemplates(templateName);
         setPlantillas(data);
-        console.log("Camapaña:", campañaSeleccionada);
+
+        console.log("Campaña:", campañaSeleccionada);
+        console.log("Plantillas obtenidas con name:", data);
       } catch (error) {
         console.error("Error al obtener plantillas:", error);
+        // Puedes manejar errores específicos aquí
       }
     };
+
     fetchTemplates();
   }, [campañaSeleccionada]);
-  
+
   useEffect(() => {
     const fetchNumeros = async () => {
       if (!subcuentaSeleccionada) return;
@@ -93,13 +122,13 @@ const Mesaje: React.FC = () => {
     };
     fetchNumeros();
   }, [subcuentaSeleccionada]);
-  
+
   const handleEnviar = () => {
     console.log("Número:", numero);
     console.log("Mensaje:", mensaje);
     console.log("Campaña:", campañaSeleccionada);
   };
-  
+
   return (
     <div className={styles.layoutContainer}>
       {/* Columna izquierda */}
@@ -173,9 +202,7 @@ const Mesaje: React.FC = () => {
         <div className={styles.formContainer_preview}>
           <h3>Vista previa</h3>
           <WhatsAppPreview
-            selectedTemplate={plantillas.find(
-              (p) => p.ID === plantillaSeleccionada
-            )}
+            selectedTemplate={selectedTemplate}
             previewVariables={["Diego", "10:30 AM", "mañana"]}
             replaceVariables={(body, variables) =>
               typeof body === "string"
