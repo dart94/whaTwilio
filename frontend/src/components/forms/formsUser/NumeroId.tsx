@@ -55,7 +55,6 @@ const NumeroSelectorId: React.FC<NumeroSelectorProps> = ({
           <option value={0}>Seleccione un número</option>
           {numeros.map(
             (numero) => (
-              console.log("numero", numero),
               (
                 <option key={numero.id} value={numero.id}>
                   {numero.nombre}

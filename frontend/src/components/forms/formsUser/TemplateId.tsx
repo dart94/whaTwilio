@@ -4,6 +4,7 @@ import styles from "../../../styles/AsociarCredencialesView.module.css";
 interface Template {
   ID: number;
   Nombre: string;
+  body: string;
 }
 
 interface TemplateSelectorProps {
