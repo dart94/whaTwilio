@@ -60,3 +60,73 @@
   z-index: 1;
 }
 
+/** Responsive **/
+/* Tu CSS original... */
+
+@media screen and (max-width: 768px) {
+  .layout {
+    flex-direction: column; /* Cambia a columna para móvil/tablet */
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 0.75rem;
+    flex-direction: row;
+    /* flex-wrap: wrap; */
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+  }
+
+  .logoContainer {
+    justify-content: flex-start;
+    margin-bottom: 0;
+    flex: 1 1 auto;
+  }
+
+  .logoContainer img {
+    width: 120px;
+    height: auto;
+  }
+
+  .nav {
+    width: 100%;
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .sidebar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.5rem;
+    display: flex;
+
+  }
+
+  .logoContainer {
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .nav {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .logoContainer img {
+    width: 100px;
+  }
+
+  .content {
+    padding: 0.75rem;
+  }
+}

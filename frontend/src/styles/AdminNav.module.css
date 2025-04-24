@@ -1,35 +1,55 @@
+/* NAVBAR BASE */
 .navbar {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between  ;
-  gap: 2rem;
-  /* width: 100%; */
-  /* padding: 1rem; */
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+  padding: 1rem;
   background-color: var(--color-left-bg);
+  overflow-x: auto;             /* Scroll horizontal */
+  white-space: nowrap;          /* Mantiene elementos en línea */
+  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+  scrollbar-width: thin;        /* Scroll delgado en Firefox */
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
+/* OCULTAR SCROLLBAR (Opcional) */
+.navbar::-webkit-scrollbar {
+  display: none;
+}
+
+.navbar {
+  -ms-overflow-style: none;  
+  scrollbar-width: none;     
+}
+
+/* GRUPO DE ITEMS */
 .navGroup {
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
 }
 
+/* ÍTEMS DE NAVEGACIÓN */
 .navItem {
-  display: flex;
+
   align-items: center;
   cursor: pointer;
   padding: 0.5rem 1rem;
-  /* border-radius: 5px; */
+  white-space: nowrap;
   transition: background-color 0.3s ease;
+  flex-shrink: 0;            
+  color: var(--color-text);
+  border-radius: 4px;
 }
 
 .navItem:hover {
   background-color: var(--color-button-bg);
 }
 
+/* ÍTEM ACTIVO */
 .active {
   background-color: var(--color-background);
   color: var(--color-negro);
-  /* border-radius: .5rem;
-   */
 }

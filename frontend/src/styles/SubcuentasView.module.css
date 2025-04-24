@@ -282,3 +282,89 @@
   background-color: #222;
   transform: scale(0.97);
 }
+
+
+/**Responsive**/
+/* 🎯 Estilos Responsive */
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 0.75rem;
+  }
+
+  .heading {
+    font-size: 1.75rem;
+  }
+
+  .subHeading {
+    font-size: 1.125rem;
+  }
+
+  .input, .select, .textarea {
+    font-size: 0.95rem;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+  }
+
+  .submitButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .phoneAssociation {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .tabla th,
+  .tabla td {
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+
+  .tooltip {
+    width: 90%;
+    max-width: 300px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .heading {
+    font-size: 1.5rem;
+  }
+
+  .subHeading {
+    font-size: 1rem;
+  }
+
+  .label {
+    font-size: 0.95rem;
+  }
+
+  .input, .select, .textarea {
+    font-size: 0.9rem;
+  }
+
+  .buttonGroup {
+    gap: 0.25rem;
+  }
+
+  .submitButton, .button {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .tablaWrapper {
+    overflow-x: auto;
+  }
+
+  .tooltip {
+    font-size: 11px;
+  }
+
+  .copyBtn {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+}
