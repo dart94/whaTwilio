@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// Definimos la interfaz para la API de Twilio
 export async function getContentTemplates(accountSid: string, authToken: string) {
   const url = 'https://content.twilio.com/v1/Content';
   console.log(`Realizando solicitud a Twilio a la URL: ${url}`);
@@ -31,6 +32,7 @@ interface TwilioTemplateResponse {
   };
 }
 
+// Defino una función para obtener los detalles de una plantilla específica
 export async function getTemplateDetails(
   accountSid: string,
   authToken: string,

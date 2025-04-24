@@ -1,7 +1,7 @@
 // frontend/src/components/AsociarCampos.tsx
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import styles from '../../styles/AsociarCredencialesView.module.css'; // Cambiar nombre de la hoja
+import styles from '../../styles/AsociarCredencialesView.module.css';
 import SubcuentaSelector from '../../components/forms/SubcuentaSelector';
 import BuscarUsuario from '../../components/forms/BuscarUsuario';
 import { obtenerCredenciales } from '../../services/credentialService';

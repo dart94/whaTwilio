@@ -49,31 +49,20 @@ export const getCampaignsBySubAccount = async (req: Request, res: Response): Pro
   try {
     const sql = `
       SELECT 
-        c.id AS ID,
-        c.name AS Nombre,
-        c.description AS Descripción,
-        c.sub_account_id AS Subcuenta,
-        COUNT(DISTINCT t.id) AS CredencialTwilio,
-        COUNT(DISTINCT s.id) AS CredencialGcp,
-        COALESCE(COUNT(DISTINCT t.id), 0) AS Plantillas,
-        COALESCE(COUNT(DISTINCT s.id), 0) AS Sheets,
-        DATE_FORMAT(c.created_at, '%d/%m/%Y, %H:%i:%s') AS Creado,
-        DATE_FORMAT(c.updated_at, '%d/%m/%Y, %H:%i:%s') AS Actualizado,
-        'Editar' AS Acciones
+        id,
+        name,
+        description,
+        created_at,
+        updated_at,
+        credential_sheet_id,
+        credential_template_id,
+        sub_account_id
       FROM 
-        Campaign c
-      LEFT JOIN 
-        Templates t ON c.id = t.campaign_id
-      LEFT JOIN 
-        Sheets s ON c.id = s.campaign_id
+        campaign
       WHERE 
-        c.sub_account_id = ${connection.escape(sub_account_id)} 
-      GROUP BY 
-        c.id, c.name, c.description, c.sub_account_id, c.created_at, c.updated_at
-      ORDER BY 
-        c.id DESC;
+        sub_account_id = ?;
     `;
-    const [results] = await connection.query(sql);
+    const [results] = await connection.query(sql, [sub_account_id]);
     res.status(200).json(results);
   } catch (err) {
     console.error('Error al ejecutar la consulta:', err);

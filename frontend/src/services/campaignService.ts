@@ -76,11 +76,19 @@ export async function actualizarCampana(campana: CampaignData) {
 
 //** Obtener campañas por numero de subcuenta */
 export async function obtenerCampanasPorSubcuenta(sub_account_id: number) {
-  const response = await fetch(
-    `${BASE_URL}/api/campaigns/sub_account/${sub_account_id}`
-  );
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/campaigns/sub_account/${sub_account_id}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error al obtener campañas:", error);
+    throw error;
   }
-  return response.json();
 }

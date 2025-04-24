@@ -13,8 +13,9 @@ import NumeroSelectorId from "../components/forms/formsUser/NumeroId";
 import WhatsAppPreview from "../components/preview/WhatsAppPreview";
 
 interface Campaign {
-  ID: number;
-  Nombre: string;
+  id: number;
+  name: string;
+  credential_template_id: number;
 }
 
 interface Template {
@@ -36,9 +37,8 @@ const Mesaje: React.FC = () => {
   >(null);
   const [campañas, setCampañas] = useState<Campaign[]>([]);
   const [plantillas, setPlantillas] = useState<Template[]>([]);
-  const [campañaSeleccionada, setCampañaSeleccionada] = useState<number | null>(
-    null
-  );
+  const [campañaSeleccionada, setCampañaSeleccionada] =
+    useState<Campaign | null>(null);
   const [plantillaSeleccionada, setPlantillaSeleccionada] = useState<
     number | null
   >(null);
@@ -51,34 +51,36 @@ const Mesaje: React.FC = () => {
   const selectedTemplate = plantillas.find(
     (p) => p.ID === plantillaSeleccionada
   );
-  console.log("🧾 Plantilla seleccionada:", selectedTemplate);
-
+ 
   useEffect(() => {
     const fetchCampañas = async () => {
       if (!subcuentaSeleccionada) return;
       try {
         const data = await obtenerCampanasPorSubcuenta(subcuentaSeleccionada);
         setCampañas(data);
+        console.log("Campañas:", data);
       } catch (error) {
         console.error("Error al obtener campañas:", error);
       }
     };
     fetchCampañas();
   }, [subcuentaSeleccionada]);
-
+  
+  //Fetch para la plantilla por campaña
   useEffect(() => {
     const fetchTemplates = async () => {
       if (!campañaSeleccionada) return;
       try {
-        const data = await getTemplatesByCampaign(campañaSeleccionada);
+        const data = await getTemplatesByCampaign(campañaSeleccionada.id);
         setPlantillas(data);
+        console.log("Camapaña:", campañaSeleccionada);
       } catch (error) {
         console.error("Error al obtener plantillas:", error);
       }
     };
     fetchTemplates();
   }, [campañaSeleccionada]);
-
+  
   useEffect(() => {
     const fetchNumeros = async () => {
       if (!subcuentaSeleccionada) return;
@@ -91,13 +93,13 @@ const Mesaje: React.FC = () => {
     };
     fetchNumeros();
   }, [subcuentaSeleccionada]);
-
+  
   const handleEnviar = () => {
     console.log("Número:", numero);
     console.log("Mensaje:", mensaje);
     console.log("Campaña:", campañaSeleccionada);
   };
-
+  
   return (
     <div className={styles.layoutContainer}>
       {/* Columna izquierda */}
@@ -125,38 +127,40 @@ const Mesaje: React.FC = () => {
               </div>
             </div>
           </div>
-
           <div className={styles.formContainer}>
             <BuscarCampaignId
               Campaigns={campañas}
-              onCampaignChange={(id) => setCampañaSeleccionada(id)}
+              onCampaignChange={(campaign) => {
+                setCampañaSeleccionada(campaign);
+                console.log(
+                  "🪪 credential_template_id:",
+                  campaign && campaign.credential_template_id
+                );
+              }}
               onCampaignsEncontradas={() => {}}
             />
           </div>
-
           <div className={styles.formContainer}>
             <TemplateSelectorId
-              campañaSeleccionada={campañaSeleccionada}
+              campañaSeleccionada={campañaSeleccionada?.id || null}
               Templates={plantillas}
               value={plantillaSeleccionada}
               onTemplateChange={(id) => setPlantillaSeleccionada(id)}
             />
           </div>
-
           <div className={styles.formContainer}>
             <DestinatariosId
-              campañaSeleccionada={campañaSeleccionada}
+              campañaSeleccionada={campañaSeleccionada?.id || null}
               rangeStart={rangeStart}
               rangeEnd={rangeEnd}
               setRangeStart={setRangeStart}
               setRangeEnd={setRangeEnd}
             />
           </div>
-
           <div className={styles.formContainer}>
             <NumeroSelectorId
               templates={plantillas}
-              campañaSeleccionada={campañaSeleccionada}
+              campañaSeleccionada={campañaSeleccionada?.id || null}
               numeros={numeros}
               selectedNumeroId={numeroSeleccionado}
               onNumeroChange={(id) => setNumeroSeleccionado(id)}
@@ -164,7 +168,6 @@ const Mesaje: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Columna derecha */}
       <div className={styles.rightColumn}>
         <div className={styles.formContainer_preview}>

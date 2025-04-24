@@ -13,6 +13,7 @@ interface TemplateSelectorProps {
   onTemplatesEncontradas?: (templates: Template[]) => void;
   onTemplateChange: (newValue: number) => void;
   campañaSeleccionada: number | null;
+  
 }
 
 const TemplateSelectorId: React.FC<TemplateSelectorProps> = ({

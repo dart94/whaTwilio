@@ -2,27 +2,30 @@ import React from "react";
 import styles from "../../../styles/AsociarCredencialesView.module.css";
 
 interface Campaign {
-  ID: number;
-  Nombre: string;
+  id: number;
+  name: string;
+  credential_template_id: number;
 }
 
 interface BuscarCampaignSelectorProps {
   Campaigns: Campaign[];
   onCampaignsEncontradas: (campaigns: Campaign[]) => void;
-  onCampaignChange: (newValue: number) => void;
+  onCampaignChange: (campaign: Campaign | null) => void;
 }
 
 const BuscarCampaignId: React.FC<BuscarCampaignSelectorProps> = ({
   Campaigns,
   onCampaignChange,
-  onCampaignsEncontradas,  // Asegúrate de incluir esta prop
+  onCampaignsEncontradas, // Asegúrate de incluir esta prop
 }) => {
   const [selectedCampaign, setSelectedCampaign] = React.useState<number>(0);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = Number(e.target.value);
     setSelectedCampaign(newValue);
-    onCampaignChange(newValue);
+
+    const selected = Campaigns.find((c) => c.id === newValue) || null;
+    onCampaignChange(selected);
   };
 
   return (
@@ -42,8 +45,8 @@ const BuscarCampaignId: React.FC<BuscarCampaignSelectorProps> = ({
         >
           <option value={0}>Seleccione una campaña</option>
           {Campaigns.map((campaign) => (
-            <option key={campaign.ID} value={campaign.ID}>
-              {campaign.Nombre}
+            <option key={campaign.id} value={campaign.id}>
+              {campaign.name}
             </option>
           ))}
         </select>
