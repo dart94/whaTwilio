@@ -1,5 +1,5 @@
-import React from 'react';
-import styles from '../../../styles/AsociarCredencialesView.module.css';
+import React from "react";
+import styles from "../../../styles/AsociarCredencialesView.module.css";
 
 interface Template {
   ID: number;
@@ -9,14 +9,16 @@ interface Template {
 interface TemplateSelectorProps {
   Templates: Template[];
   value: number | null;
-  onTemplatesEncontradas?: (templates: Template[]) => void; // opcional por si no lo usas
+  onTemplatesEncontradas?: (templates: Template[]) => void;
   onTemplateChange: (newValue: number) => void;
+  campañaSeleccionada: number | null;
 }
 
 const TemplateSelectorId: React.FC<TemplateSelectorProps> = ({
   Templates,
   value,
   onTemplateChange,
+  campañaSeleccionada,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = Number(e.target.value);
@@ -25,8 +27,25 @@ const TemplateSelectorId: React.FC<TemplateSelectorProps> = ({
 
   return (
     <div className={styles.formGroup}>
-      <label className={styles.label}>Seleccionar Plantilla:</label>
+      <div className={styles.stepHeader}>
+        <div className={styles.stepNumber}>2</div>
+        <h3 className={styles.title}>Plantilla</h3>
+        <span
+          className={`${styles.status} ${
+            campañaSeleccionada ? styles.statusGreen : styles.statusRed
+          }`}
+        >
+          {campañaSeleccionada
+            ? "Plantillas disponibles"
+            : "Disponible al seleccionar la campaña"}
+        </span>
+      </div>
+      
+      <label className={styles.label} htmlFor="template-select">
+        Seleccionar Plantilla:
+      </label>
       <select
+        id="template-select"
         className={styles.select}
         value={value ?? 0}
         onChange={handleChange}

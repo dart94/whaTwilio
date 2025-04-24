@@ -29,4 +29,7 @@
 
 .active {
   background-color: var(--color-background);
+  color: var(--color-negro);
+  /* border-radius: .5rem;
+   */
 }

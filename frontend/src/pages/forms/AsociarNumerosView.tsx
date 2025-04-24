@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from '../../styles/AsociarNumerosView.module.css';
 import { ToastContainer, toast } from 'react-toastify';
-import { obtenerNumerosTelefonicos } from '../../services/numertoTelefonicoService';
+import { obtenerNumerosTelefonicos } from '../../services/numeroTelefonicoService';
 import { associateNumbersToSubAccount } from '../../services/credentialAssociationService';
 import BuscarUsuario from '../../components/forms/BuscarUsuario';
 import { obtenerCredenciales } from '../../services/credentialService'; 

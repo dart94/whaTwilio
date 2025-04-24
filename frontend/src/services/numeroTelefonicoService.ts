@@ -44,7 +44,7 @@ export async function crearNumeroTelefonico(formData: {
 }
 
 
-//*** Función para obtener los números telefónicos asociados a una subcuenta ***
+//*** Función para obtener los números telefónicos  ***
 export async function obtenerNumerosTelefonicos() {
   const response = await fetch(`${BASE_URL}/api/number_phones`, {
     method: 'GET',
@@ -90,5 +90,17 @@ export async function actualizarNumeroTelefonico(numeroTelefonico: NumeroTelefon
     }
   }
 
+  return response.json();
+}
+
+/**Obtener numeros por subcuenta */
+
+export async function obtenerNumerosPorSubcuenta(sub_account_id: number) {
+  const response = await fetch(
+    `${BASE_URL}/api/number_phones/sub_account/${sub_account_id}`
+  );
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
   return response.json();
 }

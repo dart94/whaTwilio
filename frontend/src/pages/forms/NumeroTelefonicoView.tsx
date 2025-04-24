@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
 import styles from '../../styles/SubcuentasView.module.css';
-import { crearNumeroTelefonico } from '../../services/numertoTelefonicoService';
+import { crearNumeroTelefonico } from '../../services/numeroTelefonicoService';
 
 const NumeroTelefonicoView: React.FC = () => {
   const [numeroTelefonicoForm, setNumeroTelefonicoForm] = useState({

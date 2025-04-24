@@ -418,3 +418,62 @@
     grid-template-columns: 1fr;
   }
 }
+
+.stepHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stepNumber {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  background-color: var(--color-left-bg) ;
+  color: var(--color-subtitle);
+  font-weight: 400;
+}
+
+@media (min-width: 768px) {
+  .stepNumber {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+}
+
+.status {
+  margin-left: auto;
+  font-size: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .status {
+    font-size: 0.875rem;
+  }
+}
+
+.statusGreen {
+  color: #22c55e;
+}
+
+.statusRed {
+  color: #ef4444;
+}
+
+.gridLayout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+}
+
+@media (min-width: 640px) {
+  .gridLayout {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

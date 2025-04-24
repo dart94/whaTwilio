@@ -6,7 +6,10 @@ import SubcuentaSelectorId from "../components/forms/formsUser/SubcuentaSelector
 import BuscarCampaignId from "../components/forms/formsUser/BuscarCampaingId";
 import { obtenerCampanasPorSubcuenta } from "../services/campaignService";
 import { getTemplatesByCampaign } from "../services/templatesService";
+import { obtenerNumerosPorSubcuenta } from "../services/numeroTelefonicoService";
+import DestinatariosId from "../components/forms/formsUser/DestinatariosId";
 import TemplateSelectorId from "../components/forms/formsUser/TemplateId";
+import NumeroSelectorId from "../components/forms/formsUser/NumeroId";
 
 interface Campaign {
   ID: number;
@@ -16,6 +19,12 @@ interface Campaign {
 interface Template {
   ID: number;
   Nombre: string;
+}
+
+interface Number {
+  id: number;
+  nombre: string;
+  number: number;
 }
 
 const Mesaje: React.FC = () => {
@@ -32,7 +41,12 @@ const Mesaje: React.FC = () => {
   const [plantillaSeleccionada, setPlantillaSeleccionada] = useState<
     number | null
   >(null);
+  const [rangeStart, setRangeStart] = useState<number | null>(null);
+  const [rangeEnd, setRangeEnd] = useState<number | null>(null);
+  const [numeros, setNumeros] = useState<Number[]>([]);
+  const [numeroSeleccionado, setNumeroSeleccionado] = useState<number | null>(null);
 
+  //Función para obtener las campañas por subcuenta
   useEffect(() => {
     const fetchCampañas = async () => {
       if (!subcuentaSeleccionada) return;
@@ -47,6 +61,7 @@ const Mesaje: React.FC = () => {
     fetchCampañas();
   }, [subcuentaSeleccionada]);
 
+  //Función para obtener las plantillas por campaña
   useEffect(() => {
     const fetchTemplates = async () => {
       if (!campañaSeleccionada) return;
@@ -60,6 +75,21 @@ const Mesaje: React.FC = () => {
 
     fetchTemplates();
   }, [campañaSeleccionada]);
+
+  //Función para obtener los números por subcuenta
+  useEffect(() => {
+    const fetchNumeros = async () => {
+      if (!subcuentaSeleccionada) return;
+      try {
+        const data = await obtenerNumerosPorSubcuenta(subcuentaSeleccionada);
+        setNumeros(data);
+      } catch (error) {
+        console.error("Error al obtener números:", error);
+      }
+    };
+
+    fetchNumeros();
+  }, [subcuentaSeleccionada]);
 
   const handleEnviar = () => {
     console.log("Número:", numero);
@@ -105,11 +135,34 @@ const Mesaje: React.FC = () => {
       {/* Plantilla */}
       <div className={styles.formContainer}>
         <TemplateSelectorId
+          campañaSeleccionada={campañaSeleccionada}
           Templates={plantillas}
           value={plantillaSeleccionada}
           onTemplateChange={(id) => {
             setPlantillaSeleccionada(id);
           }}
+        />
+      </div>
+
+      {/* Destinatarios */}
+      <div className={styles.formContainer}>
+        <DestinatariosId
+          campañaSeleccionada={campañaSeleccionada}
+          rangeStart={rangeStart}
+          rangeEnd={rangeEnd}
+          setRangeStart={setRangeStart}
+          setRangeEnd={setRangeEnd}
+        />
+      </div>
+
+      {/* Números */}
+      <div className={styles.formContainer}>
+        <NumeroSelectorId
+          templates={plantillas}
+          campañaSeleccionada={campañaSeleccionada}
+          numeros={numeros}
+          selectedNumeroId={numeroSeleccionado}
+          onNumeroChange={(id) => setNumeroSeleccionado(id)}
         />
       </div>
     </div>
