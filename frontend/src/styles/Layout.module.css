@@ -65,7 +65,7 @@
 
 @media screen and (max-width: 768px) {
   .layout {
-    flex-direction: column; /* Cambia a columna para móvil/tablet */
+    flex-direction: column;
   }
 
   .sidebar {
@@ -106,7 +106,7 @@
 @media screen and (max-width: 480px) {
   .sidebar {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     padding: 0.5rem;
     display: flex;
 
@@ -118,7 +118,7 @@
   }
 
   .nav {
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
   }
 

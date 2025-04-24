@@ -4,11 +4,11 @@
   align-items: center;
   justify-content: flex-start;
   gap: 1rem;
-  padding: 1rem;
+  /* padding: 1rem; */
   background-color: var(--color-left-bg);
   overflow-x: auto;             /* Scroll horizontal */
   white-space: nowrap;          /* Mantiene elementos en línea */
-  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+  -webkit-overflow-scrolling: touch; 
   scrollbar-width: thin;        /* Scroll delgado en Firefox */
   max-width: 100%;
   box-sizing: border-box;

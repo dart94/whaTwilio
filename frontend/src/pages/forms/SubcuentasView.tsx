@@ -38,6 +38,7 @@ const SubcuentasView: React.FC = () => {
       <BuscarUsuario
         onSubcuentasEncontradas={setUserSubcuentas}
         handleBuscarCredencial={handleBuscarCredencial}
+        onEmailSelected={setEmail}
       />
 
       {/* Nombre de la subcuenta */}

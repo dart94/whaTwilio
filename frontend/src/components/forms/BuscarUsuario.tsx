@@ -6,11 +6,13 @@ import styles from '../../styles/AsociarCredencialesView.module.css';
 interface BuscarUsuarioProps {
   onSubcuentasEncontradas: (subcuentas: any[]) => void;
   handleBuscarCredencial: (email: string) => Promise<void>;
+  onEmailSelected: (email: string) => void;
 }
 
 const BuscarUsuario: React.FC<BuscarUsuarioProps> = ({
   onSubcuentasEncontradas,
-  handleBuscarCredencial
+  handleBuscarCredencial,
+  onEmailSelected
 }) => {
   const [email, setEmail] = useState(localStorage.getItem('userEmail') || '');
 
@@ -37,6 +39,7 @@ const BuscarUsuario: React.FC<BuscarUsuarioProps> = ({
       console.log("Buscando subcuentas para:", userEmail);
       const data = await buscarSubcuentasPorUsuario(userEmail);
       onSubcuentasEncontradas(data);
+      onEmailSelected(userEmail); // Actualiza el email seleccionado
 
       if (data.length === 0) {
         toast.error('No se encontró ninguna subcuenta para este usuario');
@@ -64,7 +67,10 @@ const BuscarUsuario: React.FC<BuscarUsuarioProps> = ({
           type="email"
           placeholder="Correo del usuario"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            onEmailSelected(e.target.value);
+          }}
           className={styles.input}
         />
         <button className={styles.button} onClick={handleBuscarUsuario}>
