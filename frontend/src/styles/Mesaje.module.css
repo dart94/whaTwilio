@@ -35,7 +35,7 @@
 .formContainer_preview {
   color: var(--color-negro);
   display: flex;
-  align-items: center;
+  align-items: left;
   flex-direction: column;
   width: 100%;
   padding: 15px; 
