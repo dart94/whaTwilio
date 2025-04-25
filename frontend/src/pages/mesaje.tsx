@@ -56,6 +56,39 @@ const Mesaje: React.FC = () => {
     (p) => p.sid === plantillaSeleccionada
   );
 
+  const checkLocalStorage = () => {
+    const savedCampaign = localStorage.getItem('selectedCampaign');
+    const savedTemplate = localStorage.getItem('selectedTemplate');
+    const savedRangeStart = localStorage.getItem('rangeStart');
+    const savedRangeEnd = localStorage.getItem('rangeEnd');
+    const savedNumber = localStorage.getItem('selectedNumber');
+   
+    console.log('Datos guardados en localStorage:');
+    console.log('Campaign:', savedCampaign ? JSON.parse(savedCampaign) : 'No guardado');
+    console.log('Template:', savedTemplate || 'No guardado');
+    console.log('Range Start:', savedRangeStart || 'No guardado');
+    console.log('Range End:', savedRangeEnd || 'No guardado');
+    console.log('Number:', savedNumber || 'No guardado');
+  };
+
+  // Cargar datos del localStorage al montar el componente
+  useEffect(() => {
+    const savedCampaign = localStorage.getItem('selectedCampaign');
+    const savedTemplate = localStorage.getItem('selectedTemplate');
+    const savedRangeStart = localStorage.getItem('rangeStart');
+    const savedRangeEnd = localStorage.getItem('rangeEnd');
+    const savedNumber = localStorage.getItem('selectedNumber');
+    
+    if (savedCampaign) setCampañaSeleccionada(JSON.parse(savedCampaign));
+    if (savedTemplate) setPlantillaSeleccionada(savedTemplate);
+    if (savedRangeStart) setRangeStart(parseInt(savedRangeStart));
+    if (savedRangeEnd) setRangeEnd(parseInt(savedRangeEnd));
+    if (savedNumber) setNumeroSeleccionado(parseInt(savedNumber));
+    
+    // Verificar los datos cargados
+    checkLocalStorage();
+  }, []);
+
   useEffect(() => {
     const fetchCampañas = async () => {
       if (!subcuentaSeleccionada) return;
@@ -70,8 +103,6 @@ const Mesaje: React.FC = () => {
     fetchCampañas();
   }, [subcuentaSeleccionada]);
 
-  //Fetch para la plantilla por campaña
-  // Fetch para la plantilla por campaña
   useEffect(() => {
     const fetchTemplates = async () => {
       if (!campañaSeleccionada) return;
@@ -122,6 +153,37 @@ const Mesaje: React.FC = () => {
     };
     fetchNumeros();
   }, [subcuentaSeleccionada]);
+
+  // Guardar en localStorage cuando cambien los valores
+  useEffect(() => {
+    if (campañaSeleccionada) {
+      localStorage.setItem('selectedCampaign', JSON.stringify(campañaSeleccionada));
+    }
+  }, [campañaSeleccionada]);
+  
+  useEffect(() => {
+    if (plantillaSeleccionada) {
+      localStorage.setItem('selectedTemplate', plantillaSeleccionada);
+    }
+  }, [plantillaSeleccionada]);
+  
+  useEffect(() => {
+    if (rangeStart !== null) {
+      localStorage.setItem('rangeStart', rangeStart.toString());
+    }
+  }, [rangeStart]);
+  
+  useEffect(() => {
+    if (rangeEnd !== null) {
+      localStorage.setItem('rangeEnd', rangeEnd.toString());
+    }
+  }, [rangeEnd]);
+  
+  useEffect(() => {
+    if (numeroSeleccionado !== null) {
+      localStorage.setItem('selectedNumber', numeroSeleccionado.toString());
+    }
+  }, [numeroSeleccionado]);
 
   const handleEnviar = () => {
     console.log("Número:", numero);
@@ -195,6 +257,12 @@ const Mesaje: React.FC = () => {
               onNumeroChange={(id) => setNumeroSeleccionado(id)}
             />
           </div>
+          <button 
+            onClick={checkLocalStorage}
+            className={styles.button || "button"}
+          >
+            Ver datos guardados
+          </button>
         </div>
       </div>
       {/* Columna derecha */}
