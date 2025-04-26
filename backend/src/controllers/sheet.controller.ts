@@ -73,8 +73,10 @@ export const getSheetsByCampaign = async (req: Request, res: Response): Promise<
         FROM Sheets
         WHERE campaign_id = ?
       `, [campaign_id]);
-  
-      res.status(200).json(results);
+      
+      if (Array.isArray(results) && results.length > 0) {
+        res.status(200).json(results[0]);
+      }
     } catch (err) {
       console.error('Error al obtener las hojas:', err);
       res.status(500).json({ message: 'Error al obtener las hojas de la campaña' });

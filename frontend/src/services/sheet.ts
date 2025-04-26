@@ -60,3 +60,15 @@ export async function obtenerHeadersPorGoogleSheetId(googleSheetId: string, shee
     throw error;
   }
 }
+
+
+//Otener sheets por ID de campaña
+export async function obtenerSheetsPorCampaign(campaign_id: number) {
+  const response = await fetch(`${BASE_URL}/api/sheets/campaign/${campaign_id}`);
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  
+  return response.json();
+}

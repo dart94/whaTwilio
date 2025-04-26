@@ -9,6 +9,7 @@ import subAccountRoutes from './routes/subAccounts.routes';
 import credentialRoutes from './routes/credential.routes';
 import templateRoutes from './routes/templates.routes';
 import sheetRoutes from './routes/sheet.routes';
+import massiveRoutes from './routes/massive.routes';
 
 dotenv.config();
 const app = express();
@@ -33,6 +34,7 @@ app.use('/api/', numberPhonesRoutes);
 app.use('/api/', credentialRoutes);
 app.use('/api/', templateRoutes);
 app.use('/api/', sheetRoutes);
+app.use('/api/', massiveRoutes);
 
 
 
