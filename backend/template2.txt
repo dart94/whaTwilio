@@ -1,0 +1,2 @@
+estimado {{1}}
+gracias por venir a {{2}}, te esperamos pronto
