@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
-import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import styles from "../styles/Mesaje.module.css";
 import SubcuentaSelectorId from "../components/forms/formsUser/SubcuentaSelectorId";
 import BuscarCampaignId from "../components/forms/formsUser/BuscarCampaingId";
@@ -27,7 +26,6 @@ interface Campaign {
   spreadsheet_id: string;
   sheet_name: string;
   associated_fields?: { [key: string]: string };
-
 }
 
 interface Template {
@@ -69,7 +67,6 @@ const Mesaje: React.FC = () => {
   const [camposTemp, setCamposTemp] = useState<{ [key: string]: string }>({});
   const [sheetName, setSheetName] = useState<string | null>(null);
   const [loadingDatosCampaña, setLoadingDatosCampaña] = useState(false);
-  const [loadingEnvioMensajes, setLoadingEnvioMensajes] = useState(false);
 
   const checkLocalStorage = () => {
     const savedCampaign = localStorage.getItem("selectedCampaign");
@@ -96,17 +93,17 @@ const Mesaje: React.FC = () => {
     const savedRangeStart = localStorage.getItem("rangeStart");
     const savedRangeEnd = localStorage.getItem("rangeEnd");
     const savedNumber = localStorage.getItem("selectedNumber");
-  
+
     if (savedCampaign) {
       const parsedCampaign = JSON.parse(savedCampaign);
       handleCampaignChange(parsedCampaign); // 👈 IMPORTANTE
     }
-  
+
     if (savedTemplate) setPlantillaSeleccionada(savedTemplate);
     if (savedRangeStart) setRangeStart(parseInt(savedRangeStart));
     if (savedRangeEnd) setRangeEnd(parseInt(savedRangeEnd));
     if (savedNumber) setNumeroSeleccionado(parseInt(savedNumber));
-  
+
     // Verificar los datos cargados
     checkLocalStorage();
   }, []);
@@ -214,25 +211,27 @@ const Mesaje: React.FC = () => {
   const handleCampaignChange = async (campaign: Campaign) => {
     try {
       setLoadingDatosCampaña(true);
-  
+
       const sheetInfo = await obtenerSheetsPorCampaign(campaign.id);
       const fieldsInfo = await getTemplatesByCampaign(campaign.id);
-  
+
       const updatedCampaign: Campaign = {
         ...campaign,
-        spreadsheet_id: sheetInfo?.sheet_id || '',
-        sheet_name: sheetInfo?.sheet_sheet || '',
+        spreadsheet_id: sheetInfo?.sheet_id || "",
+        sheet_name: sheetInfo?.sheet_sheet || "",
         associated_fields: fieldsInfo?.associated_fields || {},
       };
-  
+
       setCampañaSeleccionada(updatedCampaign); // 🔥 solo uno
-  
+
       console.log("📄 Spreadsheet ID:", sheetInfo?.sheet_id);
       console.log("📄 Sheet Name:", sheetInfo?.sheet_sheet);
       console.log("🧩 Campos asociados:", fieldsInfo?.associated_fields);
-  
     } catch (error) {
-      console.error("❌ Error en carga de datos adicionales para campaña:", error);
+      console.error(
+        "❌ Error en carga de datos adicionales para campaña:",
+        error
+      );
     } finally {
       setLoadingDatosCampaña(false);
     }
@@ -243,15 +242,20 @@ const Mesaje: React.FC = () => {
       console.log("spreadsheetId:", spreadsheetId);
       console.log("campañaSeleccionada:", campañaSeleccionada);
 
-      if (!spreadsheetId || !sheetName || rangeStart === null || rangeEnd === null) {
+      if (
+        !spreadsheetId ||
+        !sheetName ||
+        rangeStart === null ||
+        rangeEnd === null
+      ) {
         throw new Error("Datos incompletos: debes seleccionar un rango válido");
       }
       const requestBody = {
         spreadsheetId: spreadsheetId,
         sheetName: sheetName,
-        rangeA: `A${rangeStart}`, 
-        rangeB: `Z${rangeEnd}`,     
-        templateBody: selectedTemplate?.body || '',
+        rangeA: `A${rangeStart}`,
+        rangeB: `Z${rangeEnd}`,
+        templateBody: selectedTemplate?.body || "",
         camposTemp: campañaSeleccionada?.associated_fields || {},
       };
 
@@ -298,7 +302,7 @@ const Mesaje: React.FC = () => {
           <div className={styles.formContainer}>
             <BuscarCampaignId
               Campaigns={campañas}
-              onCampaignChange={handleCampaignChange}
+              onCampaignChange={handleCampaignChange} // <<< Aquí
               onCampaignsEncontradas={() => {}}
             />
           </div>
@@ -328,12 +332,12 @@ const Mesaje: React.FC = () => {
               onNumeroChange={(id) => setNumeroSeleccionado(id)}
             />
           </div>
-          <div className={styles.buttonContainer}>
-            <button onClick={handleEnviar} className={styles.submitButton}>
-              <FontAwesomeIcon icon={faPaperPlane} className={styles.sendIcon} />
-              <span>Enviar Mensajes</span>
-            </button>
-          </div>
+          <button
+            onClick={handleEnviar}
+            className={styles.submitButton || "button"}
+          >
+            Enviar Mensajes
+          </button>
         </div>
       </div>
       {/* Columna derecha */}
