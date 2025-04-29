@@ -24,18 +24,15 @@ const SubcuentaSelectorId: React.FC<SubcuentaSelectorProps> = ({
       try {
         setLoading(true);
         
-        // 1. Obtener el usuario de la sesión activa
         const userEmail = localStorage.getItem('userEmail'); 
         if (!userEmail) {
           toast.error('No se encontró usuario en sesión');
           return;
         }
 
-        // 2. Buscar subcuentas para este usuario
         const subcuentas = await buscarSubcuentasPorUsuario(userEmail);
         setUserSubcuentas(subcuentas);
 
-        // 3. Seleccionar la primera subcuenta por defecto si hay resultados
         if (subcuentas.length > 0) {
           const primeraSubcuenta = subcuentas[0].id;
           setSubcuentaSeleccionada(primeraSubcuenta);
@@ -59,37 +56,33 @@ const SubcuentaSelectorId: React.FC<SubcuentaSelectorProps> = ({
     onSubcuentaChange(value);
   };
 
-  if (loading) {
-    return (
-      <div className={styles.fieldGroup}>
-        <label className={styles.label}>Subcuenta</label>
-        <div className={styles.loadingMessage}>Cargando subcuentas...</div>
-      </div>
-    );
-  }
-
-  if (userSubcuentas.length === 0) {
-    return (
-      <div className={styles.fieldGroup}>
-        <label className={styles.label}>Subcuenta</label>
-        <div className={styles.errorMessage}>No se encontraron subcuentas para este usuario</div>
-      </div>
-    );
-  }
-
   return (
     <div className={styles.fieldGroup}>
       <label className={styles.label}>Subcuenta</label>
+      
       <select
         value={subcuentaSeleccionada}
         onChange={handleChange}
+        disabled={loading || userSubcuentas.length === 0}
         className={styles.select}
       >
-        {userSubcuentas.map((subcuenta) => (
-          <option key={subcuenta.id} value={subcuenta.id} className={styles.option}>
-            {subcuenta.Nombre}
-          </option>
-        ))}
+        {loading && (
+          <option value="">Cargando subcuentas...</option>
+        )}
+
+        {!loading && userSubcuentas.length === 0 && (
+          <option value="">No hay subcuentas disponibles</option>
+        )}
+
+        {!loading && userSubcuentas.length > 0 && (
+          <>
+            {userSubcuentas.map((subcuenta) => (
+              <option key={subcuenta.id} value={subcuenta.id} className={styles.option}>
+                {subcuenta.Nombre}
+              </option>
+            ))}
+          </>
+        )}
       </select>
     </div>
   );

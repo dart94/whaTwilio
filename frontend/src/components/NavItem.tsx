@@ -1,26 +1,33 @@
 import React from "react";
-import { useNavigate, useLocation } from "react-router";
-import styles from "../styles/NavItem.module.css";
+import { Link, useLocation } from "react-router-dom";
+import styles from "../styles/AdminNav.module.css";
 
 interface NavItemProps {
-    label: string;
-    route: string;
-  }
+  label: string;
+  route: string;
+  mobile?: boolean;
+}
+
+const NavItem: React.FC<NavItemProps> = ({ label, route, mobile = false }) => {
+  const location = useLocation();
+  const isActive = location.pathname === route;
   
-  const NavItem: React.FC<NavItemProps> = ({ label, route }) => {
-    const navigate = useNavigate();
-    const { pathname } = useLocation();
-    const active = pathname === route;
-  
-    return (
-      <div
-        className={`${styles.navItem} ${active ? styles.active : ""}`}
-        onClick={() => navigate(route)}
-      >
-        
-        <span>{label}</span>
-      </div>
-    );
-  };
-  
-  export default NavItem;
+  return (
+    <Link 
+      to={route} 
+      className={`
+        ${styles.navItem}
+        ${isActive ? styles.active : ''}
+        ${mobile 
+          ? 'flex w-full px-4 py-3 hover:bg-gray-700' 
+          : 'items-center cursor-pointer py-2 px-4 whitespace-nowrap flex-shrink-0 rounded'
+        }
+        transition-colors duration-300
+      `}
+    >
+      {label}
+    </Link>
+  );
+};
+
+export default NavItem;
