@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import styles from "../styles/Mesaje.module.css";
 import SubcuentaSelectorId from "../components/forms/formsUser/SubcuentaSelectorId";
 import BuscarCampaignId from "../components/forms/formsUser/BuscarCampaingId";
@@ -17,6 +18,7 @@ import { obtenerSheetsPorCampaign } from "../services/sheet";
 import { getTemplatesByCampaign } from "../services/templatesService";
 import { obtenerNumerosPorSubcuenta } from "../services/numeroTelefonicoService";
 import { obtenerCampanasPorSubcuenta } from "../services/campaignService";
+import { FaPenAlt } from "react-icons/fa";
 
 interface Campaign {
   id: number;
@@ -24,6 +26,8 @@ interface Campaign {
   credential_template_id: number;
   spreadsheet_id: string;
   sheet_name: string;
+  associated_fields?: { [key: string]: string };
+
 }
 
 interface Template {
@@ -208,45 +212,29 @@ const Mesaje: React.FC = () => {
 
   //Función para obtener sid y campos de una plantilla
   const handleCampaignChange = async (campaign: Campaign) => {
-    setCampañaSeleccionada(campaign);
-
     try {
-      setLoadingDatosCampaña(true); // 🔥 Activamos loading
-
+      setLoadingDatosCampaña(true);
+  
       const sheetInfo = await obtenerSheetsPorCampaign(campaign.id);
-      console.log("📄 sheetInfo:", sheetInfo);
-
-      if (sheetInfo && sheetInfo.sheet_id) {
-        setSpreadsheetId(sheetInfo.sheet_id);
-        console.log("📄 Spreadsheet ID cargado:", sheetInfo.sheet_id);
-      } else {
-        console.error("No se encontró sheet_id para esta campaña");
-      }
-
-      if (sheetInfo && sheetInfo.sheet_sheet) {
-        setSheetName(sheetInfo.sheet_sheet); // NUEVO estado de sheetName
-        console.log("📄 Sheet Name cargado:", sheetInfo.sheet_sheet);
-      } else {
-        console.error("No se encontró sheet_name para esta campaña");
-      }
-
       const fieldsInfo = await getTemplatesByCampaign(campaign.id);
-      if (fieldsInfo && fieldsInfo.associated_fields) {
-        setCamposTemp(fieldsInfo.associated_fields);
-        console.log(
-          "🧩 Campos asociados cargados:",
-          fieldsInfo.associated_fields
-        );
-      } else {
-        console.error("No se encontraron campos asociados para esta campaña");
-      }
+  
+      const updatedCampaign: Campaign = {
+        ...campaign,
+        spreadsheet_id: sheetInfo?.sheet_id || '',
+        sheet_name: sheetInfo?.sheet_sheet || '',
+        associated_fields: fieldsInfo?.associated_fields || {},
+      };
+  
+      setCampañaSeleccionada(updatedCampaign); // 🔥 solo uno
+  
+      console.log("📄 Spreadsheet ID:", sheetInfo?.sheet_id);
+      console.log("📄 Sheet Name:", sheetInfo?.sheet_sheet);
+      console.log("🧩 Campos asociados:", fieldsInfo?.associated_fields);
+  
     } catch (error) {
-      console.error(
-        "❌ Error en carga de datos adicionales para campaña:",
-        error
-      );
+      console.error("❌ Error en carga de datos adicionales para campaña:", error);
     } finally {
-      setLoadingDatosCampaña(false); // 🔥 Desactivamos loading siempre
+      setLoadingDatosCampaña(false);
     }
   };
 
@@ -264,7 +252,7 @@ const Mesaje: React.FC = () => {
         rangeA: `A${rangeStart}`, 
         rangeB: `Z${rangeEnd}`,     
         templateBody: selectedTemplate?.body || '',
-        camposTemp: camposTemp,
+        camposTemp: campañaSeleccionada?.associated_fields || {},
       };
 
       const response = await sendMassive(requestBody);
@@ -310,7 +298,7 @@ const Mesaje: React.FC = () => {
           <div className={styles.formContainer}>
             <BuscarCampaignId
               Campaigns={campañas}
-              onCampaignChange={handleCampaignChange} // <<< Aquí
+              onCampaignChange={handleCampaignChange}
               onCampaignsEncontradas={() => {}}
             />
           </div>
@@ -340,9 +328,12 @@ const Mesaje: React.FC = () => {
               onNumeroChange={(id) => setNumeroSeleccionado(id)}
             />
           </div>
-          <button onClick={handleEnviar} className={styles.button || "button"}>
-            Enviar Mensajes
-          </button>
+          <div className={styles.buttonContainer}>
+            <button onClick={handleEnviar} className={styles.submitButton}>
+              <FontAwesomeIcon icon={faPaperPlane} className={styles.sendIcon} />
+              <span>Enviar Mensajes</span>
+            </button>
+          </div>
         </div>
       </div>
       {/* Columna derecha */}

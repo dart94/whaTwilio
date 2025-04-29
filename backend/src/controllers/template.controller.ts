@@ -143,22 +143,48 @@ export const getTemplateFieldsByCampaignId = async (req: Request, res: Response)
 
   if (!campaign_id) {
     res.status(400).json({ message: 'ID de campaña es requerido' });
-    return 
+    return;
   }
 
   try {
-    const [results] = await connection.query(`
+    const [results]: any = await connection.query(`
       SELECT id, name, associated_fields, sid
       FROM Templates
       WHERE campaign_id = ?
     `, [campaign_id]);
 
-    res.status(200).json(results);
+    if (results.length === 0) {
+      res.status(404).json({ message: 'No se encontraron plantillas para esta campaña' });
+      return;
+    }
+
+    const template = results[0];
+
+    let associated_fields = {};
+
+    if (typeof template.associated_fields === 'string') {
+      try {
+        associated_fields = JSON.parse(template.associated_fields);
+      } catch (error) {
+        console.error('Error al parsear associated_fields:', error);
+        associated_fields = {};
+      }
+    } else if (typeof template.associated_fields === 'object') {
+      associated_fields = template.associated_fields;
+    }
+
+    res.status(200).json({
+      associated_fields,
+      sid: template.sid,
+      name: template.name,
+    });
+
   } catch (err) {
     console.error('Error al obtener las plantillas:', err);
     res.status(500).json({ message: 'Error al obtener las plantillas de la campaña' });
   }
 };
+
 
 // Obtener plantillas asociadas a una campaña Twilio
 export const getTemplates: RequestHandler = async (req, res) => {

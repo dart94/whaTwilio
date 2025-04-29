@@ -19,7 +19,7 @@ router.get('/templates/campaign-fields/:template_id', getTemplateFields);
 router.post('/templates/campaign-fields', associateFieldsToTemplate);
 
 // Ruta para obtener los campos de una plantilla específica por ID de campaña
-router.get('/templates/campaign/:campaign_id/fields', getTemplatesByCampaign);
+router.get('/templates/campaign/:campaign_id/fields', getTemplateFieldsByCampaignId);
 
 // Ruta para obtener los campos de una plantilla específica
 router.get('/templates', getTemplates);
