@@ -20,7 +20,6 @@ export const runMassiveMsg = async (params: MsgParams) => {
 
     console.log("🚀 Iniciando envío masivo...");
 
-    // Validar que rangeA y rangeB existan
     if (!rangeA || !rangeB) {
       throw new Error("El rango inicial o final no está definido.");
     }
@@ -28,11 +27,9 @@ export const runMassiveMsg = async (params: MsgParams) => {
     const fullRange = `${sheetName}!${rangeA}:${rangeB}`;
     console.log("🔍 Rango completo para consulta:", fullRange);
 
-    // Obtener encabezados
     const headers = await getHeaders(spreadsheetId, sheetName);
     console.log("📋 Encabezados:", headers);
 
-    // Obtener datos del rango
     const values = await getData(spreadsheetId, fullRange);
     console.log(`📊 Se obtuvieron ${values.length} registros`);
 
@@ -41,7 +38,6 @@ export const runMassiveMsg = async (params: MsgParams) => {
       return;
     }
 
-    // Definir estructura de filas
     interface RowData {
       [key: string]: string;
       Lista_Negra: string;
@@ -57,7 +53,10 @@ export const runMassiveMsg = async (params: MsgParams) => {
       return obj;
     });
 
-    // Procesar fila por fila
+    // 🔥 Aquí inicializamos contadores
+    let enviados = 0;
+    let errores = 0;
+
     for (const [index, row] of data.entries()) {
       console.log(`\n➡️ Procesando fila ${index + 1}:`, row);
 
@@ -70,6 +69,8 @@ export const runMassiveMsg = async (params: MsgParams) => {
         console.log(`❌ Fila ignorada. Valor de Whatsapp: "${row["Whatsapp"]}"`);
         continue;
       }
+
+      console.log(`➡️ Enviando mensaje ${index + 1} de ${data.length}...`);
 
       const replacements: { [key: string]: string } = {};
       for (let i = 1; i <= 20; i++) {
@@ -88,20 +89,28 @@ export const runMassiveMsg = async (params: MsgParams) => {
         const mensaje = await sendMessage(numero, mensajeFinal);
         console.log(`✅ Mensaje enviado a ${numero}: ${mensaje.sid}`);
         row["Whatsapp"] = "Enviado";
+        enviados++; // ✅ Aumentamos contador de enviados
       } catch (err) {
         console.error(`❌ Error al enviar a ${numero}:`, err);
         row["Whatsapp"] = "Error";
+        errores++; // ✅ Aumentamos contador de errores
       }
     }
 
-    // Actualizar datos en el mismo rango
     const updatedValues = data.map((row) =>
       headers.map((header) => row[header] ?? "")
     );
 
     await updateData(spreadsheetId, fullRange, updatedValues);
     console.log("📥 Datos actualizados en la hoja correctamente.");
+
+    // 🔥🔥🔥 Resumen final
+    console.log("\n✅ Envío masivo completado.");
+    console.log(`📤 Mensajes enviados exitosamente: ${enviados}`);
+    console.log(`❌ Errores de envío: ${errores}`);
+
   } catch (err) {
     console.error("❌ Error general en el proceso:", err);
   }
 };
+

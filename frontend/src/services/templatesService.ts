@@ -28,9 +28,9 @@ export async function insertTemplate(template: TemplateData) {
   return response.json();
 }
 
-//Obtener plantilla por campaña
+// Obtener campos asociados por campaña
 export async function getTemplatesByCampaign(campaign_id: number) {
-  const response = await fetch(`${BASE_URL}/api/templates/campaign/${campaign_id}`);
+  const response = await fetch(`${BASE_URL}/api/templates/campaign/${campaign_id}/fields`);
   
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
