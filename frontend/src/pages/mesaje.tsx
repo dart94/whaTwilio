@@ -17,7 +17,7 @@ import { obtenerSheetsPorCampaign } from "../services/sheet";
 import { getTemplatesByCampaign } from "../services/templatesService";
 import { obtenerNumerosPorSubcuenta } from "../services/numeroTelefonicoService";
 import { obtenerCampanasPorSubcuenta } from "../services/campaignService";
-import { FaPenAlt } from "react-icons/fa";
+import { FaPenAlt, FaCheckCircle } from "react-icons/fa";
 
 interface Campaign {
   id: number;
@@ -67,6 +67,40 @@ const Mesaje: React.FC = () => {
   const [camposTemp, setCamposTemp] = useState<{ [key: string]: string }>({});
   const [sheetName, setSheetName] = useState<string | null>(null);
   const [loadingDatosCampaña, setLoadingDatosCampaña] = useState(false);
+  
+  // Estado para controlar el progreso del formulario
+  const [progressPercentage, setProgressPercentage] = useState(0);
+
+  // Función para calcular el progreso
+  const calculateProgress = () => {
+    let completedSteps = 0;
+    const totalSteps = 5; // Subcuenta, Campaña, Template, Destinatarios, Número
+
+    // Verificamos explícitamente que cada paso esté completo
+    if (subcuentaSeleccionada !== null && subcuentaSeleccionada !== undefined) completedSteps++;
+    if (campañaSeleccionada !== null && campañaSeleccionada !== undefined) completedSteps++;
+    if (plantillaSeleccionada !== null && plantillaSeleccionada !== "") completedSteps++;
+    if (rangeStart !== null && rangeEnd !== null && rangeStart > 0 && rangeEnd > 0) completedSteps++;
+    if (numeroSeleccionado !== null && numeroSeleccionado !== undefined) completedSteps++;
+
+    // Verificamos que la función retorne correctamente el porcentaje exacto
+    console.log(`Progreso: ${completedSteps}/${totalSteps} pasos completados = ${(completedSteps / totalSteps) * 100}%`);
+    return Math.round((completedSteps / totalSteps) * 100);
+  };
+
+  // Actualizar el progreso cuando cambien los estados relevantes
+  useEffect(() => {
+    const newProgress = calculateProgress();
+    console.log("Actualizando progreso a:", newProgress);
+    setProgressPercentage(newProgress);
+  }, [
+    subcuentaSeleccionada,
+    campañaSeleccionada,
+    plantillaSeleccionada,
+    rangeStart,
+    rangeEnd,
+    numeroSeleccionado,
+  ]);
 
   const checkLocalStorage = () => {
     const savedCampaign = localStorage.getItem("selectedCampaign");
@@ -99,13 +133,18 @@ const Mesaje: React.FC = () => {
       handleCampaignChange(parsedCampaign); // 👈 IMPORTANTE
     }
 
-    if (savedTemplate) setPlantillaSeleccionada(savedTemplate);
-    if (savedRangeStart) setRangeStart(parseInt(savedRangeStart));
-    if (savedRangeEnd) setRangeEnd(parseInt(savedRangeEnd));
-    if (savedNumber) setNumeroSeleccionado(parseInt(savedNumber));
+    if (savedTemplate && savedTemplate !== "null") setPlantillaSeleccionada(savedTemplate);
+    if (savedRangeStart && savedRangeStart !== "null") setRangeStart(parseInt(savedRangeStart));
+    if (savedRangeEnd && savedRangeEnd !== "null") setRangeEnd(parseInt(savedRangeEnd));
+    if (savedNumber && savedNumber !== "null") setNumeroSeleccionado(parseInt(savedNumber));
 
     // Verificar los datos cargados
     checkLocalStorage();
+    
+    // Actualizar el progreso después de cargar datos
+    setTimeout(() => {
+      setProgressPercentage(calculateProgress());
+    }, 500);
   }, []);
 
   useEffect(() => {
@@ -180,30 +219,40 @@ const Mesaje: React.FC = () => {
         "selectedCampaign",
         JSON.stringify(campañaSeleccionada)
       );
+    } else {
+      localStorage.removeItem("selectedCampaign");
     }
   }, [campañaSeleccionada]);
 
   useEffect(() => {
     if (plantillaSeleccionada) {
       localStorage.setItem("selectedTemplate", plantillaSeleccionada);
+    } else {
+      localStorage.removeItem("selectedTemplate");
     }
   }, [plantillaSeleccionada]);
 
   useEffect(() => {
     if (rangeStart !== null) {
       localStorage.setItem("rangeStart", rangeStart.toString());
+    } else {
+      localStorage.removeItem("rangeStart");
     }
   }, [rangeStart]);
 
   useEffect(() => {
     if (rangeEnd !== null) {
       localStorage.setItem("rangeEnd", rangeEnd.toString());
+    } else {
+      localStorage.removeItem("rangeEnd");
     }
   }, [rangeEnd]);
 
   useEffect(() => {
     if (numeroSeleccionado !== null) {
       localStorage.setItem("selectedNumber", numeroSeleccionado.toString());
+    } else {
+      localStorage.removeItem("selectedNumber");
     }
   }, [numeroSeleccionado]);
 
@@ -222,7 +271,15 @@ const Mesaje: React.FC = () => {
         associated_fields: fieldsInfo?.associated_fields || {},
       };
 
-      setCampañaSeleccionada(updatedCampaign); // 🔥 solo uno
+      setCampañaSeleccionada(updatedCampaign); 
+      
+      if (sheetInfo?.sheet_id) {
+        setSpreadsheetId(sheetInfo.sheet_id);
+      }
+      
+      if (sheetInfo?.sheet_sheet) {
+        setSheetName(sheetInfo.sheet_sheet);
+      }
 
       console.log("📄 Spreadsheet ID:", sheetInfo?.sheet_id);
       console.log("📄 Sheet Name:", sheetInfo?.sheet_sheet);
@@ -267,11 +324,44 @@ const Mesaje: React.FC = () => {
       alert("Error al enviar los mensajes. Revisa la consola.");
     }
   };
+  
+  // Lista de pasos del formulario para la barra de progreso con las mismas condiciones que calculateProgress
+  const formSteps = [
+    { name: "Subcuenta", completed: subcuentaSeleccionada !== null && subcuentaSeleccionada !== undefined },
+    { name: "Campaña", completed: campañaSeleccionada !== null && campañaSeleccionada !== undefined },
+    { name: "Plantilla", completed: plantillaSeleccionada !== null && plantillaSeleccionada !== "" },
+    { name: "Destinatarios", completed: rangeStart !== null && rangeEnd !== null && rangeStart > 0 && rangeEnd > 0 },
+    { name: "Número", completed: numeroSeleccionado !== null && numeroSeleccionado !== undefined }
+  ];
+  
   return (
     <div className={styles.layoutContainer}>
       {/* Columna izquierda */}
       <div className={styles.leftColumn}>
         <div className={styles.container}>
+          {/* Barra de progreso */}
+          <div className={styles.progressContainer}>
+            <div className={styles.progressInfo}>
+              <span className={styles.progressText}>Progreso del formulario: {progressPercentage}%</span>
+            </div>
+            <div className={styles.progressBarOuter}>
+              <div 
+                className={styles.progressBarInner} 
+                style={{ width: `${progressPercentage}%` }}
+              ></div>
+            </div>
+            <div className={styles.progressStepsContainer}>
+              {formSteps.map((step, index) => (
+                <div key={index} className={styles.progressStep}>
+                  <div className={`${styles.stepIndicator} ${step.completed ? styles.completed : ''}`}>
+                    {step.completed && <FaCheckCircle className={styles.checkIcon} />}
+                  </div>
+                  <span className={styles.stepName}>{step.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          
           <div className={styles.formContainer}>
             <div className={styles.header}>
               <div className={styles.textContent}>
@@ -334,9 +424,10 @@ const Mesaje: React.FC = () => {
           </div>
           <button
             onClick={handleEnviar}
-            className={styles.submitButton || "button"}
+            className={`${styles.submitButton || "button"} ${progressPercentage === 100 ? styles.buttonReady : ''}`}
+            disabled={progressPercentage !== 100}
           >
-            Enviar Mensajes
+            {progressPercentage === 100 ? "Enviar Mensajes" : `Complete los pasos (${progressPercentage}%)`}
           </button>
         </div>
       </div>

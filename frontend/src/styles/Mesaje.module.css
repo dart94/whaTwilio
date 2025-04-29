@@ -187,3 +187,115 @@
   transform: translateY(0);
 }
 
+
+/* Estilos para agregar a Mesaje.module.css */
+
+.progressContainer {
+  margin-bottom: 20px;
+  width: 100%;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.progressInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.progressText {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.progressBarOuter {
+  height: 10px;
+  background-color: #e9ecef;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progressBarInner {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-left-bg), var(--color-button-bg));
+  border-radius: 5px;
+  transition: width 0.5s ease-in-out;
+}
+
+.progressStepsContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.progressStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20%;
+}
+
+.stepIndicator {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #e9ecef;
+  border: 2px solid #ced4da;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.stepIndicator.completed {
+  background-color: var(--color-left-bg);
+  border-color: var(--color-left-bg);
+  color: white;
+}
+
+.checkIcon {
+  color: white;
+  font-size: 12px;
+}
+
+.stepName {
+  font-size: 12px;
+  color: #6c757d;
+  text-align: center;
+}
+
+/* Estilos para el botón */
+.submitButton {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transition: all 0.3s ease;
+}
+
+.buttonReady {
+  opacity: 1;
+  cursor: pointer;
+  background-color: #25d366;
+  color: white;
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Para responsive en móviles */
+@media (max-width: 768px) {
+  .progressStepsContainer {
+    flex-wrap: wrap;
+  }
+  
+  .progressStep {
+    width: 33%;
+    margin-bottom: 10px;
+  }
+  
+  .stepName {
+    font-size: 10px;
+  }
+}
