@@ -1,6 +1,6 @@
 // src/components/Sidebar.tsx
 import React from "react";
-import NavigationItem from "./NavigationItem";
+import NavItem from "./NavItem";
 import { CiMonitor } from "react-icons/ci";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
@@ -15,9 +15,9 @@ const Sidebar: React.FC = () => {
         <img src={icon} alt="icon" className="w-[90%] h-auto rounded-lg" />
       </div>
       <nav className={`${styles.nav} mt-4 relative z-10`}>
-        <NavigationItem label="Monitor" route="/monitor" icon={<CiMonitor size={20} />} />
-        <NavigationItem label="Mensaje" route="/mesaje" icon={<FontAwesomeIcon icon={faWhatsapp} />} />
-        <NavigationItem label="Admin" route="/admin" icon={<MdAdminPanelSettings size={20} />} />
+        <NavItem label="Monitor" route="/monitor" icon={<CiMonitor size={20} />} />
+        <NavItem label="Mensaje" route="/mesaje" icon={<FontAwesomeIcon icon={faWhatsapp} />} />
+        <NavItem label="Admin" route="/admin" icon={<MdAdminPanelSettings size={20} />} />
       </nav>
     </div>
   );

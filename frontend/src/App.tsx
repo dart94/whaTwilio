@@ -17,6 +17,7 @@ import NumeroTelefonicoAdminView from './pages/admin/NumeroTelefonicoAdminView';
 import CredencialAdminView from './pages/admin/CredencialAdminView';
 import CampaignsAdminView from './pages/admin/CampaignAdminView';
 import Mesaje from './pages/mesaje';
+import Monitor from './pages/monitor';
 import 'react-toastify/dist/ReactToastify.css';
 
 const App: React.FC = () => {
@@ -42,6 +43,7 @@ const App: React.FC = () => {
               <Route path="campanasAdmin" element={<CampaignsAdminView />} />
             </Route>
             <Route path="/mesaje" element={<Mesaje />} />
+            <Route path="/monitor" element={<Monitor />} />
           </Route>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Mesaje />} />
