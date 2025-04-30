@@ -8,15 +8,20 @@ const whatsappNumber = "whatsapp:+5216624216955";
 
 const client = new Twilio(accountSid, authToken);
 
-export const sendMessage = async (to: string, body: string) => {
-  try{
+export const sendMessage = async (
+  to: string,
+  contentSid: string,
+  contentVariables: { [key: string]: string },
+  from: string,
+  accountSid: string,
+  authToken: string
+) => {
+  const client = new Twilio(accountSid, authToken);
+
   return await client.messages.create({
-    from: whatsappNumber,
-    to: to,
-    body: body,
+    from,
+    to,
+    contentSid,
+    contentVariables: JSON.stringify(contentVariables),
   });
-  } catch (error) {
-    console.error(`❌ Error al enviar mensaje a ${to}:`, error);
-    throw error;
-  }
-  }
+};
