@@ -60,8 +60,12 @@
   z-index: 1;
 }
 
+.icon{
+  color: var(--color-text);
+}
+
 /** Responsive **/
-/* Tu CSS original... */
+
 
 @media screen and (max-width: 768px) {
   .layout {

@@ -5,7 +5,7 @@ export interface MassiveData {
   sheetName: string;
   rangeA: string;
   rangeB: string;
-  templateBody: string;
+  templateSid: string;
   camposTemp: CamposTemplate;
 }
 
