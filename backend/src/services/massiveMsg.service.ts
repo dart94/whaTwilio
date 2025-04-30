@@ -1,5 +1,4 @@
 import { getHeaders, getData, updateData } from "../services/sheets.Service";
-import { replaceTemplate } from "../utils/templateUtils";
 import { sendMessage } from "../services/twilio.Service";
 import * as fs from "fs";
 
@@ -10,13 +9,26 @@ interface MsgParams {
   sheetName: string;
   rangeA: string;
   rangeB: string;
-  templateBody: string;
+  templateSid: string;
   camposTemp: CamposTemplate;
+  twilioAccountSid: string;
+  twilioAuthToken: string;
+  twilioSenderNumber: string; // O puedes usar messagingServiceSid si aplica
 }
 
 export const runMassiveMsg = async (params: MsgParams) => {
   try {
-    const { spreadsheetId, sheetName, rangeA, rangeB, templateBody, camposTemp } = params;
+    const {
+      spreadsheetId: sidFromCampaign,
+      sheetName: nameFromCampaign,
+      rangeA,
+      rangeB,
+      templateSid,
+      camposTemp,
+      twilioAccountSid,
+      twilioAuthToken,
+      twilioSenderNumber,
+    } = params;
 
     console.log("🚀 Iniciando envío masivo...");
 
@@ -24,13 +36,13 @@ export const runMassiveMsg = async (params: MsgParams) => {
       throw new Error("El rango inicial o final no está definido.");
     }
 
-    const fullRange = `${sheetName}!${rangeA}:${rangeB}`;
+    const fullRange = `${nameFromCampaign}!${rangeA}:${rangeB}`;
     console.log("🔍 Rango completo para consulta:", fullRange);
 
-    const headers = await getHeaders(spreadsheetId, sheetName);
+    const headers = await getHeaders(sidFromCampaign, nameFromCampaign);
     console.log("📋 Encabezados:", headers);
 
-    const values = await getData(spreadsheetId, fullRange);
+    const values = await getData(sidFromCampaign, fullRange);
     console.log(`📊 Se obtuvieron ${values.length} registros`);
 
     if (!values.length) {
@@ -53,7 +65,6 @@ export const runMassiveMsg = async (params: MsgParams) => {
       return obj;
     });
 
-    // 🔥 Aquí inicializamos contadores
     let enviados = 0;
     let errores = 0;
 
@@ -66,7 +77,7 @@ export const runMassiveMsg = async (params: MsgParams) => {
       }
 
       if (row["Whatsapp"]?.toUpperCase() !== "ENVIAR") {
-        console.log(`❌ Fila ignorada. Valor de Whatsapp: "${row["Whatsapp"]}"`);
+        console.log(`❌ Fila ignorada. Valor de Whatsapp: \"${row["Whatsapp"]}\"`);
         continue;
       }
 
@@ -78,39 +89,37 @@ export const runMassiveMsg = async (params: MsgParams) => {
         replacements[i.toString()] = campo ? row[campo] || "" : "";
       }
 
-      const mensajeFinal = replaceTemplate(templateBody, replacements);
-      console.log("📨 Mensaje generado:", mensajeFinal);
-
-      fs.writeFileSync(`debug_message_${index + 1}.txt`, mensajeFinal, "utf8");
-
       const numero = `whatsapp:+521${row["Celular"]}`.trim();
 
       try {
-        const mensaje = await sendMessage(numero, mensajeFinal);
+        const mensaje = await sendMessage(
+          numero,
+          templateSid,
+          replacements,
+          twilioSenderNumber,
+          twilioAccountSid,
+          twilioAuthToken
+        );
+
         console.log(`✅ Mensaje enviado a ${numero}: ${mensaje.sid}`);
         row["Whatsapp"] = "Enviado";
-        enviados++; // ✅ Aumentamos contador de enviados
+        enviados++;
       } catch (err) {
-        console.error(`❌ Error al enviar a ${numero}:`, err);
+        console.error(`❌ Error al enviar a ${numero}:"`, err);
         row["Whatsapp"] = "Error";
-        errores++; // ✅ Aumentamos contador de errores
+        errores++;
       }
     }
 
-    const updatedValues = data.map((row) =>
-      headers.map((header) => row[header] ?? "")
-    );
+    const updatedValues = data.map((row) => headers.map((header) => row[header] ?? ""));
 
-    await updateData(spreadsheetId, fullRange, updatedValues);
+    await updateData(sidFromCampaign, fullRange, updatedValues);
     console.log("📥 Datos actualizados en la hoja correctamente.");
 
-    // 🔥🔥🔥 Resumen final
     console.log("\n✅ Envío masivo completado.");
     console.log(`📤 Mensajes enviados exitosamente: ${enviados}`);
     console.log(`❌ Errores de envío: ${errores}`);
-
   } catch (err) {
     console.error("❌ Error general en el proceso:", err);
   }
 };
-

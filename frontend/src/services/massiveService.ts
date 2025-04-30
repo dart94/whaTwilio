@@ -1,20 +1,21 @@
+// Corrigiendo la interfaz de MassiveData para que coincida con el objeto que se está enviando
 import { BASE_URL } from "../config/apiConfig";
-
 export interface MassiveData {
-  spreadsheetId: string;
-  sheetName: string;
+  spreadsheetId: string | undefined;
+  sheetName: string | undefined;
   rangeA: string;
   rangeB: string;
-  templateBody: string;
-  camposTemp: CamposTemplate;
+  templateSid: string | undefined;
+  camposTemp: CamposTemplate | undefined;
+  twilioAccountSid: string | undefined;
+  twilioAuthToken: string | undefined;
+  twilioSenderNumber: string;
 }
-
 interface CamposTemplate {
   [key: string]: string;
 }
 
-//Función para enviar masivos
-
+// Función para enviar masivos
 export async function sendMassive(requestBody: MassiveData) {
     try {
       const response = await fetch(`${BASE_URL}/api/massive`, {
@@ -24,11 +25,11 @@ export async function sendMassive(requestBody: MassiveData) {
         },
         body: JSON.stringify(requestBody),
       });
-  
+ 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+ 
       const data = await response.json();
       console.log("📥 Datos recibidos:", data);
       return data;
@@ -37,5 +38,3 @@ export async function sendMassive(requestBody: MassiveData) {
       throw error;
     }
   }
-  
-
