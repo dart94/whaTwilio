@@ -1,22 +1,19 @@
 import { Twilio } from 'twilio';
-import * as dotenv from 'dotenv';
-dotenv.config({ path: 'config.env' });
 
-const accountSid = "AC6c3d6ce185b11c304be26b2185d97cf7";
-const authToken = "ef6554437011da40e10b3182170cdea0";
-const whatsappNumber = "whatsapp:+5216624216955";
+export const sendMessage = async (
+  to: string,
+  contentSid: string,
+  contentVariables: { [key: string]: string },
+  messagingServiceSid: string,
+  accountSid: string,
+  authToken: string
+) => {
+  const client = new Twilio(accountSid, authToken);
 
-const client = new Twilio(accountSid, authToken);
-
-export const sendMessage = async (to: string, body: string) => {
-  try{
   return await client.messages.create({
-    from: whatsappNumber,
-    to: to,
-    body: body,
+    messagingServiceSid, // 👈 aquí en vez de 'from'
+    to,
+    contentSid,
+    contentVariables: JSON.stringify(contentVariables),
   });
-  } catch (error) {
-    console.error(`❌ Error al enviar mensaje a ${to}:`, error);
-    throw error;
-  }
-  }
+};

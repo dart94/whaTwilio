@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "../styles/Mesaje.module.css";
+import styles from '../styles/subcuentasView.module.css';
 import { FaSpinner, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 // import { getTwilioLogs } from "../services/twilioService";
 import { toast } from "react-toastify";
@@ -38,14 +38,14 @@ const Monitor: React.FC = () => {
   }, []);
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Logs de Twilio</h2>
+    <div className={styles.contenedor}>
+      <h2 className={styles.heading}>Logs de Twilio</h2>
       {loading ? (
         <div className={styles.loading}>
           <FaSpinner className={styles.spinner} /> Cargando logs...
         </div>
       ) : (
-        <table className={styles.table}>
+        <table className={styles.tabla}>
           <thead>
             <tr>
               <th>Fecha</th>

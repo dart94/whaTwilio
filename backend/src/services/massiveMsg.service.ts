@@ -10,13 +10,27 @@ interface MsgParams {
   sheetName: string;
   rangeA: string;
   rangeB: string;
-  templateBody: string;
-  camposTemp: CamposTemplate;
+  templateSid: string; 
+  camposTemp: { [key: string]: string };
+  twilioAccountSid: string;
+  twilioAuthToken: string;
+  twilioSenderNumber: string;
+  messagingServiceSid: string;
 }
 
 export const runMassiveMsg = async (params: MsgParams) => {
   try {
-    const { spreadsheetId, sheetName, rangeA, rangeB, templateBody, camposTemp } = params;
+    const {
+      spreadsheetId,
+      sheetName,
+      rangeA,
+      rangeB,
+      templateSid,
+      camposTemp,
+      twilioAccountSid,
+      twilioAuthToken,
+      messagingServiceSid,
+    } = params;
 
     console.log("🚀 Iniciando envío masivo...");
 
@@ -59,44 +73,44 @@ export const runMassiveMsg = async (params: MsgParams) => {
 
     for (const [index, row] of data.entries()) {
       console.log(`\n➡️ Procesando fila ${index + 1}:`, row);
-
+    
       if (row["Lista_Negra"] === "ListaNegra") {
         console.log("⛔ Contacto en lista negra. Se omite.");
         continue;
       }
-
+    
       if (row["Whatsapp"]?.toUpperCase() !== "ENVIAR") {
         console.log(`❌ Fila ignorada. Valor de Whatsapp: "${row["Whatsapp"]}"`);
         continue;
       }
-
-      console.log(`➡️ Enviando mensaje ${index + 1} de ${data.length}...`);
-
+    
       const replacements: { [key: string]: string } = {};
       for (let i = 1; i <= 20; i++) {
         const campo = camposTemp[i.toString()];
         replacements[i.toString()] = campo ? row[campo] || "" : "";
       }
-
-      const mensajeFinal = replaceTemplate(templateBody, replacements);
-      console.log("📨 Mensaje generado:", mensajeFinal);
-
-      fs.writeFileSync(`debug_message_${index + 1}.txt`, mensajeFinal, "utf8");
-
+    
       const numero = `whatsapp:+521${row["Celular"]}`.trim();
-
+    
       try {
-        const mensaje = await sendMessage(numero, mensajeFinal);
+        const mensaje = await sendMessage(
+          numero,
+          templateSid,
+          replacements,
+          messagingServiceSid,
+          twilioAccountSid,
+          twilioAuthToken
+        );
+    
         console.log(`✅ Mensaje enviado a ${numero}: ${mensaje.sid}`);
         row["Whatsapp"] = "Enviado";
-        enviados++; // ✅ Aumentamos contador de enviados
+        enviados++;
       } catch (err) {
         console.error(`❌ Error al enviar a ${numero}:`, err);
         row["Whatsapp"] = "Error";
-        errores++; // ✅ Aumentamos contador de errores
+        errores++;
       }
     }
-
     const updatedValues = data.map((row) =>
       headers.map((header) => row[header] ?? "")
     );
@@ -108,9 +122,7 @@ export const runMassiveMsg = async (params: MsgParams) => {
     console.log("\n✅ Envío masivo completado.");
     console.log(`📤 Mensajes enviados exitosamente: ${enviados}`);
     console.log(`❌ Errores de envío: ${errores}`);
-
   } catch (err) {
     console.error("❌ Error general en el proceso:", err);
   }
 };
-

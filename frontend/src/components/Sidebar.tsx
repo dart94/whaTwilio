@@ -14,7 +14,7 @@ const Sidebar: React.FC = () => {
       <div className={`${styles.logoContainer} flex justify-center items-center mb-4`}>
         <img src={icon} alt="icon" className="w-[90%] h-auto rounded-lg" />
       </div>
-      <nav className={`${styles.nav} mt-4 relative z-10`}>
+      <nav className="flex flex-col gap-4 mt-4 w-full z-10">
         <NavItem label="Monitor" route="/monitor" icon={<CiMonitor size={20} />} />
         <NavItem label="Mensaje" route="/mesaje" icon={<FontAwesomeIcon icon={faWhatsapp} />} />
         <NavItem label="Admin" route="/admin" icon={<MdAdminPanelSettings size={20} />} />
