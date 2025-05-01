@@ -8,6 +8,7 @@ import DestinatariosId from "../components/forms/formsUser/DestinatariosId";
 import TemplateSelectorId from "../components/forms/formsUser/TemplateId";
 import NumeroSelectorId from "../components/forms/formsUser/NumeroId";
 import WhatsAppPreview from "../components/preview/WhatsAppPreview";
+import Monitor from "../pages/monitor";
 
 import { getContentTemplates } from "../services/Twilio";
 import { getCredencialById } from "../services/credentialService";
@@ -72,6 +73,7 @@ const Mesaje: React.FC = () => {
   const [progressPercentage, setProgressPercentage] = useState(0);
   const [credencialSeleccionada, setCredencialSeleccionada] =
     useState<TwilioCredential | null>(null);
+  const [mostrarTodo, setMostrarTodo] = useState(false);
 
   const selectedTemplate = plantillas.find(
     (p) => p.sid === plantillaSeleccionada
@@ -209,6 +211,8 @@ const Mesaje: React.FC = () => {
 
         setCredencialSeleccionada(credTransformada);
         console.log("🔥 Cred transformada antes de guardar:", credTransformada);
+        localStorage.setItem("twilioAccountSid", cred.account_sid);
+        localStorage.setItem("twilioAuthToken", cred.auth_token);
         const templates = await getContentTemplates(cred.name);
         setPlantillas(templates);
       } catch (e) {
@@ -291,6 +295,14 @@ const Mesaje: React.FC = () => {
         messagingServiceSid: credencialSeleccionada.messagingServiceSid,
         twilioSenderNumber: `whatsapp:+521${sender.numero}`,
       };
+      localStorage.setItem(
+        "twilioAccountSid",
+        credencialSeleccionada.account_sid
+      );
+      localStorage.setItem(
+        "twilioAuthToken",
+        credencialSeleccionada.auth_token
+      );
 
       console.log("🔥 Payload a enviar:", body);
       await sendMassive(body);
@@ -314,129 +326,150 @@ const Mesaje: React.FC = () => {
   ];
 
   return (
-    <div className={styles.layoutContainer}>
-      {/* Izquierda */}
-      <div className={styles.leftColumn}>
-        <div className={styles.container}>
-          <div className={styles.progressContainer}>
-            <div className={styles.progressInfo}>
-              <span className={styles.progressText}>
-                Progreso: {progressPercentage}%
-              </span>
-            </div>
-            <div className={styles.progressBarOuter}>
-              <div
-                className={styles.progressBarInner}
-                style={{ width: `${progressPercentage}%` }}
-              />
-            </div>
-            <div className={styles.progressStepsContainer}>
-              {formSteps.map((step, idx) => (
-                <div key={idx} className={styles.progressStep}>
-                  <div
-                    className={`${styles.stepIndicator} ${
-                      step.completed ? styles.completed : ""
-                    }`}
-                  >
-                    {step.completed && (
-                      <FaCheckCircle className={styles.checkIcon} />
-                    )}
-                  </div>
-                  <span className={styles.stepName}>{step.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className={styles.formContainer}>
-            <div className={styles.header}>
-              <div className={styles.textContent}>
-                <div className={styles.titleRow}>
-                  <FontAwesomeIcon
-                    icon={faWhatsapp}
-                    className={styles.whatsappIcon}
-                  />
-                  <h2 className="formTitle">Envío de mensajes Masivos</h2>
-                </div>
-                <p>
-                  Envía mensajes masivos seleccionando campaña, plantilla y
-                  rango.
-                </p>
+    <div className={styles.layoutWrapper}>
+      <div className={styles.topRow}>
+        {/* Izquierda */}
+        <div className={styles.leftColumn}>
+          <div className={styles.container}>
+            <div className={styles.progressContainer}>
+              <div className={styles.progressInfo}>
+                <span className={styles.progressText}>
+                  Progreso: {progressPercentage}%
+                </span>
               </div>
-              <div className={styles.selectorContainer}>
-                <SubcuentaSelectorId
-                  onSubcuentaChange={setSubcuentaSeleccionada}
+              <div className={styles.progressBarOuter}>
+                <div
+                  className={styles.progressBarInner}
+                  style={{ width: `${progressPercentage}%` }}
                 />
               </div>
+              <div className={styles.progressStepsContainer}>
+                {formSteps.map((step, idx) => (
+                  <div key={idx} className={styles.progressStep}>
+                    <div
+                      className={`${styles.stepIndicator} ${
+                        step.completed ? styles.completed : ""
+                      }`}
+                    >
+                      {step.completed && (
+                        <FaCheckCircle className={styles.checkIcon} />
+                      )}
+                    </div>
+                    <span className={styles.stepName}>{step.name}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-          {loadingDatosCampaña && (
-            <div className={styles.loadingContainer}>
-              <p>Cargando datos...</p>
+
+            <div className={styles.formContainer}>
+              <div className={styles.header}>
+                <div className={styles.textContent}>
+                  <div className={styles.titleRow}>
+                    <FontAwesomeIcon
+                      icon={faWhatsapp}
+                      className={styles.whatsappIcon}
+                    />
+                    <h2 className="formTitle">Envío de mensajes Masivos</h2>
+                  </div>
+                  <p>
+                    Envía mensajes masivos seleccionando campaña, plantilla y
+                    rango.
+                  </p>
+                </div>
+                <div className={styles.selectorContainer}>
+                  <SubcuentaSelectorId
+                    onSubcuentaChange={setSubcuentaSeleccionada}
+                  />
+                </div>
+              </div>
             </div>
-          )}
+            {loadingDatosCampaña && (
+              <div className={styles.loadingContainer}>
+                <p>Cargando datos...</p>
+              </div>
+            )}
 
-          <div className={styles.formContainer}>
-            <BuscarCampaignId
-              Campaigns={campañas}
-              onCampaignChange={handleCampaignChange}
-              onCampaignsEncontradas={() => {}}
-            />
-          </div>
-          <div className={styles.formContainer}>
-            <TemplateSelectorId
-              campañaSeleccionada={campañaSeleccionada?.id || null}
-              Templates={plantillas}
-              value={plantillaSeleccionada}
-              onTemplateChange={setPlantillaSeleccionada}
-            />
-          </div>
-          <div className={styles.formContainer}>
-            <DestinatariosId
-              campañaSeleccionada={campañaSeleccionada?.id || null}
-              rangeStart={rangeStart}
-              rangeEnd={rangeEnd}
-              setRangeStart={setRangeStart}
-              setRangeEnd={setRangeEnd}
-            />
-          </div>
-          <div className={styles.formContainer}>
-            <NumeroSelectorId
-              templates={plantillas}
-              campañaSeleccionada={campañaSeleccionada?.id || null}
-              numeros={numeros}
-              selectedNumeroId={numeroSeleccionado}
-              onNumeroChange={setNumeroSeleccionado}
-            />
-          </div>
+            <div className={styles.formContainer}>
+              <BuscarCampaignId
+                Campaigns={campañas}
+                onCampaignChange={handleCampaignChange}
+                onCampaignsEncontradas={() => {}}
+              />
+            </div>
+            <div className={styles.formContainer}>
+              <TemplateSelectorId
+                campañaSeleccionada={campañaSeleccionada?.id || null}
+                Templates={plantillas}
+                value={plantillaSeleccionada}
+                onTemplateChange={setPlantillaSeleccionada}
+              />
+            </div>
+            <div className={styles.formContainer}>
+              <DestinatariosId
+                campañaSeleccionada={campañaSeleccionada?.id || null}
+                rangeStart={rangeStart}
+                rangeEnd={rangeEnd}
+                setRangeStart={setRangeStart}
+                setRangeEnd={setRangeEnd}
+              />
+            </div>
+            <div className={styles.formContainer}>
+              <NumeroSelectorId
+                templates={plantillas}
+                campañaSeleccionada={campañaSeleccionada?.id || null}
+                numeros={numeros}
+                selectedNumeroId={numeroSeleccionado}
+                onNumeroChange={setNumeroSeleccionado}
+              />
+            </div>
 
-          <button
-            onClick={handleEnviar}
-            className={`${styles.submitButton} ${
-              progressPercentage === 100 ? styles.buttonReady : ""
-            }`}
-            disabled={progressPercentage !== 100}
-          >
-            {progressPercentage === 100
-              ? "Enviar Mensajes"
-              : `Complete los pasos (${progressPercentage}%)`}
-          </button>
+            <button
+              onClick={handleEnviar}
+              className={`${styles.submitButton} ${
+                progressPercentage === 100 ? styles.buttonReady : ""
+              }`}
+              disabled={progressPercentage !== 100}
+            >
+              {progressPercentage === 100
+                ? "Enviar Mensajes"
+                : `Complete los pasos (${progressPercentage}%)`}
+            </button>
+          </div>
+        </div>
+
+        {/* Derecha */}
+        <div className={styles.rightColumn}>
+          <div className={styles.formContainer_preview}>
+            <h3>Vista previa</h3>
+            <WhatsAppPreview
+              selectedTemplate={selectedTemplate}
+              previewVariables={["Pedro", "10:30 AM", "mañana"]}
+              replaceVariables={(body, vars) =>
+                typeof body === "string"
+                  ? body.replace(/{{(\d+)}}/g, (_, i) => vars[+i - 1] || "")
+                  : ""
+              }
+            />
+          </div>
         </div>
       </div>
-
-      {/* Derecha */}
-      <div className={styles.rightColumn}>
-        <div className={styles.formContainer_preview}>
-          <h3>Vista previa</h3>
-          <WhatsAppPreview
-            selectedTemplate={selectedTemplate}
-            previewVariables={["Diego", "10:30 AM", "mañana"]}
-            replaceVariables={(body, vars) =>
-              typeof body === "string"
-                ? body.replace(/{{(\d+)}}/g, (_, i) => vars[+i - 1] || "")
-                : ""
-            }
-          />
+      <div className={styles.bottomRow}>
+        <div className={styles.formContainer2}>
+          <button
+            className={styles.fullLogButton}
+            onClick={() => setMostrarTodo(!mostrarTodo)}
+            disabled={!credencialSeleccionada}
+          >
+            {mostrarTodo ? "Ver menos" : "Ver todo el historial"}
+          </button>
+          <h3>Historial de envíos</h3>
+          {credencialSeleccionada && (
+            <Monitor
+              accountSid={credencialSeleccionada.account_sid}
+              authToken={credencialSeleccionada.auth_token}
+              maxRows={mostrarTodo ? undefined : 50} // Mostrar todas las filas si mostrarTodo es true
+            />
+          )}
         </div>
       </div>
     </div>
