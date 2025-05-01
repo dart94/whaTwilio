@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import styles from "../styles/Mesaje.module.css";
-import { FaSpinner, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import {
+  FaCheckCircle,
+  FaTimesCircle,
+  FaExclamationCircle,
+  FaClock,
+  FaSpinner,
+} from "react-icons/fa";
 import { getTwilioLogs } from "../services/monitorTwilioService";
 import { toast } from "react-toastify";
 
@@ -22,10 +28,30 @@ interface MonitorProps {
   maxRows?: number;
 }
 
-const Monitor: React.FC<Props & MonitorProps> = ({ accountSid, authToken, maxRows }) => {
+const Monitor: React.FC<Props & MonitorProps> = ({
+  accountSid,
+  authToken,
+  maxRows,
+}) => {
   const [logs, setLogs] = useState<TwilioLog[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const rowsToDisplay = maxRows ? logs.slice(0, maxRows) : logs;
+  const rowsPerPage = maxRows || 10;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(logs.length / rowsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const paginatedLogs = logs.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
 
   const fetchLogs = async () => {
     setLoading(true);
@@ -39,6 +65,23 @@ const Monitor: React.FC<Props & MonitorProps> = ({ accountSid, authToken, maxRow
       toast.error("No se pudieron cargar los logs de Twilio.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const renderStatusIcon = (status) => {
+    switch (status) {
+      case "read":
+      case "received":
+        return <FaCheckCircle className={styles.delivered} />;
+      case "undelivered":
+        return <FaExclamationCircle className={styles.undelivered} />;
+      case "failed":
+        return <FaTimesCircle className={styles.failed} />;
+      case "queued":
+      case "sending":
+        return <FaClock className={styles.pending} />;
+      default:
+        return <FaClock className={styles.unknown} />;
     }
   };
 
@@ -57,6 +100,7 @@ const Monitor: React.FC<Props & MonitorProps> = ({ accountSid, authToken, maxRow
           <FaSpinner className={styles.spinner} /> Cargando logs...
         </div>
       ) : (
+      <div>
         <table className={styles.tabla}>
           <thead>
             <tr>
@@ -66,21 +110,28 @@ const Monitor: React.FC<Props & MonitorProps> = ({ accountSid, authToken, maxRow
             </tr>
           </thead>
           <tbody>
-          {rowsToDisplay.map((log) => (
+            {paginatedLogs.map((log) => (
               <tr key={log.sid}>
                 <td>{new Date(log.dateCreated).toLocaleString()}</td>
                 <td>{log.to}</td>
                 <td>
-                  {log.status === "read" || log.status === "received" ? (
-                    <FaCheckCircle className={styles.delivered} />
-                  ) : (
-                    <FaTimesCircle className={styles.failed} />
-                  )} {log.status}
+                  {renderStatusIcon(log.status)} {log.status}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        <div className={styles.pagination}>
+          <button onClick={handlePrevPage} disabled={currentPage === 1}>
+            Anterior
+          </button>
+          <span>Página {currentPage} de {totalPages}</span>
+          <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+            Siguiente
+          </button>
+        </div>
+      </div>
+        
       )}
     </div>
   );
