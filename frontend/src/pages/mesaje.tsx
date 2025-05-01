@@ -467,7 +467,7 @@ const Mesaje: React.FC = () => {
             <Monitor
               accountSid={credencialSeleccionada.account_sid}
               authToken={credencialSeleccionada.auth_token}
-              maxRows={mostrarTodo ? undefined : 50} // Mostrar todas las filas si mostrarTodo es true
+              maxRows={mostrarTodo ? undefined : 20} // Mostrar todas las filas si mostrarTodo es true
             />
           )}
         </div>

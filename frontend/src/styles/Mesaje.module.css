@@ -352,3 +352,64 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+
+.delivered {
+  color: #28a745; /* verde */
+}
+
+.undelivered {
+  color: #ffc107; /* amarillo */
+  animation: pulse 1.5s infinite;
+}
+
+.failed {
+  color: #dc3545; /* rojo */
+}
+
+.pending {
+  color: #6c757d; /* gris */
+}
+
+.unknown {
+  color: #adb5bd; /* gris claro */
+}
+
+/* Animación para íconos tipo "advertencia" */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+  gap: 1rem;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
