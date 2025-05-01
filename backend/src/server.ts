@@ -10,6 +10,7 @@ import credentialRoutes from './routes/credential.routes';
 import templateRoutes from './routes/templates.routes';
 import sheetRoutes from './routes/sheet.routes';
 import massiveRoutes from './routes/massive.routes';
+import MonitorTwilioRoutes from './routes/monitorTwilio.routes';
 
 dotenv.config();
 const app = express();
@@ -35,6 +36,7 @@ app.use('/api/', credentialRoutes);
 app.use('/api/', templateRoutes);
 app.use('/api/', sheetRoutes);
 app.use('/api/', massiveRoutes);
+app.use('/api/', MonitorTwilioRoutes);
 
 
 
