@@ -134,3 +134,21 @@
     padding: 0.75rem;
   }
 }
+
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  padding: 8px;
+}
+
+.logoutButton:hover {
+  cursor: pointer;
+}

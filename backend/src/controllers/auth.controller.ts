@@ -20,7 +20,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
           secure: false,
           sameSite: 'lax',
         });
-        res.status(200).json({ message: 'Inicio de sesión exitoso' });
+        res.status(200).json({ message: 'Inicio de sesión exitoso',
+          user:{
+            id: user.id,
+            email: user.email,
+            is_staff: user.is_staff,
+          }
+         });
       } else {
         res.status(401).json({ message: 'Correo electrónico o contraseña incorrectos.' });
       }

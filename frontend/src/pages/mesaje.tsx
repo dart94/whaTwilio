@@ -19,6 +19,7 @@ import { obtenerNumerosPorSubcuenta } from "../services/numeroTelefonicoService"
 import { obtenerCampanasPorSubcuenta } from "../services/campaignService";
 import { FaCheckCircle, FaSpinner } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 interface Campaign {
   id: number;
@@ -51,6 +52,7 @@ interface TwilioCredential {
 }
 
 const Mesaje: React.FC = () => {
+  const navigate = useNavigate();
   const [subcuentaSeleccionada, setSubcuentaSeleccionada] = useState<
     number | null
   >(null);
@@ -79,6 +81,15 @@ const Mesaje: React.FC = () => {
     (p) => p.sid === plantillaSeleccionada
   );
   const [enviando, setEnviando] = useState(false);
+
+
+  // useEffect(() => {
+  //   const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  //   if (!user || user.is_staff === 0) {
+  //     navigate("/login"); // o redirige al login
+  //   }
+  // }, []);
 
   // Calcula el progreso del formulario
   const calculateProgress = () => {

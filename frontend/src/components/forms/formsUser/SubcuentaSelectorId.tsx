@@ -23,17 +23,33 @@ const SubcuentaSelectorId: React.FC<SubcuentaSelectorProps> = ({
     const fetchSubcuentas = async () => {
       try {
         setLoading(true);
-       
-        const userEmail = localStorage.getItem('userEmail');
-        if (!userEmail) {
+        
+        const storedUser = localStorage.getItem('user');
+        if (!storedUser) {
           toast.error('No se encontró usuario en sesión');
           return;
         }
-        const subcuentas = await buscarSubcuentasPorUsuario(userEmail);
-        setUserSubcuentas(subcuentas);
+  
+        const parsedData = JSON.parse(storedUser);
+  
+        // Verificar que el objeto parsedData tenga la propiedad 'user' y el 'email'
+        if (!parsedData || !parsedData.user || !parsedData.user.email) {
+          toast.error('Usuario no válido');
+          return;
+        }
         
-        // Ya no seleccionamos automáticamente la primera subcuenta
-        // El usuario debe seleccionar explícitamente una opción
+        const userEmail = parsedData.user.email;
+  
+        // Llamar a la API para obtener las subcuentas
+        const subcuentas = await buscarSubcuentasPorUsuario(userEmail);
+  
+        // Verificar si se obtuvieron las subcuentas correctamente
+        if (subcuentas) {
+          setUserSubcuentas(subcuentas);
+        } else {
+          toast.error('No se encontraron subcuentas para este usuario');
+        }
+  
         setSubcuentaSeleccionada(null);
         onSubcuentaChange(null);
       } catch (error) {
@@ -43,8 +59,11 @@ const SubcuentaSelectorId: React.FC<SubcuentaSelectorProps> = ({
         setLoading(false);
       }
     };
+  
     fetchSubcuentas();
   }, [onSubcuentaChange]);
+  
+
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = e.target.value;
