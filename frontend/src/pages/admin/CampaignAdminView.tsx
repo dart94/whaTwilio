@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import CampaignEditModal from './../../modals/CampaignEditModal';
 import { CampaignData, obtenerCampanas, actualizarCampana } from '../../services/campaignService';
-import styles from '../../styles/subcuentasView.module.css';
+import styles from '../../styles/SubcuentasView.module.css';
 
 const CampaignsAdminView: React.FC = () => {
   const [campaignsData, setCampaignsData] = useState<CampaignData[]>([]);

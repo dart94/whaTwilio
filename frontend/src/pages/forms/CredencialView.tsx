@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import styles from '../../styles/subcuentasView.module.css';
+import styles from '../../styles/SubcuentasView.module.css';
 import { ToastContainer } from 'react-toastify';
 import { crearCredencial, obtenerCredenciales } from '../../services/credentialService';
 

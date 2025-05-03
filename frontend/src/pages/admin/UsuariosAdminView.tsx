@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaPencilAlt } from 'react-icons/fa';
 import { obtenerUsuarios } from '../../services/userService';
-import styles from '../../styles/subcuentasView.module.css';
+import styles from '../../styles/SubcuentasView.module.css';
 import UserEditModal from '../../modals/UserEditModal'; 
 
 // Interfaz de Usuario 
