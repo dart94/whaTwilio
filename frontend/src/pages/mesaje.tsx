@@ -17,7 +17,7 @@ import { obtenerSheetsPorCampaign } from "../services/sheet";
 import { getTemplatesByCampaign } from "../services/templatesService";
 import { obtenerNumerosPorSubcuenta } from "../services/numeroTelefonicoService";
 import { obtenerCampanasPorSubcuenta } from "../services/campaignService";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaSpinner } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 interface Campaign {
@@ -78,6 +78,7 @@ const Mesaje: React.FC = () => {
   const selectedTemplate = plantillas.find(
     (p) => p.sid === plantillaSeleccionada
   );
+  const [enviando, setEnviando] = useState(false);
 
   // Calcula el progreso del formulario
   const calculateProgress = () => {
@@ -256,6 +257,9 @@ const Mesaje: React.FC = () => {
   // Envío masivo
   const handleEnviar = async () => {
     try {
+      setEnviando(true);
+      toast.info("Enviando mensajes, esto puede tardar unos minutos...");
+
       if (
         !spreadsheetId ||
         !sheetName ||
@@ -385,7 +389,8 @@ const Mesaje: React.FC = () => {
             </div>
             {loadingDatosCampaña && (
               <div className={styles.loadingContainer}>
-                <p>Cargando datos...</p>
+                <div className={styles.spinner}></div>
+                Cargando datos de campaña...
               </div>
             )}
 
@@ -430,7 +435,9 @@ const Mesaje: React.FC = () => {
               }`}
               disabled={progressPercentage !== 100}
             >
-              {progressPercentage === 100
+              {enviando && <FaSpinner className={styles.spinner} />
+                ? "Enviando..."
+                : progressPercentage === 100
                 ? "Enviar Mensajes"
                 : `Complete los pasos (${progressPercentage}%)`}
             </button>
