@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import NumeroTelefonicoEditModal from '../../modals/NumeroTelefonicoEditModal';
 import { actualizarNumeroTelefonico, NumeroTelefonico, obtenerNumerosTelefonicos } from '../../services/numeroTelefonicoService';
-import styles from '../../styles/subcuentasView.module.css';
+import styles from '../../styles/SubcuentasView.module.css';
 import { FaPencilAlt } from 'react-icons/fa';
 
 

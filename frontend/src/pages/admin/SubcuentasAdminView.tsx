@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { actualizarSubcuenta, obtenerSubcuentas, Subcuenta } from '../../services/subcuentaService';
 import SubcuentaEditModal from '../../modals/SubcuentaEditModal';
-import styles from '../../styles/subcuentasView.module.css';
+import styles from '../../styles/SubcuentasView.module.css';
 import { FaPencilAlt } from 'react-icons/fa';
 
 const SubcuentasAdminView: React.FC = () => {
