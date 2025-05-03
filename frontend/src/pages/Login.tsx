@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import icon from '../img/logo2.png';
 import { login } from '../services/auth';
 import styles from '../styles/Login.module.css';
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,12 +15,15 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
-
+  
     try {
-      await login(email, password);
-      console.log('Inicio de sesión exitoso.');
-      navigate('/admin');
+      const userData = await login(email, password);
+      localStorage.setItem('user', JSON.stringify(userData));
+  
+      console.log('Inicio de sesión exitoso.', userData);
+      navigate('/mesaje');
     } catch (error: any) {
+      toast.error('Error al iniciar sesión. Verifica tus credenciales.');
       console.error('Error al conectar con el servidor:', error);
       setErrorMessage(error.message || 'Error al iniciar sesión.');
     }
