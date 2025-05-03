@@ -68,6 +68,8 @@ const Monitor: React.FC<Props & MonitorProps> = ({
     }
   };
 
+  
+
   const renderStatusIcon = (status) => {
     switch (status) {
       case "read":
