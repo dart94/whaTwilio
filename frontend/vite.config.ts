@@ -7,8 +7,8 @@ export default defineConfig({
     outDir: 'dist',
   },
   base: './',
-  server: {
-    port: parseInt(process.env.PORT || '3000'), 
-    host: true, 
-  },
+  preview: {
+    port: parseInt(process.env.PORT || '3000'),
+    host: '0.0.0.0'
+  }
 });
