@@ -11,13 +11,16 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@types/react-router-dom": "^5.3.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^6.30.0",
     "react-toastify": "^11.0.5"
-  },"scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview",
-  "start": "vite preview --port %PORT% --host"
-}
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "vite preview --port $PORT --host 0.0.0.0"
+  }
 }
