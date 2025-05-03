@@ -25,6 +25,7 @@
     "nodemon": "^3.1.9"
   },
   "scripts": {
+    "start": "ts-node src/server.ts",
     "dev": "npx nodemon --exec npx ts-node src/server.ts"
   }
 }
