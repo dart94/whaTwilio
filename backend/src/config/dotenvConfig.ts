@@ -1,4 +1,4 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
+const GOOGLE_KEYS = process.env.GOOGLE_KEYS;
+const credenciales = JSON.parse(GOOGLE_KEYS!);
 
-export const GOOGLE_KEYS_FILE = process.env.GOOGLE_KEYS_FILE || 'credenciales.json';
+
