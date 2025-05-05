@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { MdAdminPanelSettings } from "react-icons/md";
 import styles from "../styles/Layout.module.css";
-import icon from "../img/icon.png";
+import icon from "../img/iconAutoInsights.png";
 import { useNavigate } from "react-router-dom";
 
 const Sidebar: React.FC = () => {
