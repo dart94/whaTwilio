@@ -57,8 +57,6 @@ const Monitor: React.FC<Props & MonitorProps> = ({
     setLoading(true);
     try {
       const data = await getTwilioLogs(accountSid, authToken);
-      console.log("🔥 Logs obtenidos:", data);
-      console.log("🧾 Credenciales:", accountSid, authToken);
       setLogs(data);
     } catch (error) {
       console.error("Error fetching Twilio logs:", error);

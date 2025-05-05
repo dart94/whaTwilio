@@ -16,7 +16,6 @@ export async function crearNumeroTelefonico(formData: {
   name: string;
   company: string;
 }) {
-  console.log('Datos enviados al servidor:', formData);
   if (!formData.number || !formData.name || !formData.company) {
     throw new Error('Todos los campos son requeridos');
   }
@@ -32,11 +31,9 @@ export async function crearNumeroTelefonico(formData: {
     
     if (contentType && contentType.includes('application/json')) {
       const errorData = await response.json();
-      console.log('Error del servidor:', errorData);
       throw new Error(errorData.message || 'Error desconocido');
     } else {
       const errorText = await response.text();
-      console.log('Error del servidor:', errorText);
       throw new Error(`Error ${response.status}: ${response.statusText}`);
     }
   }
@@ -56,11 +53,9 @@ export async function obtenerNumerosTelefonicos() {
     
     if (contentType && contentType.includes('application/json')) {
       const errorData = await response.json();
-      console.log('Error del servidor:', errorData);
       throw new Error(errorData.message || 'Error desconocido');
     } else {
       const errorText = await response.text();
-      console.log('Error del servidor:', errorText);
       throw new Error(`Error ${response.status}: ${response.statusText}`);
     }
   }
@@ -81,11 +76,9 @@ export async function actualizarNumeroTelefonico(numeroTelefonico: NumeroTelefon
     
     if (contentType && contentType.includes('application/json')) {
       const errorData = await response.json();
-      console.log('Error del servidor:', errorData);
       throw new Error(errorData.message || 'Error desconocido');
     } else {
       const errorText = await response.text();
-      console.log('Error del servidor:', errorText);
       throw new Error(`Error ${response.status}: ${response.statusText}`);
     }
   }

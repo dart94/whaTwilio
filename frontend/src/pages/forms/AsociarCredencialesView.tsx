@@ -86,7 +86,6 @@ const AsociarCredencialesView: React.FC = () => {
       setUserSubcuentas(subcuentasData);
 
       const credencialesData = await getUserCredentials(email);
-      console.log('Credenciales:', credencialesData);
       setUserCredentials(credencialesData);
 
       if (subcuentasData.length === 0) {
@@ -116,7 +115,6 @@ const AsociarCredencialesView: React.FC = () => {
   const handleBuscarCredencial = async (email: string) => {
     try {
       const credencialesData = await getUserCredentials(email);
-      console.log('Credenciales:', credencialesData);
       setUserCredentials(credencialesData);
       
       if (credencialesData.length === 0) {

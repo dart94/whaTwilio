@@ -36,7 +36,6 @@ const BuscarUsuario: React.FC<BuscarUsuarioProps> = ({
     }
 
     try {
-      console.log("Buscando subcuentas para:", userEmail);
       const data = await buscarSubcuentasPorUsuario(userEmail);
       onSubcuentasEncontradas(data);
       onEmailSelected(userEmail); // Actualiza el email seleccionado

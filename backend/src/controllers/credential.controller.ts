@@ -41,8 +41,6 @@ export const postCredentials = async (req: Request, res: Response): Promise<void
         insertCredentialQuery,
         [name, json]
       );
-
-      console.log('Credencial creada con ID:', insertResults.insertId);
       res.status(201).json({ message: 'Credencial creada exitosamente.' });
     } catch (err) {
       console.error('Error al crear la credencial:', err);
@@ -121,8 +119,6 @@ export const deleteCredential = async (req: Request, res: Response): Promise<voi
       res.status(404).json({ message: 'No se encontró la credencial a eliminar.' });
       return;
     }
-
-    console.log(`Se eliminaron ${result.affectedRows} credenciales.`);
     res.status(200).json({
       message: `Se eliminaron ${result.affectedRows} credenciales.`,
       affectedRows: result.affectedRows

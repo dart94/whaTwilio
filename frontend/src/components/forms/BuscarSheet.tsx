@@ -19,9 +19,7 @@ const BuscarSheet: React.FC<BuscarSheetProps> = ({ onSheetEncontrado }) => {
     }
     
     try {
-      const response = await obtenerSheetPorId(sheetId);
-      console.log('Respuesta completa:', response);
-     
+      const response = await obtenerSheetPorId(sheetId);     
       if (!response.success || !response.data) {
         toast.info('No se encontró la hoja');
         setSheetInfo(null);

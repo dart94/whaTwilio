@@ -29,7 +29,6 @@ export const createSubAccount = async (req: Request, res: Response): Promise<voi
       [nombreSubcuenta, userId]
     );
 
-    console.log('Subcuenta creada con ID:', insertResults.insertId);
     res.status(201).json({ message: 'Subcuenta creada exitosamente.' });
 
   } catch (error) {

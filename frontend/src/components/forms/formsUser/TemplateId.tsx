@@ -23,7 +23,6 @@ const TemplateSelectorId: React.FC<TemplateSelectorProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = e.target.value; 
     onTemplateChange(newValue);
-    console.log("Plantilla seleccionada:", newValue); 
   };
 
   return (

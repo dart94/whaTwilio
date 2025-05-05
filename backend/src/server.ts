@@ -41,5 +41,4 @@ app.use('/api/', MonitorTwilioRoutes);
 
 
 app.listen(port, () => {
-  console.log(`Servidor corriendo en el puerto ${port}`);
 });

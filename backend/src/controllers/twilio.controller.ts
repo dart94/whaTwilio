@@ -2,7 +2,6 @@ import axios from 'axios';
 
 export async function getContentTemplates(accountSid: string, authToken: string) {
   const url = 'https://content.twilio.com/v1/Content';
-  console.log(`Realizando solicitud a Twilio a la URL: ${url}`);
   
   try {
     const response = await axios.get<{ contents: any[] }>(url, {
@@ -37,7 +36,6 @@ export async function getTemplateDetails(
   templateId: string
 ): Promise<TwilioTemplate> {
   const url = `https://content.twilio.com/v1/ContentTemplates/${templateId}`;
-  console.log("📡 Obteniendo plantilla desde Twilio API...:",  url);
   try {
     const response = await axios.get(url, {
       auth: {

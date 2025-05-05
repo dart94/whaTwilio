@@ -24,7 +24,6 @@ const NumeroTelefonicoView: React.FC = () => {
 
   const handleCrearNumeroTelefonico = async () => {
     try {
-      console.log('➡ Formulario antes de enviar:', numeroTelefonicoForm);
       await crearNumeroTelefonico(numeroTelefonicoForm);
       toast.success('Número telefónico creado exitosamente');
       // Reiniciar el formulario
