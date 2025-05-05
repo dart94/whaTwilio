@@ -1,9 +1,12 @@
 import { google } from 'googleapis';
-import { GOOGLE_KEYS_FILE } from './dotenvConfig';
+import dotenv from 'dotenv';
 
+dotenv.config();
+
+const credentials = JSON.parse(process.env.GOOGLE_KEYS!); 
 const auth = new google.auth.GoogleAuth({
-    keyFile: GOOGLE_KEYS_FILE,
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  credentials,
+  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
 export const cliSheets = google.sheets({ version: 'v4', auth });
