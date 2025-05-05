@@ -3,10 +3,12 @@ import * as dotenv from 'dotenv';
 dotenv.config({ path: 'config.env' });
 
 const cScope = ['https://www.googleapis.com/auth/spreadsheets'];
-const keysFile = 'credenciales.json';
+
+// Convertimos el contenido JSON que está en la variable GOOGLE_KEYS a un objeto
+const credentials = JSON.parse(process.env.GOOGLE_KEYS!);
 
 const auth = new google.auth.GoogleAuth({
-  keyFile: keysFile,
+  credentials,
   scopes: cScope,
 });
 
