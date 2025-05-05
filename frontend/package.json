@@ -1,8 +1,11 @@
 {
   "devDependencies": {
+    "@types/express": "^5.0.1",
     "@types/node": "^22.13.14",
     "@types/react": "^19.0.12",
     "@vitejs/plugin-react": "^4.3.4",
+    "exnpm": "^1.0.2",
+    "install": "^0.13.0",
     "vite": "^6.3.4"
   },
   "dependencies": {
@@ -17,10 +20,10 @@
     "react-router-dom": "^6.30.0",
     "react-toastify": "^11.0.5"
   },
- "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview",
-  "start": "npm run build && vite preview --port $PORT --host 0.0.0.0"
-}
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "npm run build && vite preview --port $PORT --host 0.0.0.0"
+  }
 }
