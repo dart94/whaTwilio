@@ -19,8 +19,7 @@ const Login = () => {
     try {
       const userData = await login(email, password);
       localStorage.setItem('user', JSON.stringify(userData));
-  
-      console.log('Inicio de sesión exitoso.', userData);
+
       navigate('/mesaje');
     } catch (error: any) {
       toast.error('Error al iniciar sesión. Verifica tus credenciales.');

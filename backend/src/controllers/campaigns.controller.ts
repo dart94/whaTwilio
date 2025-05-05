@@ -1,8 +1,11 @@
-import { Request, Response } from 'express';
-import { connection } from '../config/db.config';
+import { Request, Response } from "express";
+import { connection } from "../config/db.config";
 
 //ruta para obtener campañas
-export const getCampaigns = async (req: Request, res: Response): Promise<void> => {
+export const getCampaigns = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const [results, fields] = await connection.execute(`
       SELECT 
@@ -30,19 +33,21 @@ export const getCampaigns = async (req: Request, res: Response): Promise<void> =
     `);
     res.status(200).json(results);
   } catch (err) {
-    console.error('Error al ejecutar la consulta:', err);
-    res.status(500).json({ message: 'Error al obtener las campañas.' });
+    console.error("Error al ejecutar la consulta:", err);
+    res.status(500).json({ message: "Error al obtener las campañas." });
   }
 };
 
 //obtener campañas por ID de subcuenta
-export const getCampaignsBySubAccount = async (req: Request, res: Response): Promise<void> => {
-  console.log('Parametros recibidos:', req.params);
+export const getCampaignsBySubAccount = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { sub_account_id } = req.params;
 
   // Validar que el ID sea un número entero
   if (!sub_account_id || isNaN(Number(sub_account_id))) {
-    res.status(400).json({ message: 'ID de subcuenta inválido' });
+    res.status(400).json({ message: "ID de subcuenta inválido" });
     return;
   }
 
@@ -65,84 +70,92 @@ export const getCampaignsBySubAccount = async (req: Request, res: Response): Pro
     const [results] = await connection.query(sql, [sub_account_id]);
     res.status(200).json(results);
   } catch (err) {
-    console.error('Error al ejecutar la consulta:', err);
-    res.status(500).json({ message: 'Error al obtener las campañas.' });
+    console.error("Error al ejecutar la consulta:", err);
+    res.status(500).json({ message: "Error al obtener las campañas." });
   }
 };
 
-
 //ruta para crear campaña
-export const createCampaign = async (req: Request, res: Response): Promise<void> => {
-  console.log("✅ Recibida petición POST en /createCampaign");
-  console.log("🔍 Request Body:", req.body);
-  const { name, description, sub_account_id, credential_sheet_id, credential_template_id } = req.body;
-  
-  if (!name || !sub_account_id || !credential_sheet_id || !credential_template_id) {
-    console.log("❌ Falta un parámetro obligatorio.");
-    res.status(400).json({ message: 'Nombre, subcuenta y credenciales son requeridos.' });
+export const createCampaign = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const {
+    name,
+    description,
+    sub_account_id,
+    credential_sheet_id,
+    credential_template_id,
+  } = req.body;
+
+  if (
+    !name ||
+    !sub_account_id ||
+    !credential_sheet_id ||
+    !credential_template_id
+  ) {
+    res
+      .status(400)
+      .json({ message: "Nombre, subcuenta y credenciales son requeridos." });
     return;
   }
-  
+
   try {
     // Verificar que la subcuenta existe
-    console.log(`🔎 Buscando subcuenta con ID: ${sub_account_id}`);
-    const [subAccountResults] = await connection.query(
-      'SELECT id FROM sub_accounts WHERE id = ?',
+
+    const [subAccountResults] = (await connection.query(
+      "SELECT id FROM sub_accounts WHERE id = ?",
       [sub_account_id]
-    ) as [any[], any];
-   
-    console.log("🔍 Resultado subcuenta:", subAccountResults);
+    )) as [any[], any];
     if (subAccountResults.length === 0) {
-      console.log("❌ Subcuenta no encontrada.");
-      res.status(404).json({ message: 'Subcuenta no encontrada.' });
+      res.status(404).json({ message: "Subcuenta no encontrada." });
       return;
     }
-    
+
     // Verificar que las credenciales existen
-    console.log(`🔎 Buscando credencial para Google Sheets con ID: ${credential_sheet_id}`);
-    const [sheetCredentialResults] = await connection.query(
-      'SELECT id FROM credentials WHERE id = ?',
+    const [sheetCredentialResults] = (await connection.query(
+      "SELECT id FROM credentials WHERE id = ?",
       [credential_sheet_id]
-    ) as [any[], any];
-    
-    console.log("🔍 Resultado credencial de Google Sheets:", sheetCredentialResults);
+    )) as [any[], any];
+
     if (sheetCredentialResults.length === 0) {
-      console.log("❌ Credencial para Google Sheets no encontrada.");
-      res.status(404).json({ message: 'Credencial para Google Sheets no encontrada.' });
+      res
+        .status(404)
+        .json({ message: "Credencial para Google Sheets no encontrada." });
       return;
     }
-    
-    console.log(`🔎 Buscando credencial para mensajes con ID: ${credential_template_id}`);
-    const [templateCredentialResults] = await connection.query(
-      'SELECT id FROM credentials WHERE id = ?',
+
+    const [templateCredentialResults] = (await connection.query(
+      "SELECT id FROM credentials WHERE id = ?",
       [credential_template_id]
-    ) as [any[], any];
-    
-    console.log("🔍 Resultado credencial para mensajes:", templateCredentialResults);
+    )) as [any[], any];
+
     if (templateCredentialResults.length === 0) {
-      console.log("❌ Credencial para mensajes no encontrada.");
-      res.status(404).json({ message: 'Credencial para mensajes no encontrada.' });
+      res
+        .status(404)
+        .json({ message: "Credencial para mensajes no encontrada." });
       return;
     }
-    
-    console.log("✅ La credencial para mensajes existe. Creando campaña...");
-    
+
     // Insertar la campaña en la base de datos
-    const [result] = await connection.query(
-      'INSERT INTO campaign (name, description, sub_account_id, credential_sheet_id, credential_template_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
-      [name, description, sub_account_id, credential_sheet_id, credential_template_id]
-    ) as [any, any];
-    
-    console.log("✅ Campaña insertada con éxito:", result);
-    
+    const [result] = (await connection.query(
+      "INSERT INTO campaign (name, description, sub_account_id, credential_sheet_id, credential_template_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())",
+      [
+        name,
+        description,
+        sub_account_id,
+        credential_sheet_id,
+        credential_template_id,
+      ]
+    )) as [any, any];
+
     // SOLO UNA RESPUESTA al final del try
-    res.status(201).json({ 
+    res.status(201).json({
       message: "Campaña creada correctamente.",
-      campaignId: result.insertId 
+      campaignId: result.insertId,
     });
-    
   } catch (err) {
-    console.error('❌ Error en la consulta:', err);
-    res.status(500).json({ message: 'Error al crear la campaña.', error: err });
+    console.error("❌ Error en la consulta:", err);
+    res.status(500).json({ message: "Error al crear la campaña.", error: err });
   }
 };

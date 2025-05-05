@@ -81,7 +81,6 @@ const Headers: React.FC<CrearSheetFormProps> = ({ onCrearSheet, campaigns }) => 
           setHeaders(headersResponse.headers);
           setMostrarHeaders(true);
           toast.success('Encabezados obtenidos correctamente');
-          console.log('Encabezados obtenidos:', headersResponse.headers);
         }
         
         // Si recibimos los nombres de las hojas disponibles

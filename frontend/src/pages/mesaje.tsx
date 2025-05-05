@@ -100,24 +100,11 @@ const Mesaje: React.FC = () => {
     if (plantillaSeleccionada) completedSteps++;
     if (rangeStart != null && rangeEnd != null) completedSteps++;
     if (numeroSeleccionado != null) completedSteps++;
-    console.log(
-      `Progreso: ${completedSteps}/${totalSteps} pasos = ${
-        (completedSteps / totalSteps) * 100
-      }%`
-    );
     return Math.round((completedSteps / totalSteps) * 100);
   };
 
   // Recalcula progreso en cambios
   useEffect(() => {
-    console.log({
-      subcuentaSeleccionada,
-      campañaSeleccionada,
-      plantillaSeleccionada,
-      rangeStart,
-      rangeEnd,
-      numeroSeleccionado,
-    });
     setProgressPercentage(calculateProgress());
   }, [
     subcuentaSeleccionada,
@@ -193,7 +180,6 @@ const Mesaje: React.FC = () => {
     const savedNum = localStorage.getItem("selectedNumber");
     if (savedNum) setNumeroSeleccionado(parseInt(savedNum, 10));
 
-    console.log("LocalStorage cargado");
   }, []);
 
   // Fetch campañas cuando cambia subcuenta
@@ -222,7 +208,6 @@ const Mesaje: React.FC = () => {
         };
 
         setCredencialSeleccionada(credTransformada);
-        console.log("🔥 Cred transformada antes de guardar:", credTransformada);
         localStorage.setItem("twilioAccountSid", cred.account_sid);
         localStorage.setItem("twilioAuthToken", cred.auth_token);
         const templates = await getContentTemplates(cred.name);
@@ -288,8 +273,6 @@ const Mesaje: React.FC = () => {
       const sender = numeros.find((n) => n.id === numeroSeleccionado);
       if (!sender || !sender.numero) {
         toast.error("Número de envío no encontrado o inválido.");
-        console.log("❌ Números:", numeros);
-        console.log("❌ ID seleccionado:", numeroSeleccionado);
         return;
       }
 
@@ -318,8 +301,6 @@ const Mesaje: React.FC = () => {
         "twilioAuthToken",
         credencialSeleccionada.auth_token
       );
-
-      console.log("🔥 Payload a enviar:", body);
       await sendMassive(body);
       toast.success("Mensajes enviados exitosamente!");
     } catch (e) {

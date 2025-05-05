@@ -68,7 +68,6 @@ export const createNumberPhone = async (req: Request, res: Response): Promise<vo
       [name, company, number]
     );
 
-    console.log('Número telefónico creado con ID:', result.insertId);
     res.status(201).json({ message: 'Número telefónico creado exitosamente.' });
   } catch (insertErr) {
     console.error('Error al crear el número telefónico:', insertErr);

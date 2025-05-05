@@ -13,7 +13,6 @@ const SubcuentasView: React.FC = () => {
 
   const handleBuscarCredencial = async () => {
     // Si deseas que también haga algo al buscar credenciales, puedes dejarlo
-    console.log("Buscar credencial ejecutado");
   };
 
   const handleCreateSubcuenta = async () => {

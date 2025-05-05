@@ -1,19 +1,25 @@
-import { Request, Response, RequestHandler } from 'express';
-import { connection } from '../config/db.config';
-import { getContentTemplates, getTemplateDetails } from '../controllers/twilio.controller';
-import twilioCredentialsModel from '../models/TwilioCredentials';
+import { Request, Response, RequestHandler } from "express";
+import { connection } from "../config/db.config";
+import {
+  getContentTemplates,
+  getTemplateDetails,
+} from "../controllers/twilio.controller";
+import twilioCredentialsModel from "../models/TwilioCredentials";
 
 // Obtener plantillas asociadas a una campaña
-export const getTemplatesByCampaign = async (req: Request, res: Response): Promise<void> => {
-    const { campaign_id } = req.params;
+export const getTemplatesByCampaign = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { campaign_id } = req.params;
 
-    if (!campaign_id || isNaN(Number(campaign_id))) {
-        res.status(400).json({ message: 'ID de campaña inválido' });
-      return 
-    }
-  
-    try {
-      const sql = `
+  if (!campaign_id || isNaN(Number(campaign_id))) {
+    res.status(400).json({ message: "ID de campaña inválido" });
+    return;
+  }
+
+  try {
+    const sql = `
         SELECT 
           t.id AS ID,
           t.name AS Nombre,
@@ -29,36 +35,40 @@ export const getTemplatesByCampaign = async (req: Request, res: Response): Promi
         ORDER BY 
           t.id DESC;
       `;
-  
-      const [results] = await connection.query(sql);
-      res.status(200).json(results);  // Devolver los resultados
-    } catch (err) {
-      console.error('Error al obtener las plantillas:', err);
-      res.status(500).json({ message: 'Error al obtener las plantillas.' });
-    }
-  };
 
+    const [results] = await connection.query(sql);
+    res.status(200).json(results); // Devolver los resultados
+  } catch (err) {
+    console.error("Error al obtener las plantillas:", err);
+    res.status(500).json({ message: "Error al obtener las plantillas." });
+  }
+};
 
 // Obtener los campos de una plantilla específica
-export const getTemplateFields = async (req: Request, res: Response): Promise<void> => {
+export const getTemplateFields = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { template_id } = req.params;
 
   if (!template_id) {
-    res.status(400).json({ message: 'ID de plantilla es requerido' });
-    return 
-    
+    res.status(400).json({ message: "ID de plantilla es requerido" });
+    return;
   }
 
   try {
-    const [results] = await connection.query<any[]>(`
+    const [results] = await connection.query<any[]>(
+      `
       SELECT id, name, associated_fields, sid
       FROM Templates
       WHERE id = ?
-    `, [template_id]);
+    `,
+      [template_id]
+    );
 
     if (results.length === 0) {
-      res.status(404).json({ message: 'Plantilla no encontrada' });
-      return 
+      res.status(404).json({ message: "Plantilla no encontrada" });
+      return;
     }
 
     // Parsear associated_fields que es un objeto JSON almacenado como string
@@ -70,23 +80,28 @@ export const getTemplateFields = async (req: Request, res: Response): Promise<vo
         associatedFields = JSON.parse(template.associated_fields);
       }
     } catch (parseError) {
-      console.error('Error al parsear associated_fields:', parseError);
+      console.error("Error al parsear associated_fields:", parseError);
     }
 
     res.status(200).json({
       id: template.id,
       name: template.name,
       sid: template.sid,
-      associated_fields: associatedFields
+      associated_fields: associatedFields,
     });
   } catch (err) {
-    console.error('Error al obtener los campos de la plantilla:', err);
-    res.status(500).json({ message: 'Error al obtener los campos de la plantilla' });
+    console.error("Error al obtener los campos de la plantilla:", err);
+    res
+      .status(500)
+      .json({ message: "Error al obtener los campos de la plantilla" });
   }
 };
 
 //Asociar campos entre plantillas y hojas
-export const associateFieldsToTemplate = async (req: Request, res: Response): Promise<void> => {
+export const associateFieldsToTemplate = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const {
     campaign_id,
     sheet_id,
@@ -94,67 +109,83 @@ export const associateFieldsToTemplate = async (req: Request, res: Response): Pr
     template_id,
     field_blacklist,
     field_status,
-    field_contact
+    field_contact,
   } = req.body;
 
   if (!campaign_id || !sheet_id || !template_id) {
-    res.status(400).json({ message: 'ID de campaña, ID de hoja y ID de plantilla son requeridos' });
+    res.status(400).json({
+      message: "ID de campaña, ID de hoja y ID de plantilla son requeridos",
+    });
     return;
   }
 
   try {
     // 1. Actualizar la tabla Sheets con la información de los campos
-    await connection.query(`
+    await connection.query(
+      `
       UPDATE Sheets
       SET field_blacklist = JSON_ARRAY(?),
           field_status = ?,
           field_contact = ?,
           updated_at = NOW()
       WHERE id = ? AND campaign_id = ?
-    `, [field_blacklist, field_status, field_contact, sheet_id, campaign_id]);
+    `,
+      [field_blacklist, field_status, field_contact, sheet_id, campaign_id]
+    );
 
     // 2. Actualizar la tabla Templates con el mapeo de campos
     // Convertir el objeto field_mappings a JSON string
     const associated_fields_json = JSON.stringify(field_mappings);
 
-    await connection.query(`
+    await connection.query(
+      `
       UPDATE Templates
       SET associated_fields = ?,
           updated_at = NOW()
       WHERE id = ? AND campaign_id = ?
-    `, [associated_fields_json, template_id, campaign_id]);
+    `,
+      [associated_fields_json, template_id, campaign_id]
+    );
 
     res.status(200).json({
-      message: 'Campos asociados exitosamente',
+      message: "Campos asociados exitosamente",
       updated: {
         sheet: { id: sheet_id, field_blacklist, field_status, field_contact },
-        template: { id: template_id, associated_fields: field_mappings }
-      }
+        template: { id: template_id, associated_fields: field_mappings },
+      },
     });
   } catch (err) {
-    console.error('Error al asociar los campos:', err);
-    res.status(500).json({ message: 'Error al asociar los campos' });
+    console.error("Error al asociar los campos:", err);
+    res.status(500).json({ message: "Error al asociar los campos" });
   }
 };
 
 // endpoint para obtener los campos de una plantilla específica
-export const getTemplateFieldsByCampaignId = async (req: Request, res: Response): Promise<void> => {
+export const getTemplateFieldsByCampaignId = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { campaign_id } = req.params;
 
   if (!campaign_id) {
-    res.status(400).json({ message: 'ID de campaña es requerido' });
+    res.status(400).json({ message: "ID de campaña es requerido" });
     return;
   }
 
   try {
-    const [results]: any = await connection.query(`
+    const [results]: any = await connection.query(
+      `
       SELECT id, name, associated_fields, sid
       FROM Templates
       WHERE campaign_id = ?
-    `, [campaign_id]);
+    `,
+      [campaign_id]
+    );
 
     if (results.length === 0) {
-      res.status(404).json({ message: 'No se encontraron plantillas para esta campaña' });
+      res
+        .status(404)
+        .json({ message: "No se encontraron plantillas para esta campaña" });
       return;
     }
 
@@ -162,14 +193,14 @@ export const getTemplateFieldsByCampaignId = async (req: Request, res: Response)
 
     let associated_fields = {};
 
-    if (typeof template.associated_fields === 'string') {
+    if (typeof template.associated_fields === "string") {
       try {
         associated_fields = JSON.parse(template.associated_fields);
       } catch (error) {
-        console.error('Error al parsear associated_fields:', error);
+        console.error("Error al parsear associated_fields:", error);
         associated_fields = {};
       }
-    } else if (typeof template.associated_fields === 'object') {
+    } else if (typeof template.associated_fields === "object") {
       associated_fields = template.associated_fields;
     }
 
@@ -178,13 +209,13 @@ export const getTemplateFieldsByCampaignId = async (req: Request, res: Response)
       sid: template.sid,
       name: template.name,
     });
-
   } catch (err) {
-    console.error('Error al obtener las plantillas:', err);
-    res.status(500).json({ message: 'Error al obtener las plantillas de la campaña' });
+    console.error("Error al obtener las plantillas:", err);
+    res
+      .status(500)
+      .json({ message: "Error al obtener las plantillas de la campaña" });
   }
 };
-
 
 // Obtener plantillas asociadas a una campaña Twilio
 export const getTemplates: RequestHandler = async (req, res) => {
@@ -193,27 +224,26 @@ export const getTemplates: RequestHandler = async (req, res) => {
 
     if (!name) {
       res.status(400).json({ message: 'El parámetro "name" es requerido.' });
-      return; 
+      return;
     }
 
-    console.log(`📌 Buscando credencial con name: ${name}`);
     const credentials = await twilioCredentialsModel.findByName(name as string);
 
     if (!credentials) {
-      res.status(404).json({ message: `No se encontró una credencial con el nombre "${name}".` });
+      res.status(404).json({
+        message: `No se encontró una credencial con el nombre "${name}".`,
+      });
       return;
     }
 
     // Extraer y parsear la columna "json"
     const { json } = credentials;
-    const parsedCredentials = typeof json === 'string' ? JSON.parse(json) : json;
-    
-    
-    const { account_sid, auth_token } = parsedCredentials;
-    console.log('✅ Credenciales obtenidas:', { account_sid, auth_token: '***' });
+    const parsedCredentials =
+      typeof json === "string" ? JSON.parse(json) : json;
 
-    const twilioUrl = 'https://content.twilio.com/v1/Content';
-    console.log(`📡 Realizando solicitud a Twilio a la URL: ${twilioUrl} con credencial id: ${name}`);
+    const { account_sid, auth_token } = parsedCredentials;
+
+    const twilioUrl = "https://content.twilio.com/v1/Content";
 
     // Obtener plantillas desde Twilio usando las credenciales dinámicas
     const templates = await getContentTemplates(account_sid, auth_token);
@@ -221,14 +251,14 @@ export const getTemplates: RequestHandler = async (req, res) => {
     const filteredTemplates = templates.map((template: any) => ({
       sid: template.sid,
       friendly_name: template.friendly_name,
-      body: template.types?.['twilio/quick-reply']?.body || '',
-      variables: template.variables || {} 
+      body: template.types?.["twilio/quick-reply"]?.body || "",
+      variables: template.variables || {},
     }));
 
     res.json(filteredTemplates);
   } catch (error) {
-    console.error('❌ Error obteniendo plantillas:', error);
-    res.status(500).json({ error: 'Error al obtener plantillas' });
+    console.error("❌ Error obteniendo plantillas:", error);
+    res.status(500).json({ error: "Error al obtener plantillas" });
   }
 };
 
@@ -243,59 +273,70 @@ export const getTemplateById: RequestHandler = async (req, res) => {
       return;
     }
 
-    console.log(`📌 Buscando credencial con name: ${name}`);
     const credentials = await twilioCredentialsModel.findByName(name as string);
 
     if (!credentials) {
-      res.status(404).json({ message: `No se encontró una credencial con el nombre "${name}".` });
+      res.status(404).json({
+        message: `No se encontró una credencial con el nombre "${name}".`,
+      });
       return;
     }
 
     // Extraer y parsear la columna "json"
     const { json } = credentials;
     const parsedCredentials = JSON.parse(json);
-    
+
     const { account_sid, auth_token } = parsedCredentials;
-    console.log('✅ Credenciales obtenidas:', { account_sid, auth_token: '***' });
 
     // Obtener detalles de la plantilla
     const template = await getTemplateDetails(account_sid, auth_token, id);
 
     res.json(template);
   } catch (error) {
-    console.error('❌ Error obteniendo detalles de la plantilla:', error);
-    res.status(500).json({ error: 'Error al obtener detalles de la plantilla' });
+    res
+      .status(500)
+      .json({ error: "Error al obtener detalles de la plantilla" });
   }
 };
 
 // Obtener plantillas desde Twilio Content
-export async function findTemplateBySid(accountSid: string, authToken: string, sid: string) {
-  console.log("📡 Buscando plantillas desde Twilio Content...");
+export async function findTemplateBySid(
+  accountSid: string,
+  authToken: string,
+  sid: string
+) {
   const templates = await getContentTemplates(accountSid, authToken);
-  console.log("📦 Plantillas obtenidas:", templates.length);
 
   const selected = templates.find((t) => t.sid === sid);
-  console.log("🎯 Plantilla seleccionada:", selected);
 
   return selected;
 }
 
-
-
-
-export const postTemplates: RequestHandler = async (req, res): Promise<void> => {
-
+export const postTemplates: RequestHandler = async (
+  req,
+  res
+): Promise<void> => {
   const { name, associated_fields, sid, campaign_id } = req.body;
 
-    if (!name || !sid || !campaign_id || !associated_fields) {
-      console.error('❌ Datos inválidos:', { name, sid, campaign_id, associated_fields });
-      res.status(400).json({ message: 'Faltan campos requeridos o están vacíos.', name, sid, campaign_id, associated_fields });
-      
-      return;
-    }
+  if (!name || !sid || !campaign_id || !associated_fields) {
+    console.error("❌ Datos inválidos:", {
+      name,
+      sid,
+      campaign_id,
+      associated_fields,
+    });
+    res.status(400).json({
+      message: "Faltan campos requeridos o están vacíos.",
+      name,
+      sid,
+      campaign_id,
+      associated_fields,
+    });
+
+    return;
+  }
 
   try {
-    console.log('✅ Datos de la plantilla:', { name, sid, campaign_id, associated_fields });
     // 1) Insertamos a la base de datos
     const [result]: any = await connection.execute(
       `
@@ -303,14 +344,8 @@ export const postTemplates: RequestHandler = async (req, res): Promise<void> => 
         (name, associated_fields, sid, campaign_id, created_at, updated_at)
       VALUES (?, ?, ?, ?, NOW(), NOW())
       `,
-      [
-        name,
-        JSON.stringify(associated_fields), 
-        sid,
-        Number(campaign_id),
-      ]
+      [name, JSON.stringify(associated_fields), sid, Number(campaign_id)]
     );
-
 
     if (result.affectedRows === 1) {
       const [rows]: any = await connection.execute(
@@ -319,17 +354,11 @@ export const postTemplates: RequestHandler = async (req, res): Promise<void> => 
       );
 
       res.status(201).json({ data: rows[0] });
-      console.log("✅ Plantilla creada exitosamente");
     } else {
-      res
-        .status(500)
-        .json({ message: 'No se insertó la plantilla.' });
+      res.status(500).json({ message: "No se insertó la plantilla." });
     }
   } catch (err) {
-    console.error('Error al crear la plantilla:', err);
-    res
-      .status(500)
-      .json({ message: 'Error interno al crear la plantilla.' });
+    console.error("Error al crear la plantilla:", err);
+    res.status(500).json({ message: "Error interno al crear la plantilla." });
   }
 };
-

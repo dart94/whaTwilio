@@ -70,7 +70,6 @@ const CredentialSelector: React.FC<CredentialSelectorProps> = ({
       }
   
       const templates = await getContentTemplates(credentialSelected.name);
-      console.log("📦 Plantillas obtenidas:", templates);
       
       if (!templates) {
         toast.error('Error al buscar plantillas');

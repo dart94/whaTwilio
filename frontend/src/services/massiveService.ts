@@ -31,10 +31,8 @@ export async function sendMassive(requestBody: MassiveData) {
       }
  
       const data = await response.json();
-      console.log("📥 Datos recibidos:", data);
       return data;
     } catch (error) {
-      console.error("❌ Error al enviar los datos:", error);
       throw error;
     }
   }

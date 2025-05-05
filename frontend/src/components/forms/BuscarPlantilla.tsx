@@ -13,7 +13,6 @@ const BuscarPlantilla: React.FC<BuscarPlantillaProps> = ({
   const [nombrePlantilla, setNombrePlantilla] = useState('');
 
   const handleBuscarPlantilla = async () => {
-    console.log("handleBuscarPlantilla ejecutado");
     try {
       const templates = await getContentTemplates(nombrePlantilla);
       
