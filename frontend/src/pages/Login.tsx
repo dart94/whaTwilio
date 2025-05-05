@@ -5,6 +5,8 @@ import icon from '../img/logo2.png';
 import { login } from '../services/auth';
 import styles from '../styles/Login.module.css';
 import { toast } from 'react-toastify';
+import { IoMdLogIn } from "react-icons/io";
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -74,7 +76,9 @@ const Login = () => {
           )}
 
           <button type="submit" className={styles.button}>
+            
             Iniciar sesión
+            <IoMdLogIn size={20} style={{ marginLeft: "8px", alignItems: "center" }} />
           </button>
         </form>
       </div>
