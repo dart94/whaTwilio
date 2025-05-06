@@ -31,13 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
   return (
     <div className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
       {/* Botón de colapso */}
-      <button 
-        onClick={toggleSidebar} 
-        className={styles.collapseButton}
-        aria-label={collapsed ? "Expandir menú" : "Colapsar menú"}
-      >
-        {collapsed ? <FiChevronRight size={20} /> : <FiChevronLeft size={20} />}
-      </button>
+
 
       <div className={styles.logoContainer}>
         <img src={icon} alt="icon" className={`${collapsed ? styles.collapsedLogo : ''}`} />
@@ -63,6 +57,13 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
       <button onClick={handleLogout} className={styles.logoutButton}>
         <FiLogOut size={18} />
         {!collapsed && <span className={styles.logoutText}>Cerrar sesión</span>}
+      </button>
+      <button 
+        onClick={toggleSidebar} 
+        className={styles.collapseButton}
+        aria-label={collapsed ? "Expandir menú" : "Colapsar menú"}
+      >
+        {collapsed ? <FiChevronRight size={20} /> : <FiChevronLeft size={20} />}
       </button>
     </div>
   );
