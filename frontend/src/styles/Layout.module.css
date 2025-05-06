@@ -23,31 +23,98 @@
   position: relative;
   z-index: 2;
   font-family: var(--font-family-sans);
-
-  /* Centrado vertical y horizontal */
+  display: flex;
   flex-direction: column;
-  align-items: center;     
-  justify-content: center; 
+  align-items: center;
+  justify-content: flex-start;
+  transition: width 0.3s ease, padding 0.3s ease;
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  width: 4rem;
+  padding: .5rem 0;
 }
 
 .logoContainer {
   display: flex;
-  justify-content: center; 
-  align-items: center;      
+  justify-content: center;
+  align-items: center;
   margin-bottom: 1rem;
+  width: 100%;
+  padding: 0 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.sidebar.collapsed .logoContainer {
+  padding: 0;
+  margin-bottom: 1.5rem;
 }
 
 .logoContainer img {
   width: 90%;
   height: auto;
   border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.sidebar.collapsed .logoContainer img {
+  width: 70%;
+  min-width: 30px;
 }
 
 /* ========== Navegación en la Sidebar ========== */
 .nav {
-  margin-top: 1rem; 
+  margin-top: 1rem;
   position: relative;
   z-index: 3;
+  width: 100%;
+}
+
+.sidebar.collapsed .nav {
+  margin-top: 0.5rem;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  margin: 0.25rem 0;
+  color: var(--color-text);
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.sidebar.collapsed .navItem {
+  justify-content: center;
+  padding: 0.75rem 0;
+}
+
+.navItem:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navItemIcon {
+  margin-right: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar.collapsed .navItemIcon {
+  margin-right: 0;
+}
+
+.navItemLabel {
+  transition: opacity 0.2s ease;
+}
+
+.sidebar.collapsed .navItemLabel {
+  opacity: 0;
+  width: 0;
+  display: none;
 }
 
 /* ========== Contenido Principal ========== */
@@ -60,23 +127,59 @@
   z-index: 1;
 }
 
-.icon{
+.icon {
   color: var(--color-text);
 }
 
 /* Estilo para el contenido principal cuando el sidebar está expandido o colapsado */
 #mainContent {
   transition: margin-left 0.3s ease;
-  margin-left: 12rem; /* 48px (w-48) */
+  margin-left: 12rem;
 }
 
 #mainContent.collapsed {
-  margin-left: 4rem; /* 16px (w-16) */
+  margin-left: 4rem;
+}
+
+/* ========== Botón de Cerrar Sesión ========== */
+.logoutButton {
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 1rem;
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0.75rem 1rem;
+  width: calc(100% - 1rem);
+  border-radius: 4px;
+}
+
+.sidebar.collapsed .logoutButton {
+  padding: 0.75rem 0;
+  width: 100%;
+  justify-content: center;
+}
+
+.logoutButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.logoutButtonText {
+  margin-left: 0.75rem;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar.collapsed .logoutButtonText {
+  opacity: 0;
+  width: 0;
+  display: none;
 }
 
 /** Responsive **/
-
-
 @media screen and (max-width: 768px) {
   .layout {
     flex-direction: column;
@@ -86,10 +189,13 @@
     width: 100%;
     padding: 0.75rem;
     flex-direction: row;
-    /* flex-wrap: wrap; */
     justify-content: space-between;
     align-items: center;
-    display: flex;
+  }
+
+  .sidebar.collapsed {
+    width: 100%;
+    padding: 0.75rem;
   }
 
   .logoContainer {
@@ -98,22 +204,64 @@
     flex: 1 1 auto;
   }
 
+  .sidebar.collapsed .logoContainer {
+    justify-content: flex-start;
+    margin-bottom: 0;
+  }
+
   .logoContainer img {
     width: 120px;
     height: auto;
   }
 
-  .nav {
-    width: 100%;
-    margin-top: 0.5rem;
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
+  .sidebar.collapsed .logoContainer img {
+    width: 120px;
   }
 
-  .content {
-    padding: 1rem;
+  .nav {
+    width: auto;
+    margin-top: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+
+  .sidebar.collapsed .nav {
+    display: flex;
+  }
+
+  .navItem {
+    margin: 0;
+  }
+
+  .sidebar.collapsed .navItem {
+    padding: 0.75rem;
+  }
+
+  .sidebar.collapsed .navItemLabel {
+    opacity: 1;
+    width: auto;
+    display: inline;
+  }
+
+  .logoutButton {
+    margin: 0 0 0 1rem;
+    width: auto;
+  }
+
+  .sidebar.collapsed .logoutButton {
+    padding: 0.75rem;
+  }
+
+  .sidebar.collapsed .logoutButtonText {
+    opacity: 1;
+    width: auto;
+    display: inline;
+  }
+
+  #mainContent, #mainContent.collapsed {
+    margin-left: 0;
+    margin-top: 60px;
   }
 }
 
@@ -122,8 +270,11 @@
     flex-direction: column;
     align-items: center;
     padding: 0.5rem;
-    display: flex;
+  }
 
+  .sidebar.collapsed {
+    flex-direction: column;
+    padding: 0.5rem;
   }
 
   .logoContainer {
@@ -131,34 +282,26 @@
     margin-bottom: 0.5rem;
   }
 
-  .nav {
-    flex-direction: row;
-    align-items: flex-start;
-  }
-
   .logoContainer img {
     width: 100px;
   }
 
-  .content {
-    padding: 0.75rem;
+  .sidebar.collapsed .logoContainer img {
+    width: 100px;
   }
-}
 
+  .nav {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    width: 100%;
+  }
 
-.logoutButton {
-  display: flex;
-  align-items: center;
-  margin-top: 16px;
-  background: transparent;
-  border: none;
-  color: var(--color-text);
-  font-weight: bold;
-  cursor: pointer;
-  transition: color 0.3s ease;
-  padding: 8px;
-}
-
-.logoutButton:hover {
-  cursor: pointer;
+  .logoutButton {
+    margin: 0.5rem 0 0;
+    width: 100%;
+    justify-content: center;
+  }
 }
