@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import styles from "../styles/Layout.module.css";
 
 const Layout: React.FC = () => {
   const { pathname } = useLocation();
   const [collapsed, setCollapsed] = useState(() => {
-    // Leer del localStorage al inicializar
     const saved = localStorage.getItem("sidebarCollapsed");
     return saved === "true";
   });
@@ -20,14 +18,16 @@ const Layout: React.FC = () => {
   if (pathname === "/") return <Outlet />;
 
   return (
-    <div className={styles.layout}>
+    <div className="flex h-screen w-screen overflow-hidden">
       <Sidebar collapsed={collapsed} toggleSidebar={toggleSidebar} />
-      <div
+      <main
         id="mainContent"
-        className={`${styles.content} ${collapsed ? styles.collapsed : ""}`}
+        className={`flex-1 bg-gray-100 overflow-y-auto p-6 transition-all duration-300 ${
+          collapsed ? "ml-[70px]" : "ml-60"
+        }`}
       >
         <Outlet />
-      </div>
+      </main>
     </div>
   );
 };
