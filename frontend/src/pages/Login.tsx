@@ -1,7 +1,7 @@
 // src/pages/Login.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import icon from '../img/logo2.png';
+import icon from '../img/logo2.avif';
 import { login } from '../services/auth';
 import styles from '../styles/Login.module.css';
 import { toast } from 'react-toastify';

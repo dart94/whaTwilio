@@ -31,7 +31,7 @@ const Sidebar: React.FC = () => {
       <nav className={`${styles.nav} mt-4 relative z-10`}>
         <NavItem label="Mensaje" route="/mesaje" icon={<FontAwesomeIcon icon={faWhatsapp} />} />
         {user.is_staff === 1 && (
-          <NavItem label="Admin" route="/admin" icon={<MdAdminPanelSettings size={20} />} />
+          <NavItem label="Admin" route="/admin/usuarios" icon={<MdAdminPanelSettings size={20} />} />
         )}
       </nav>
 
