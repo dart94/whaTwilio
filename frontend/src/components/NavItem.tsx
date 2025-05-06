@@ -1,7 +1,7 @@
 // src/components/NavItem.tsx
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import styles from "../styles/AdminNav.module.css";
+import styles from "../styles/Layout.module.css"; // Cambiado a Layout.module.css para coherencia
 
 interface NavItemProps {
   label: string;
@@ -19,27 +19,33 @@ const NavItem: React.FC<NavItemProps> = ({
   collapsed = false 
 }) => {
   const location = useLocation();
-  const isActive = location.pathname === route;
+  const isActive = location.pathname.startsWith(route); // Mejorado para rutas anidadas
   
   return (
     <Link
       to={route}
       className={`
         ${styles.navItem}
-        ${isActive ? styles.active : ""}
+        ${isActive ? styles.active : ''}
         ${mobile
-          ? "flex w-full px-4 py-3 hover:bg-gray-700"
-          : `flex items-center gap-2 cursor-pointer py-2 ${collapsed ? 'px-2 justify-center' : 'px-4'} whitespace-nowrap rounded`
+          ? styles.mobileNavItem
+          : `${styles.desktopNavItem} ${collapsed ? styles.collapsedNavItem : ''}`
         }
-        transition-colors duration-300
-        ${collapsed && !mobile ? 'w-10 mx-auto' : 'w-full'}
+        ${collapsed && !mobile ? styles.collapsed : ''}
       `}
       title={collapsed && !mobile ? label : undefined}
+      aria-label={label}
     >
-      {icon && <span className={collapsed && !mobile ? 'mx-auto' : ''}>{icon}</span>}
-      {(!collapsed || mobile) && <span>{label}</span>}
-      {collapsed && !mobile && (
-        <span className="sr-only">{label}</span> // Mantener el texto para lectores de pantalla
+      {icon && (
+        <span className={`
+          ${styles.navIcon} 
+          ${collapsed && !mobile ? styles.collapsedIcon : ''}
+        `}>
+          {icon}
+        </span>
+      )}
+      {(!collapsed || mobile) && (
+        <span className={styles.navLabel}>{label}</span>
       )}
     </Link>
   );
