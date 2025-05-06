@@ -29,46 +29,51 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
     navigate("/login");
   };
 
+  const iconSize = 24; 
+  const collapseIconSize = 24; 
+  const logoutIconSize = 22; 
+  
   return (
     <div className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
       {/* Botón de colapso */}
-
-
       <div className={styles.logoContainer}>
         <img
-      src={collapsed ? collapsedIcon : icon} 
-          alt="icon" 
-          className={`${collapsed ? styles.collapsedLogo : ''}`} 
-          />
+          src={collapsed ? collapsedIcon : icon}
+          alt="icon"
+          className={`${collapsed ? styles.collapsedLogo : ''}`}
+          style={{ width: collapsed ? '32px' : '140px' }} // Ajustamos tamaño de los logos
+        />
       </div>
-      
+     
       <nav className={styles.nav}>
-        <NavItem 
-          label="Mensaje" 
-          route="/mesaje" 
-          icon={<FontAwesomeIcon icon={faWhatsapp} />}
+        <NavItem
+          label="Mensaje"
+          route="/mesaje"
+          icon={<FontAwesomeIcon icon={faWhatsapp} size="lg" />} 
           collapsed={collapsed}
         />
         {user.is_staff === 1 && (
-          <NavItem 
-            label="Admin" 
-            route="/admin/usuarios" 
-            icon={<MdAdminPanelSettings size={20} />}
+          <NavItem
+            label="Admin"
+            route="/admin/usuarios"
+            icon={<MdAdminPanelSettings size={iconSize} />} 
             collapsed={collapsed}
           />
         )}
       </nav>
-
       <button onClick={handleLogout} className={styles.logoutButton}>
-        <FiLogOut size={18} />
+        <FiLogOut size={logoutIconSize} /> {/* Aumentamos tamaño */}
         {!collapsed && <span className={styles.logoutText}>Cerrar sesión</span>}
       </button>
-      <button 
-        onClick={toggleSidebar} 
+      <button
+        onClick={toggleSidebar}
         className={styles.collapseButton}
         aria-label={collapsed ? "Expandir menú" : "Colapsar menú"}
       >
-        {collapsed ? <FiChevronRight size={20} /> : <FiChevronLeft size={20} />}
+        {collapsed ? 
+          <FiChevronRight size={collapseIconSize} /> : 
+          <FiChevronLeft size={collapseIconSize} />
+        } {/* Aumentamos tamaño */}
       </button>
     </div>
   );
