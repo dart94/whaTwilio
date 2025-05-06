@@ -315,3 +315,74 @@
     justify-content: center;
   }
 }
+
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Asegúrate de que esté por encima de otros elementos */
+}
+
+.modalContent {
+  background-color: white;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  min-width: 300px;
+  max-width: 90%;
+}
+
+.modalContent h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.2em;
+  color: #333;
+}
+
+.modalContent p {
+  margin-bottom: 20px;
+  font-size: 1em;
+  color: #333;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end; /* Alinea los botones a la derecha */
+  gap: 10px; /* Espacio entre botones */
+}
+
+.modalButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.confirmButton {
+  background-color: #d9534f; /* Un rojo para confirmar acciones destructivas */
+  color: white;
+}
+
+.confirmButton:hover {
+  background-color: #c9302c;
+}
+
+.cancelButton {
+  background-color: #f0f0f0; /* Un gris claro para cancelar */
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.cancelButton:hover {
+  background-color: #e6e6e6;
+}
