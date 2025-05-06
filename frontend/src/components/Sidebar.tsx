@@ -7,6 +7,7 @@ import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { MdAdminPanelSettings } from "react-icons/md";
 import styles from "../styles/Layout.module.css";
 import icon from "../img/iconAutoInsights.png";
+import collapsedIcon from  "../img/AI4.avif";
 import { useNavigate } from "react-router-dom";
 
 interface SidebarProps {
@@ -34,7 +35,11 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
 
 
       <div className={styles.logoContainer}>
-        <img src={icon} alt="icon" className={`${collapsed ? styles.collapsedLogo : ''}`} />
+        <img
+      src={collapsed ? collapsedIcon : icon} 
+          alt="icon" 
+          className={`${collapsed ? styles.collapsedLogo : ''}`} 
+          />
       </div>
       
       <nav className={styles.nav}>
