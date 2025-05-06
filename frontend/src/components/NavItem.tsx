@@ -19,7 +19,7 @@ const NavItem: React.FC<NavItemProps> = ({
   collapsed = false 
 }) => {
   const location = useLocation();
-  const isActive = location.pathname.startsWith(route); // Mejorado para rutas anidadas
+  const isActive = location.pathname.startsWith(route);
   
   return (
     <Link

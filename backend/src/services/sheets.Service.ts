@@ -1,11 +1,26 @@
 import { google } from 'googleapis';
 import * as dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
+
 dotenv.config({ path: 'config.env' });
 
 const cScope = ['https://www.googleapis.com/auth/spreadsheets'];
 
-// Convertimos el contenido JSON que está en la variable GOOGLE_KEYS a un objeto
-const credentials = JSON.parse(process.env.GOOGLE_KEYS!);
+let credentials: any;
+
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.GOOGLE_KEYS) {
+    throw new Error('GOOGLE_KEYS no está definida en entorno de producción.');
+  }
+  credentials = JSON.parse(process.env.GOOGLE_KEYS);
+} else {
+  const credentialsPath = path.resolve(__dirname, '../config/credencialesAI.json');
+  if (!fs.existsSync(credentialsPath)) {
+    throw new Error(`No se encontró el archivo de credenciales en ${credentialsPath}`);
+  }
+  credentials = require(credentialsPath);
+}
 
 const auth = new google.auth.GoogleAuth({
   credentials,
