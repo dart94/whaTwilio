@@ -29,6 +29,7 @@
   justify-content: flex-start;
   transition: width 0.3s ease, padding 0.3s ease;
   overflow: hidden;
+  position: relative;
 }
 
 .sidebar.collapsed {
