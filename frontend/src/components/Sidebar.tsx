@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { isUserAdmin, getCurrentUser } from "../utils/user";
 import NavItem from "./NavItem";
 import { FiLogOut, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { AiOutlineMenu } from "react-icons/ai";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { MdAdminPanelSettings } from "react-icons/md";
@@ -25,8 +26,20 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
   }, []);
 
   const handleLogout = () => {
+    setShowLogoutConfirm(true);
+    
+  };
+
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const confirmLogout = () => {
     localStorage.clear();
     navigate("/login");
+    setShowLogoutConfirm(false); // Ocultar el modal
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutConfirm(false); // Ocultar el modal
   };
 
   const iconSize = 24; 
@@ -71,10 +84,26 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) => {
         aria-label={collapsed ? "Expandir menú" : "Colapsar menú"}
       >
         {collapsed ? 
-          <FiChevronRight size={collapseIconSize} /> : 
+          <AiOutlineMenu size={collapseIconSize} /> : 
           <FiChevronLeft size={collapseIconSize} />
         } {/* Aumentamos tamaño */}
       </button>
+      {showLogoutConfirm && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <h4>Confirmar Cierre de Sesión</h4>
+            <p>¿Estás seguro de que quieres cerrar sesión?</p>
+            <div className={styles.modalActions}>
+              <button onClick={cancelLogout} className={`${styles.modalButton} ${styles.cancelButton}`}>
+                Cancelar
+              </button>
+              <button onClick={confirmLogout} className={`${styles.modalButton} ${styles.confirmButton}`}>
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
