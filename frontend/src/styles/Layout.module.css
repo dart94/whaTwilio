@@ -64,6 +64,16 @@
   color: var(--color-text);
 }
 
+/* Estilo para el contenido principal cuando el sidebar está expandido o colapsado */
+#mainContent {
+  transition: margin-left 0.3s ease;
+  margin-left: 12rem; /* 48px (w-48) */
+}
+
+#mainContent.collapsed {
+  margin-left: 4rem; /* 16px (w-16) */
+}
+
 /** Responsive **/
 
 
