@@ -41,4 +41,5 @@ app.use('/api/', MonitorTwilioRoutes);
 
 
 app.listen(port, () => {
+  console.log(`🚀 Servidor iniciado en http://localhost:${port}`);
 });
