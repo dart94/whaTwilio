@@ -145,7 +145,7 @@
 .logoutButton {
   display: flex;
   align-items: center;
-  margin-top: auto;
+  /* margin-top: auto; */
   margin-bottom: 1rem;
   background: transparent;
   border: none;
