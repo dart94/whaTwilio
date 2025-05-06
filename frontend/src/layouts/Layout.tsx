@@ -5,18 +5,16 @@ import styles from "../styles/Layout.module.css";
 
 const Layout: React.FC = () => {
   const { pathname } = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
-
-  // Sincronizar con localStorage
-  useEffect(() => {
-    const state = localStorage.getItem("sidebarCollapsed");
-    if (state !== null) setCollapsed(state === "true");
-  }, []);
+  const [collapsed, setCollapsed] = useState(() => {
+    // Leer del localStorage al inicializar
+    const saved = localStorage.getItem("sidebarCollapsed");
+    return saved === "true";
+  });
 
   const toggleSidebar = () => {
-    const next = !collapsed;
-    setCollapsed(next);
-    localStorage.setItem("sidebarCollapsed", String(next));
+    const newState = !collapsed;
+    setCollapsed(newState);
+    localStorage.setItem("sidebarCollapsed", String(newState));
   };
 
   if (pathname === "/") return <Outlet />;
@@ -26,7 +24,7 @@ const Layout: React.FC = () => {
       <Sidebar collapsed={collapsed} toggleSidebar={toggleSidebar} />
       <div
         id="mainContent"
-        className={`${styles.content} ${collapsed ? "collapsed" : ""}`}
+        className={`${styles.content} ${collapsed ? styles.collapsed : ""}`}
       >
         <Outlet />
       </div>
