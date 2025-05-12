@@ -10,23 +10,18 @@ interface BuscarUsuarioProps {
 }
 
 const BuscarUsuario: React.FC<BuscarUsuarioProps> = ({
+  onEmailSelected,
   onSubcuentasEncontradas,
-  handleBuscarCredencial,
-  onEmailSelected
+  handleBuscarCredencial
 }) => {
   const [email, setEmail] = useState(localStorage.getItem('userEmail') || '');
 
   const handleBuscarUsuario = async () => {
-    // Validación y limpieza del email
-    let userEmail = email.trim();
+    const userEmail = email.trim();
     
     if (!userEmail) {
-      userEmail = localStorage.getItem('userEmail') || '';
-      if (!userEmail) {
-        toast.error('Por favor ingresa un correo electrónico válido');
-        return;
-      }
-      setEmail(userEmail); // Actualiza el estado si usamos el del localStorage
+      toast.error('Por favor ingresa un correo electrónico válido');
+      return;
     }
 
     // Validación básica de formato email
@@ -36,9 +31,12 @@ const BuscarUsuario: React.FC<BuscarUsuarioProps> = ({
     }
 
     try {
+      console.log("Buscando subcuentas para:", userEmail);
       const data = await buscarSubcuentasPorUsuario(userEmail);
+      
+      // Notificar al componente padre
+      onEmailSelected(userEmail); // ← Usamos el mismo email validado
       onSubcuentasEncontradas(data);
-      onEmailSelected(userEmail); // Actualiza el email seleccionado
 
       if (data.length === 0) {
         toast.error('No se encontró ninguna subcuenta para este usuario');
@@ -48,10 +46,8 @@ const BuscarUsuario: React.FC<BuscarUsuarioProps> = ({
 
       await handleBuscarCredencial(userEmail);
       
-      // Guardar en localStorage si es un nuevo email válido
-      if (userEmail !== localStorage.getItem('userEmail')) {
-        localStorage.setItem('userEmail', userEmail);
-      }
+      // Guardar en localStorage
+      localStorage.setItem('userEmail', userEmail);
     } catch (error) {
       console.error("Error al buscar subcuentas:", error);
       toast.error('Error al buscar subcuentas para este usuario');
@@ -66,10 +62,7 @@ const BuscarUsuario: React.FC<BuscarUsuarioProps> = ({
           type="email"
           placeholder="Correo del usuario"
           value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            onEmailSelected(e.target.value);
-          }}
+          onChange={(e) => setEmail(e.target.value)}
           className={styles.input}
         />
         <button className={styles.button} onClick={handleBuscarUsuario}>
