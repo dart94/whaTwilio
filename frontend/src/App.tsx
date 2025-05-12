@@ -19,12 +19,14 @@ import CampaignsAdminView from './pages/admin/CampaignAdminView';
 import Mesaje from './pages/mesaje';
 import Monitor from './pages/monitor';
 import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 const App: React.FC = () => {
   return (
     <>
       <BrowserRouter>
         <Routes>
+          
           <Route path="/login" element={<Login />} />
           <Route element={<Layout />}>
             <Route path="/admin" element={<Admin />}>
@@ -49,6 +51,18 @@ const App: React.FC = () => {
           <Route path="*" element={<Mesaje />} />
         </Routes>
       </BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        style={{ marginTop: '3.5rem' }}
+      />
 
     </>
   );
