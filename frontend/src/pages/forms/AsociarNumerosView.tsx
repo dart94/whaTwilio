@@ -1,22 +1,35 @@
-import React, { useState } from 'react';
-import styles from '../../styles/AsociarNumerosView.module.css';
-import { ToastContainer, toast } from 'react-toastify';
-import { obtenerNumerosTelefonicos } from '../../services/numeroTelefonicoService';
-import { associateNumbersToSubAccount } from '../../services/credentialAssociationService';
-import BuscarUsuario from '../../components/forms/BuscarUsuario';
-import { obtenerCredenciales } from '../../services/credentialService'; 
-import SubcuentaSelector from '../../components/forms/SubcuentaSelector';
-
-
+import React, { useState, use } from "react";
+import styles from "../../styles/AsociarNumerosView.module.css";
+import { ToastContainer, toast } from "react-toastify";
+import { obtenerNumerosTelefonicos } from "../../services/numeroTelefonicoService";
+import { associateNumbersToSubAccount } from "../../services/credentialAssociationService";
+import BuscarUsuario from "../../components/forms/BuscarUsuario";
+import { obtenerCredenciales } from "../../services/credentialService";
+import SubcuentaSelector from "../../components/forms/SubcuentaSelector";
+import { useEffect  } from "react";
 
 const AsociarNumerosView: React.FC = () => {
   // Estados locales
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [subcuentaSeleccionada, setSubcuentaSeleccionada] = useState<number>(0);
   const [userSubcuentas, setUserSubcuentas] = useState<any[]>([]);
-  const [phoneAssociations, setPhoneAssociations] = useState<{ number_phone: number }[]>([{ number_phone: 0 }]);
+  const [phoneAssociations, setPhoneAssociations] = useState<
+    { number_phone: number }[]
+  >([{ number_phone: 0 }]);
   const [numerosTelefonicos, setNumerosTelefonicos] = useState<any[]>([]);
   const [credentials, setCredentials] = useState<any[]>([]);
+
+  useEffect(() => {
+    const cargarNumerosTelefonicos = async () => {
+      try {
+        const data = await obtenerNumerosTelefonicos();
+        setNumerosTelefonicos(data);
+      } catch (error) {
+        console.error("Error al cargar números telefónicos:", error);
+      }
+    };
+    cargarNumerosTelefonicos();
+  }, []);
 
   // Funciones para agregar y quitar asociaciones
   const addPhoneAssociation = () => {
@@ -38,36 +51,37 @@ const AsociarNumerosView: React.FC = () => {
       setNumerosTelefonicos(dataNumber);
 
       if (data.length === 0) {
-        toast.error('No se encontró ninguna credencial para este usuario');
+        toast.error("No se encontró ninguna credencial para este usuario");
       }
 
       if (dataNumber.length === 0) {
-        toast.warn('El usuario no tiene números telefónicos asociados');
-            }
+        toast.warn("El usuario no tiene números telefónicos asociados");
+      }
     } catch (error: any) {
       console.error("Error al buscar credenciales:", error);
-      toast.error('Error al buscar credenciales para este usuario');
+      toast.error("Error al buscar credenciales para este usuario");
     }
   };
 
-
-
   // Función para asociar números telefónicos
   const handleAssociateNumbers = async () => {
-    if(!email){
-      toast.error('Debe ingresar un correo electrónico');
+    if (!email) {
+      toast.error("Debe ingresar un correo electrónico");
       return;
     }
     if (!subcuentaSeleccionada || subcuentaSeleccionada === 0) {
-      toast.error('Debe seleccionar una subcuenta');
+      toast.error("Debe seleccionar una subcuenta");
       return;
     }
-    
+
     try {
-      await associateNumbersToSubAccount(subcuentaSeleccionada, phoneAssociations);
-      toast.success('Números telefónicos asociados correctamente');
+      await associateNumbersToSubAccount(
+        subcuentaSeleccionada,
+        phoneAssociations
+      );
+      toast.success("Números telefónicos asociados correctamente");
     } catch (error: any) {
-      toast.error('Error al asociar números telefónicos: ' + error.message);
+      toast.error("Error al asociar números telefónicos: " + error.message);
     }
   };
 
@@ -78,8 +92,9 @@ const AsociarNumerosView: React.FC = () => {
 
       {/* Sección Usuario */}
       <BuscarUsuario
-      onSubcuentasEncontradas={setUserSubcuentas}
-      handleBuscarCredencial={handleBuscarCredencial}
+        onSubcuentasEncontradas={setUserSubcuentas}
+        handleBuscarCredencial={handleBuscarCredencial}
+        onEmailSelected={setEmail}
       />
 
       {/* Sección Subcuenta */}
@@ -108,11 +123,15 @@ const AsociarNumerosView: React.FC = () => {
               disabled={subcuentaSeleccionada === 0}
             >
               <option value={0} className={styles.option}>Seleccionar número telefónico</option>
-              {numerosTelefonicos.map(numero => (
-                <option key={numero.id} value={numero.id} className={styles.option}>
-                  {numero.nombre} - {numero.numero}
-                </option>
-              ))}
+              {numerosTelefonicos && numerosTelefonicos.length > 0 ? (
+                numerosTelefonicos.map(numero => (
+                  <option key={numero.id} value={numero.id} className={styles.option}>
+                    {numero.nombre || 'Sin nombre'} - {numero.numero}
+                  </option>
+                ))
+              ) : (
+                <option disabled>No hay números disponibles</option>
+              )}
             </select>
           </div>
           <div className={styles.buttonGroupSmall}>
@@ -126,7 +145,9 @@ const AsociarNumerosView: React.FC = () => {
             <button
               className={styles.smallButton}
               onClick={() => removePhoneAssociation(index)}
-              disabled={subcuentaSeleccionada === 0 || phoneAssociations.length <= 1}
+              disabled={
+                subcuentaSeleccionada === 0 || phoneAssociations.length <= 1
+              }
             >
               <span className={styles.minus}>-</span>
             </button>
@@ -136,14 +157,16 @@ const AsociarNumerosView: React.FC = () => {
 
       {/* Botón para asociar números */}
       <div className={styles.buttonContainer}>
-        <button className={styles.submitButton} onClick={handleAssociateNumbers}>
+        <button
+          className={styles.submitButton}
+          onClick={handleAssociateNumbers}
+        >
           Asociar números telefónicos <span className={styles.icon}>✚</span>
         </button>
       </div>
-
-
     </div>
   );
 };
 
 export default AsociarNumerosView;
+
