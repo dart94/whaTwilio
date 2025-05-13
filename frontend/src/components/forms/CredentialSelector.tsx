@@ -217,7 +217,7 @@ const CredentialSelector: React.FC<CredentialSelectorProps> = ({
                   className={styles.option}
                 >
                   {template.friendly_name || `Plantilla ${template.sid || ''}`}
-                </option>
+                </option> 
               ))}
             </select>
             <TooltipSMS body={templatesFound.find(t => 

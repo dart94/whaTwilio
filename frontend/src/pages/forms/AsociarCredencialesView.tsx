@@ -168,6 +168,7 @@ const AsociarCredencialesView: React.FC = () => {
       <BuscarUsuario
         onSubcuentasEncontradas={handleSubcuentasEncontradas}
         handleBuscarCredencial={handleBuscarCredencial}
+        onEmailSelected={setEmail}
         
       />
 
