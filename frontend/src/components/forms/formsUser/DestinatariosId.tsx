@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "../../../styles/Destinatario.module.css";
+import { toast } from "react-toastify";
 
 interface Props {
   campañaSeleccionada: number | null;
@@ -41,9 +42,16 @@ const DestinatariosId: React.FC<Props> = ({
             placeholder="1"
             value={rangeStart || ""}
             onChange={(e) => {
-              const value = e.target.value.slice(0, 5);
-              setRangeStart(Number(value));
-              setRangeEnd(Number(value) + 499);
+              const value = e.target.value.slice(0, 3); // Limita a 3 dígitos
+              const numValue = Number(value);
+
+              // Validación básica
+              if (isNaN(numValue)) {
+                return;
+              }
+
+              // Actualiza solo el rangeStart
+              setRangeStart(numValue);
             }}
             disabled={!campañaSeleccionada}
           />
@@ -56,11 +64,8 @@ const DestinatariosId: React.FC<Props> = ({
             placeholder="0"
             value={rangeEnd || ""}
             onChange={(e) => {
-              const value = e.target.value.slice(0, 5);
+              const value = e.target.value.slice(0, 3);
               setRangeEnd(Number(value));
-              if (rangeStart !== null && Number(value) - rangeStart > 499) {
-                setRangeStart(Number(value) - 499);
-              }
             }}
             disabled={!campañaSeleccionada}
           />

@@ -126,6 +126,7 @@ const AsociarCampos: React.FC = () => {
       <BuscarUsuario
         onSubcuentasEncontradas={setUserSubcuentas}
         handleBuscarCredencial={handleBuscarCredencial}
+        onEmailSelected={setEmail}
       />
 
       {/* Sección Subcuenta */}

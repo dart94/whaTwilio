@@ -11,6 +11,7 @@ interface BuscarCampaignSelectorProps {
   Campaigns: Campaign[];
   onCampaignsEncontradas: (campaigns: Campaign[]) => void;
   onCampaignChange: (campaign: Campaign | null) => void;
+  
 }
 
 const BuscarCampaignId: React.FC<BuscarCampaignSelectorProps> = ({

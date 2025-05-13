@@ -25,8 +25,8 @@ interface Campaign {
   id: number;
   name: string;
   credential_template_id: number;
-  spreadsheet_id: string;
-  sheet_name: string;
+  spreadsheet_id?: string;
+  sheet_name?: string;
   associated_fields?: { [key: string]: string };
 }
 
@@ -229,7 +229,11 @@ const Mesaje: React.FC = () => {
   }, [subcuentaSeleccionada]);
 
   // Manejar cambio de campaña (incluye sheets y campos)
-  const handleCampaignChange = async (campaign: Campaign) => {
+  const handleCampaignChange = async (campaign: Campaign | null) => {
+    if (!campaign) {
+      setCampañaSeleccionada(null);
+      return;
+    }
     setLoadingDatosCampaña(true);
     try {
       const sheetInfo = await obtenerSheetsPorCampaign(campaign.id);
@@ -301,10 +305,12 @@ const Mesaje: React.FC = () => {
         "twilioAuthToken",
         credencialSeleccionada.auth_token
       );
+      console.log(body);
       await sendMassive(body);
       toast.success("Mensajes enviados exitosamente!");
     } catch (e) {
       console.error(e);
+      console.log(e);
       toast.error("Error al enviar los mensajes.");
     }
   };
@@ -389,8 +395,9 @@ const Mesaje: React.FC = () => {
             <div className={styles.formContainer}>
               <BuscarCampaignId
                 Campaigns={campañas}
-                onCampaignChange={handleCampaignChange}
+                onCampaignChange={c => { void handleCampaignChange(c); }}
                 onCampaignsEncontradas={() => {}}
+                
               />
             </div>
             <div className={styles.formContainer}>

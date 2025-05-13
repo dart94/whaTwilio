@@ -52,6 +52,7 @@ const SheetsView: React.FC = () => {
       <BuscarUsuario
         onSubcuentasEncontradas={setUsers}
         handleBuscarCredencial={handleBuscarUsuario}
+        onEmailSelected={setSelectedUserId}
       />
 
       <CrearSheetForm onCrearSheet={handleCrearSheet} campaigns={campaigns} />
