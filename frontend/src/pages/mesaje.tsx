@@ -258,6 +258,7 @@ const Mesaje: React.FC = () => {
   const handleEnviar = async () => {
     try {
       setEnviando(true);
+      console.log(sendMassive);
       toast.info("Enviando mensajes, esto puede tardar unos minutos...");
 
       if (
