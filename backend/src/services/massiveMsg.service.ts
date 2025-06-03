@@ -13,7 +13,7 @@ interface MsgParams {
   camposTemp: CamposTemplate;
   twilioAccountSid: string;
   twilioAuthToken: string;
-  twilioSenderNumber: string; // O puedes usar messagingServiceSid si aplica
+  twilioSenderNumber: string; 
 }
 
 export const runMassiveMsg = async (params: MsgParams) => {
