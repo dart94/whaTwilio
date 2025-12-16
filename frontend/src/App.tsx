@@ -18,6 +18,7 @@ import CredencialAdminView from './pages/admin/CredencialAdminView';
 import CampaignsAdminView from './pages/admin/CampaignAdminView';
 import Mesaje from './pages/mesaje';
 import Monitor from './pages/monitor';
+import WhatsAppTemplates from './pages/WhatsappView';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
@@ -45,7 +46,8 @@ const App: React.FC = () => {
               <Route path="campanasAdmin" element={<CampaignsAdminView />} />
             </Route>
             <Route path="/mesaje" element={<Mesaje />} />
-            <Route path="/monitor" element={<Monitor />} />
+            <Route path="/monitor" element={<Monitor accountSid="" authToken="" />} />
+            <Route path="/whatsapp-templates" element={<WhatsAppTemplates />} />
           </Route>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Mesaje />} />

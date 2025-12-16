@@ -29,9 +29,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
          });
       } else {
         res.status(401).json({ message: 'Correo electrónico o contraseña incorrectos.' });
+        console.error('Contraseña incorrecta para el usuario:', email);
       }
     } else {
       res.status(401).json({ message: 'Correo electrónico o contraseña incorrectos.' });
+      console.error('No se encontró usuario con el correo electrónico:', email);
     }
   } catch (err) {
     console.error('Error al ejecutar la consulta:', err);

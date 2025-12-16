@@ -24,4 +24,5 @@ export const sendMessage = async (
     contentSid,
     contentVariables: JSON.stringify(contentVariables),
   });
+  console.log(`Mensaje enviado a ${to} con SID: ${contentSid}`);
 };

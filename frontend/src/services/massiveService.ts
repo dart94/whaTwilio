@@ -32,6 +32,7 @@ export async function sendMassive(requestBody: MassiveData) {
  
       const data = await response.json();
       return data;
+      console.log("Massive data sent successfully:", data);
     } catch (error) {
       throw error;
     }

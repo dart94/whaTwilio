@@ -96,11 +96,13 @@ export const runMassiveMsg = async (params: MsgParams) => {
         );
         row["Whatsapp"] = "Enviado";
         enviados++;
+        console.log(`Mensaje enviado a ${numero}:`, mensaje);
       } catch (err) {
 
         row["Whatsapp"] = "Error";
         errores++;
       }
+      console.log(`Progreso: ${enviados + errores} de ${data.length} (Enviados: ${enviados}, Errores: ${errores})`);
     }
 
     const updatedValues = data.map((row) => headers.map((header) => row[header] ?? ""));

@@ -440,6 +440,16 @@ const Mesaje: React.FC = () => {
                 : progressPercentage === 100
                 ? "Enviar Mensajes"
                 : `Complete los pasos (${progressPercentage}%)`}
+                {/*Reactivar boton una vez completado el proceso*/}
+                {progressPercentage === 100 && (
+                  <button
+                    onClick={handleEnviar}
+                    className={`${styles.submitButton} ${styles.buttonReady}`}
+                  >
+                    Enviar Mensajes
+                  </button>
+                )}
+
             </button>
           </div>
         </div>
