@@ -82,7 +82,6 @@ const Mesaje: React.FC = () => {
   );
   const [enviando, setEnviando] = useState(false);
 
-
   // useEffect(() => {
   //   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
@@ -179,7 +178,6 @@ const Mesaje: React.FC = () => {
 
     const savedNum = localStorage.getItem("selectedNumber");
     if (savedNum) setNumeroSeleccionado(parseInt(savedNum, 10));
-
   }, []);
 
   // Fetch campañas cuando cambia subcuenta
@@ -254,67 +252,80 @@ const Mesaje: React.FC = () => {
     }
   };
 
+  //Resetear formulario
+  const resetFormulario = () => {
+    setSubcuentaSeleccionada(null);
+    setCampañaSeleccionada(null);
+
+    setPlantillaSeleccionada(null); // esto hace que selectedTemplate sea undefined
+    // setPlantillas([]); // opcional: solo si quieres vaciar lista
+    // setCampañas([]);   // opcional
+
+    setRangeStart(null);
+    setRangeEnd(null);
+
+    setNumeroSeleccionado(null);
+    // setNumeros([]); // opcional
+
+    setSpreadsheetId(null);
+    setSheetName(null);
+
+    setCredencialSeleccionada(null);
+    setMostrarTodo(false);
+
+    setProgressPercentage(0); // 🔥 obliga a completar pasos otra vez
+  };
+
   // Envío masivo
   const handleEnviar = async () => {
-    try {
-      setEnviando(true);
-      console.log(sendMassive);
-      toast.info("Enviando mensajes, esto puede tardar unos minutos...");
+  setEnviando(true);
 
-      if (
-        !spreadsheetId ||
-        !sheetName ||
-        rangeStart == null ||
-        rangeEnd == null
-      ) {
-        throw new Error("Datos incompletos");
-      }
+  try {
+    toast.info("Enviando mensajes, esto puede tardar unos minutos...");
 
-      if (!credencialSeleccionada) {
-        toast.error("Faltan las credenciales de Twilio para esta campaña.");
-        return;
-      }
-
-      const sender = numeros.find((n) => n.id === numeroSeleccionado);
-      if (!sender || !sender.numero) {
-        toast.error("Número de envío no encontrado o inválido.");
-        return;
-      }
-
-      if (!selectedTemplate?.sid) {
-        toast.error("No se ha seleccionado una plantilla válida.");
-        return;
-      }
-
-      const body = {
-        spreadsheetId,
-        sheetName,
-        rangeA: `A${rangeStart}`,
-        rangeB: `Z${rangeEnd}`,
-        templateSid: selectedTemplate.sid,
-        camposTemp: campañaSeleccionada?.associated_fields || {},
-        twilioAccountSid: credencialSeleccionada.account_sid,
-        twilioAuthToken: credencialSeleccionada.auth_token,
-        messagingServiceSid: credencialSeleccionada.messagingServiceSid,
-        twilioSenderNumber: `whatsapp:+521${sender.numero}`,
-      };
-      localStorage.setItem(
-        "twilioAccountSid",
-        credencialSeleccionada.account_sid
-      );
-      localStorage.setItem(
-        "twilioAuthToken",
-        credencialSeleccionada.auth_token
-      );
-      console.log(body);
-      await sendMassive(body);
-      toast.success("Mensajes enviados exitosamente!");
-    } catch (e) {
-      console.error(e);
-      console.log(e);
-      toast.error("Error al enviar los mensajes.");
+    if (!spreadsheetId || !sheetName || rangeStart == null || rangeEnd == null) {
+      throw new Error("Datos incompletos");
     }
-  };
+
+    if (!credencialSeleccionada) {
+      throw new Error("Faltan las credenciales de Twilio para esta campaña.");
+    }
+
+    const sender = numeros.find((n) => n.id === numeroSeleccionado);
+    if (!sender?.numero) {
+      throw new Error("Número de envío no encontrado o inválido.");
+    }
+
+    if (!selectedTemplate?.sid) {
+      throw new Error("No se ha seleccionado una plantilla válida.");
+    }
+
+    const body = {
+      spreadsheetId,
+      sheetName,
+      rangeA: `A${rangeStart}`,
+      rangeB: `Z${rangeEnd}`,
+      templateSid: selectedTemplate.sid,
+      camposTemp: campañaSeleccionada?.associated_fields || {},
+      twilioAccountSid: credencialSeleccionada.account_sid,
+      twilioAuthToken: credencialSeleccionada.auth_token,
+      messagingServiceSid: credencialSeleccionada.messagingServiceSid,
+      twilioSenderNumber: `whatsapp:+521${sender.numero}`,
+    };
+
+    await sendMassive(body);
+
+    toast.success("Mensajes enviados exitosamente!");
+
+    // ✅ obliga a re-seleccionar
+    resetFormulario();
+  } catch (e: any) {
+    console.error(e);
+    toast.error(e?.message || "Error al enviar los mensajes.");
+  } finally {
+    setEnviando(false);
+  }
+};
 
   // Pasos del formulario
   const formSteps = [
@@ -396,9 +407,10 @@ const Mesaje: React.FC = () => {
             <div className={styles.formContainer}>
               <BuscarCampaignId
                 Campaigns={campañas}
-                onCampaignChange={c => { void handleCampaignChange(c); }}
+                onCampaignChange={(c) => {
+                  void handleCampaignChange(c);
+                }}
                 onCampaignsEncontradas={() => {}}
-                
               />
             </div>
             <div className={styles.formContainer}>
@@ -433,23 +445,15 @@ const Mesaje: React.FC = () => {
               className={`${styles.submitButton} ${
                 progressPercentage === 100 ? styles.buttonReady : ""
               }`}
-              disabled={progressPercentage !== 100}
+              disabled={enviando || progressPercentage !== 100}
+
             >
               {enviando && <FaSpinner className={styles.spinner} />
                 ? "Enviando..."
                 : progressPercentage === 100
                 ? "Enviar Mensajes"
                 : `Complete los pasos (${progressPercentage}%)`}
-                {/*Reactivar boton una vez completado el proceso*/}
-                {progressPercentage === 100 && (
-                  <button
-                    onClick={handleEnviar}
-                    className={`${styles.submitButton} ${styles.buttonReady}`}
-                  >
-                    Enviar Mensajes
-                  </button>
-                )}
-
+              {/*Reactivar boton una vez completado el proceso*/}
             </button>
           </div>
         </div>
