@@ -98,37 +98,42 @@ const Monitor: React.FC<Props & MonitorProps> = ({
           <FaSpinner className={styles.spinner} /> Cargando logs...
         </div>
       ) : (
-      <div>
-        <table className={styles.tabla}>
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>To</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedLogs.map((log) => (
-              <tr key={log.sid}>
-                <td>{new Date(log.dateCreated).toLocaleString()}</td>
-                <td>{log.to}</td>
-                <td>
-                  {renderStatusIcon(log.status)} {log.status}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className={styles.pagination}>
-          <button onClick={handlePrevPage} disabled={currentPage === 1}>
-            Anterior
-          </button>
-          <span>Página {currentPage} de {totalPages}</span>
-          <button onClick={handleNextPage} disabled={currentPage === totalPages}>
-            Siguiente
-          </button>
-        </div>
-      </div>
+<div>
+  <div className={styles.tableWrapper}>
+    <table className={styles.tabla}>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>To</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {paginatedLogs.map((log) => (
+          <tr key={log.sid}>
+            <td>{new Date(log.dateCreated).toLocaleString()}</td>
+            <td>{log.to}</td>
+            <td>
+              {renderStatusIcon(log.status)} {log.status}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div className={styles.pagination}>
+    <button onClick={handlePrevPage} disabled={currentPage === 1}>
+      Anterior
+    </button>
+    <span className={styles.paginationText}>
+      Página {currentPage} de {totalPages}
+    </span>
+    <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+      Siguiente
+    </button>
+  </div>
+</div>
         
       )}
     </div>

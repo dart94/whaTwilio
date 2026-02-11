@@ -433,3 +433,50 @@
   background-color: #ccc;
   cursor: not-allowed;
 }
+
+/* ===== Monitor responsive (seguro) ===== */
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  min-width: 520px; /* fuerza scroll en móvil en lugar de romper */
+}
+
+/* Ajustes de contenedor del monitor */
+.contenedor {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Paginación en móvil */
+@media (max-width: 480px) {
+  .pagination {
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .paginationText {
+    width: 100%;
+    text-align: center;
+  }
+
+  .pagination button {
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabla th,
+  .tabla td {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+}
