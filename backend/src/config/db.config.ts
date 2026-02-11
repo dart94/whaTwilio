@@ -9,3 +9,6 @@ export const connection = mysql.createPool({
   password: process.env.DB_PASSWORD || '1234',
   database: process.env.DB_NAME || 'railway2',
 });
+
+console.log("MYSQLHOST", process.env.MYSQLHOST);
+console.log("DB_HOST", process.env.DB_HOST);

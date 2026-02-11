@@ -16,6 +16,9 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
 
+console.log("MYSQLHOST SERVER", process.env.MYSQLHOST);
+console.log("DB_HOST SERVER", process.env.DB_HOST);
+
 // Configuración de CORS y otros middlewares
 const corsOptions = {
   origin: '*', // Permitir cualquier origen (solo para desarrollo)
