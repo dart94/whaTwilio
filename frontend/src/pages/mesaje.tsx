@@ -464,7 +464,7 @@ const Mesaje: React.FC = () => {
             <h3>Vista previa</h3>
             <WhatsAppPreview
               selectedTemplate={selectedTemplate}
-              previewVariables={["Pedro", "10:30 AM", "mañana"]}
+              previewVariables={["Variable 1", "Variable 2", "Variable 3"]}
               replaceVariables={(body, vars) =>
                 typeof body === "string"
                   ? body.replace(/{{(\d+)}}/g, (_, i) => vars[+i - 1] || "")

@@ -153,12 +153,6 @@
 }
 
 
-/* Nuevo contenedor para el botón */
-.buttonContainer {
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
-}
 
 /* Nuevo contenedor para el botón */
 .buttonContainer {
@@ -275,11 +269,9 @@
   text-align: center;
 }
 
-/* Estilos para el botón */
-.submitButton {
+.submitButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transition: all 0.3s ease;
 }
 
 .buttonReady {
@@ -340,7 +332,7 @@
   margin: 1rem;
 }
 
-.table tbody::after {
+.tabla tbody::after {
   content: "";
   display: block;
   height: 30px;

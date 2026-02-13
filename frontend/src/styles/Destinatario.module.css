@@ -67,8 +67,9 @@
   }
   
   .gridLayout {
-    display: grid;
+    display: flex;
     grid-template-columns: 1fr;
+    justify-items: start;
 
   }
   
