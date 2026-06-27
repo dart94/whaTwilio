@@ -18,11 +18,13 @@
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^6.30.0",
-    "react-toastify": "^11.0.5"
+    "react-toastify": "^11.0.5",
+    "serve": "^14.2.4"
   },
 "scripts": {
   "dev": "vite",
   "build": "echo '🌍 VITE_API_URL='$VITE_API_URL && vite build",
-  "preview": "vite preview"
+  "preview": "vite preview",
+  "start": "serve -s dist -l $PORT"
 }
 }
