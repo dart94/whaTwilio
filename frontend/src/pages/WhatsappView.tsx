@@ -7,8 +7,8 @@ const WhatsAppTemplates: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const businessId = '1036720168621958';
-    const accessToken = 'REMOVED_FACEBOOK_ACCESS_TOKEN';
+    const businessId = import.meta.env.VITE_FB_BUSINESS_ID;
+    const accessToken = import.meta.env.VITE_FB_ACCESS_TOKEN;
 
     useEffect(() => {
         const loadTemplates = async ()=>{

@@ -24,7 +24,8 @@ export const verifyPassword = (password: string, hashedPassword: string): boolea
 };
 
 export const generateToken = (email: string): string => {
-  const secretKey = process.env.SECRET_KEY || 'tu_secreto';
+  const secretKey = process.env.SECRET_KEY;
+  if (!secretKey) throw new Error('SECRET_KEY env var is not set');
   return jwt.sign({ email }, secretKey, { expiresIn: '1h' });
 };
 
