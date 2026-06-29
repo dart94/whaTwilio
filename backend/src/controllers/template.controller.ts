@@ -28,9 +28,9 @@ export const getTemplatesByCampaign = async (
           t.campaign_id AS Campana,
           DATE_FORMAT(t.created_at, '%d/%m/%Y, %H:%i:%s') AS Creado,
           DATE_FORMAT(t.updated_at, '%d/%m/%Y, %H:%i:%s') AS Actualizado
-        FROM 
-          Templates t
-        WHERE 
+        FROM
+          templates t
+        WHERE
           t.campaign_id = ${connection.escape(campaign_id)} 
         ORDER BY 
           t.id DESC;
@@ -60,7 +60,7 @@ export const getTemplateFields = async (
     const [results] = await connection.query<any[]>(
       `
       SELECT id, name, associated_fields, sid
-      FROM Templates
+      FROM templates
       WHERE id = ?
     `,
       [template_id]
@@ -123,7 +123,7 @@ export const associateFieldsToTemplate = async (
     // 1. Actualizar la tabla Sheets con la información de los campos
     await connection.query(
       `
-      UPDATE Sheets
+      UPDATE sheets
       SET field_blacklist = JSON_ARRAY(?),
           field_status = ?,
           field_contact = ?,
@@ -139,7 +139,7 @@ export const associateFieldsToTemplate = async (
 
     await connection.query(
       `
-      UPDATE Templates
+      UPDATE templates
       SET associated_fields = ?,
           updated_at = NOW()
       WHERE id = ? AND campaign_id = ?
@@ -176,7 +176,7 @@ export const getTemplateFieldsByCampaignId = async (
     const [results]: any = await connection.query(
       `
       SELECT id, name, associated_fields, sid
-      FROM Templates
+      FROM templates
       WHERE campaign_id = ?
     `,
       [campaign_id]
@@ -340,7 +340,7 @@ export const postTemplates: RequestHandler = async (
     // 1) Insertamos a la base de datos
     const [result]: any = await connection.execute(
       `
-      INSERT INTO Templates
+      INSERT INTO templates
         (name, associated_fields, sid, campaign_id, created_at, updated_at)
       VALUES (?, ?, ?, ?, NOW(), NOW())
       `,
@@ -349,7 +349,7 @@ export const postTemplates: RequestHandler = async (
 
     if (result.affectedRows === 1) {
       const [rows]: any = await connection.execute(
-        `SELECT * FROM Templates WHERE id = ?`,
+        `SELECT * FROM templates WHERE id = ?`,
         [result.insertId]
       );
 

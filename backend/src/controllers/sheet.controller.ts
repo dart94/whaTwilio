@@ -75,7 +75,7 @@ export const getSheetsByCampaign = async (
     const [results] = await connection.query(
       `
         SELECT id, sheet_id, sheet_sheet, sheet_range, field_blacklist, field_status, field_contact
-        FROM Sheets
+        FROM sheets
         WHERE campaign_id = ?
       `,
       [campaign_id]
