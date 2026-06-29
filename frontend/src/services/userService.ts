@@ -1,28 +1,4 @@
-import { BASE_URL } from "../config/apiConfig";
-
-export async function obtenerUsuarios() {
-  const response = await fetch(`${BASE_URL}/api/users`);
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  return response.json();
-}
-
-//Editar usuario
-export async function actualizarUsuario(usuario: Usuario) {
-  const response = await fetch(`${BASE_URL}/api/users/${usuario.id}`, {
-    method: 'PUT', // o PATCH, según tu API
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(usuario),
-  });
-  
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || `Error al actualizar usuario (HTTP ${response.status})`);
-  }
-  
-  return response.json();
-}
+import { apiFetch } from '../utils/apiFetch';
 
 export interface Usuario {
   id: number;
@@ -34,4 +10,23 @@ export interface Usuario {
   is_active: boolean;
   date_joined: string;
   last_login: string | null;
+}
+
+export async function obtenerUsuarios() {
+  const response = await apiFetch('/api/users');
+  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+  return response.json();
+}
+
+export async function actualizarUsuario(usuario: Usuario) {
+  const response = await apiFetch(`/api/users/${usuario.id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(usuario),
+  });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || `Error al actualizar usuario (HTTP ${response.status})`);
+  }
+  return response.json();
 }

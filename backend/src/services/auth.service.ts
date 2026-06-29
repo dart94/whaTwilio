@@ -23,9 +23,9 @@ export const verifyPassword = (password: string, hashedPassword: string): boolea
   return hash === derivedKey;
 };
 
-export const generateToken = (email: string): string => {
+export const generateToken = (email: string, isStaff: number = 0): string => {
   const secretKey = process.env.SECRET_KEY;
   if (!secretKey) throw new Error('SECRET_KEY env var is not set');
-  return jwt.sign({ email }, secretKey, { expiresIn: '1h' });
+  return jwt.sign({ email, is_staff: isStaff }, secretKey, { expiresIn: '8h' });
 };
 

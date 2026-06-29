@@ -19,6 +19,7 @@ import CampaignsAdminView from './pages/admin/CampaignAdminView';
 import Mesaje from './pages/mesaje';
 import Monitor from './pages/monitor';
 import WhatsAppTemplates from './pages/WhatsappView';
+import ProtectedRoute from './components/ProtectedRoute';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
@@ -27,10 +28,12 @@ const App: React.FC = () => {
     <>
       <BrowserRouter>
         <Routes>
-          
           <Route path="/login" element={<Login />} />
           <Route element={<Layout />}>
-            <Route path="/admin" element={<Admin />}>
+            <Route
+              path="/admin"
+              element={<ProtectedRoute adminOnly><Admin /></ProtectedRoute>}
+            >
               <Route path="subcuentas" element={<SubcuentasView />} />
               <Route path="numeros" element={<NumeroTelefonicoView />} />
               <Route path="credenciales" element={<CredencialView />} />
@@ -45,12 +48,12 @@ const App: React.FC = () => {
               <Route path="credencialesAdmin" element={<CredencialAdminView credentials={[]} />} />
               <Route path="campanasAdmin" element={<CampaignsAdminView />} />
             </Route>
-            <Route path="/mesaje" element={<Mesaje />} />
-            <Route path="/monitor" element={<Monitor accountSid="" authToken="" />} />
-            <Route path="/whatsapp-templates" element={<WhatsAppTemplates />} />
+            <Route path="/mesaje" element={<ProtectedRoute><Mesaje /></ProtectedRoute>} />
+            <Route path="/monitor" element={<ProtectedRoute><Monitor accountSid="" authToken="" /></ProtectedRoute>} />
+            <Route path="/whatsapp-templates" element={<ProtectedRoute><WhatsAppTemplates /></ProtectedRoute>} />
           </Route>
           <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="*" element={<Mesaje />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
       <ToastContainer
@@ -65,7 +68,6 @@ const App: React.FC = () => {
         pauseOnHover
         style={{ marginTop: '3.5rem' }}
       />
-
     </>
   );
 };

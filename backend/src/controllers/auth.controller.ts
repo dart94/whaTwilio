@@ -14,11 +14,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     if (results.length > 0) {
       const user = results[0];
       if (verifyPassword(password, user.password)) {
-        const token = generateToken(user.email);
+        const token = generateToken(user.email, user.is_staff);
+        const isProd = process.env.NODE_ENV === 'production';
         res.cookie('token', token, {
           httpOnly: true,
-          secure: false,
-          sameSite: 'lax',
+          secure: isProd,
+          sameSite: isProd ? 'none' : 'lax',
+          maxAge: 8 * 60 * 60 * 1000,
         });
         res.status(200).json({ message: 'Inicio de sesión exitoso',
           user:{
@@ -49,12 +51,10 @@ export const getUserEmail = (req: Request, res: Response): void => {
     return;
   }
 
-  const secretKey = process.env.SECRET_KEY || 'tu_secreto';
-  interface DecodedToken {
-    email: string;
-    iat?: number;
-    exp?: number;
-  }
+  const secretKey = process.env.SECRET_KEY;
+  if (!secretKey) { res.status(500).json({ message: 'Error de configuración.' }); return; }
+
+  interface DecodedToken { email: string; iat?: number; exp?: number; }
 
   jwt.verify(token, secretKey, (err: jwt.VerifyErrors | null, decoded: any) => {
     if (err) {
