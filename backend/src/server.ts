@@ -17,7 +17,9 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
 
-const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',');
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
+  .split(',')
+  .map(o => o.trim().replace(/\/$/, ''));
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
