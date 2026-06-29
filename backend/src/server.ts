@@ -46,6 +46,17 @@ app.use('/api/', sheetRoutes);
 app.use('/api/', massiveRoutes);
 app.use('/api/', MonitorTwilioRoutes);
 
+// TEMP: show actual table names in Railway DB
+app.get('/api/debug/tables', async (_req, res) => {
+  try {
+    const { connection } = await import('./config/db.config');
+    const [rows] = await connection.query('SHOW TABLES');
+    res.json(rows);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Servidor iniciado en puerto ${port}`);
 });
