@@ -29,7 +29,7 @@ export const getTemplatesByCampaign = async (
           DATE_FORMAT(t.created_at, '%d/%m/%Y, %H:%i:%s') AS Creado,
           DATE_FORMAT(t.updated_at, '%d/%m/%Y, %H:%i:%s') AS Actualizado
         FROM
-          templates t
+          Templates t
         WHERE
           t.campaign_id = ${connection.escape(campaign_id)} 
         ORDER BY 
@@ -60,7 +60,7 @@ export const getTemplateFields = async (
     const [results] = await connection.query<any[]>(
       `
       SELECT id, name, associated_fields, sid
-      FROM templates
+      FROM Templates
       WHERE id = ?
     `,
       [template_id]
@@ -139,7 +139,7 @@ export const associateFieldsToTemplate = async (
 
     await connection.query(
       `
-      UPDATE templates
+      UPDATE Templates
       SET associated_fields = ?,
           updated_at = NOW()
       WHERE id = ? AND campaign_id = ?
@@ -176,7 +176,7 @@ export const getTemplateFieldsByCampaignId = async (
     const [results]: any = await connection.query(
       `
       SELECT id, name, associated_fields, sid
-      FROM templates
+      FROM Templates
       WHERE campaign_id = ?
     `,
       [campaign_id]
@@ -340,7 +340,7 @@ export const postTemplates: RequestHandler = async (
     // 1) Insertamos a la base de datos
     const [result]: any = await connection.execute(
       `
-      INSERT INTO templates
+      INSERT INTO Templates
         (name, associated_fields, sid, campaign_id, created_at, updated_at)
       VALUES (?, ?, ?, ?, NOW(), NOW())
       `,
@@ -349,7 +349,7 @@ export const postTemplates: RequestHandler = async (
 
     if (result.affectedRows === 1) {
       const [rows]: any = await connection.execute(
-        `SELECT * FROM templates WHERE id = ?`,
+        `SELECT * FROM Templates WHERE id = ?`,
         [result.insertId]
       );
 

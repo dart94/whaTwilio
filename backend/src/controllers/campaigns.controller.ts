@@ -23,7 +23,7 @@ export const getCampaigns = async (
       FROM
         campaign c
       LEFT JOIN
-        templates t ON c.id = t.campaign_id
+        Templates t ON c.id = t.campaign_id
       LEFT JOIN
         sheets s ON c.id = s.campaign_id
       GROUP BY 
