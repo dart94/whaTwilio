@@ -20,7 +20,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     res.status(500).json({ message: 'Error de configuración del servidor.' });
     return;
   }
-  jwt.verify(token, secretKey, (err, decoded) => {
+  jwt.verify(token, secretKey, (err: jwt.VerifyErrors | null, decoded: jwt.JwtPayload | string | undefined) => {
     if (err) {
       res.status(401).json({ message: 'Sesión expirada o inválida.' });
       return;
