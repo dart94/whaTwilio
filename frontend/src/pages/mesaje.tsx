@@ -12,7 +12,7 @@ import Monitor from "../pages/monitor";
 
 import { getContentTemplates } from "../services/Twilio";
 import { getCredencialById } from "../services/credentialService";
-import { sendMassive } from "../services/massiveService";
+import { sendMassive, getMassiveStatus, JobStatus } from "../services/massiveService";
 import { obtenerSheetsPorCampaign } from "../services/sheet";
 import { getTemplatesByCampaign } from "../services/templatesService";
 import { obtenerNumerosPorSubcuenta } from "../services/numeroTelefonicoService";
@@ -76,6 +76,8 @@ const Mesaje: React.FC = () => {
   const [credencialSeleccionada, setCredencialSeleccionada] =
     useState<TwilioCredential | null>(null);
   const [mostrarTodo, setMostrarTodo] = useState(false);
+  const [jobStatus, setJobStatus] = useState<JobStatus | null>(null);
+  const pollRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
 
   const selectedTemplate = plantillas.find(
     (p) => p.sid === plantillaSeleccionada
@@ -206,8 +208,6 @@ const Mesaje: React.FC = () => {
         };
 
         setCredencialSeleccionada(credTransformada);
-        localStorage.setItem("twilioAccountSid", cred.account_sid);
-        localStorage.setItem("twilioAuthToken", cred.auth_token);
         const templates = await getContentTemplates(cred.name);
         setPlantillas(templates);
       } catch (e) {
@@ -276,56 +276,69 @@ const Mesaje: React.FC = () => {
     setProgressPercentage(0); // 🔥 obliga a completar pasos otra vez
   };
 
+  // Limpia el intervalo de polling al desmontar
+  React.useEffect(() => {
+    return () => { if (pollRef.current) clearInterval(pollRef.current); };
+  }, []);
+
   // Envío masivo
   const handleEnviar = async () => {
-  setEnviando(true);
-
-  try {
-    toast.info("Enviando mensajes, esto puede tardar unos minutos...");
-
     if (!spreadsheetId || !sheetName || rangeStart == null || rangeEnd == null) {
-      throw new Error("Datos incompletos");
+      toast.error("Datos incompletos"); return;
     }
-
-    if (!credencialSeleccionada) {
-      throw new Error("Faltan las credenciales de Twilio para esta campaña.");
-    }
-
+    if (rangeStart < 1) { toast.error("El rango inicial debe ser mayor a 0."); return; }
+    if (rangeEnd < rangeStart) { toast.error("El rango final debe ser mayor o igual al inicial."); return; }
+    if (!credencialSeleccionada) { toast.error("Faltan las credenciales de Twilio para esta campaña."); return; }
     const sender = numeros.find((n) => n.id === numeroSeleccionado);
-    if (!sender?.numero) {
-      throw new Error("Número de envío no encontrado o inválido.");
+    if (!sender?.numero) { toast.error("Número de envío no encontrado o inválido."); return; }
+    if (!selectedTemplate?.sid) { toast.error("No se ha seleccionado una plantilla válida."); return; }
+
+    setEnviando(true);
+    setJobStatus(null);
+
+    try {
+      const { jobId } = await sendMassive({
+        spreadsheetId,
+        sheetName,
+        rangeA: `A${rangeStart}`,
+        rangeB: `Z${rangeEnd}`,
+        templateSid: selectedTemplate.sid,
+        camposTemp: campañaSeleccionada?.associated_fields || {},
+        twilioAccountSid: credencialSeleccionada.account_sid,
+        twilioAuthToken: credencialSeleccionada.auth_token,
+        twilioSenderNumber: `whatsapp:+521${sender.numero}`,
+      });
+
+      toast.info("Envío iniciado — actualizando progreso...");
+
+      pollRef.current = setInterval(async () => {
+        try {
+          const status = await getMassiveStatus(jobId);
+          setJobStatus(status);
+          if (status.status === 'done' || status.status === 'error') {
+            clearInterval(pollRef.current!);
+            pollRef.current = null;
+            setEnviando(false);
+            if (status.status === 'done') {
+              toast.success(`Completado: ${status.sent} enviados, ${status.errors} errores`);
+              resetFormulario();
+              setJobStatus(null);
+            } else {
+              toast.error(`Error en el envío: ${status.message || 'Error desconocido'}`);
+            }
+          }
+        } catch {
+          clearInterval(pollRef.current!);
+          pollRef.current = null;
+          setEnviando(false);
+        }
+      }, 3000);
+
+    } catch (e: any) {
+      toast.error(e?.message || "Error al iniciar el envío.");
+      setEnviando(false);
     }
-
-    if (!selectedTemplate?.sid) {
-      throw new Error("No se ha seleccionado una plantilla válida.");
-    }
-
-    const body = {
-      spreadsheetId,
-      sheetName,
-      rangeA: `A${rangeStart}`,
-      rangeB: `Z${rangeEnd}`,
-      templateSid: selectedTemplate.sid,
-      camposTemp: campañaSeleccionada?.associated_fields || {},
-      twilioAccountSid: credencialSeleccionada.account_sid,
-      twilioAuthToken: credencialSeleccionada.auth_token,
-      messagingServiceSid: credencialSeleccionada.messagingServiceSid,
-      twilioSenderNumber: `whatsapp:+521${sender.numero}`,
-    };
-
-    await sendMassive(body);
-
-    toast.success("Mensajes enviados exitosamente!");
-
-    // ✅ obliga a re-seleccionar
-    resetFormulario();
-  } catch (e: any) {
-    console.error(e);
-    toast.error(e?.message || "Error al enviar los mensajes.");
-  } finally {
-    setEnviando(false);
-  }
-};
+  };
 
   // Pasos del formulario
   const formSteps = [
@@ -448,12 +461,11 @@ const Mesaje: React.FC = () => {
               disabled={enviando || progressPercentage !== 100}
 
             >
-              {enviando && <FaSpinner className={styles.spinner} />
-                ? "Enviando..."
+              {enviando
+                ? <><FaSpinner className={styles.spinnerIcon} /> {jobStatus ? `Enviando ${jobStatus.processed}/${jobStatus.total}...` : "Iniciando..."}</>
                 : progressPercentage === 100
                 ? "Enviar Mensajes"
                 : `Complete los pasos (${progressPercentage}%)`}
-              {/*Reactivar boton una vez completado el proceso*/}
             </button>
           </div>
         </div>

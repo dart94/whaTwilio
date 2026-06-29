@@ -1,6 +1,6 @@
 import { getHeaders, getData, updateData } from "../services/sheets.Service";
 import { sendMessage } from "../services/twilio.Service";
-import * as fs from "fs";
+import { updateJob } from "../services/jobStore";
 
 type CamposTemplate = { [key: string]: string };
 
@@ -13,101 +13,97 @@ interface MsgParams {
   camposTemp: CamposTemplate;
   twilioAccountSid: string;
   twilioAuthToken: string;
-  twilioSenderNumber: string; 
+  twilioSenderNumber: string;
 }
 
-export const runMassiveMsg = async (params: MsgParams) => {
-  try {
-    const {
-      spreadsheetId: sidFromCampaign,
-      sheetName: nameFromCampaign,
-      rangeA,
-      rangeB,
-      templateSid,
-      camposTemp,
-      twilioAccountSid,
-      twilioAuthToken,
-      twilioSenderNumber,
-    } = params;
+interface RowData {
+  [key: string]: string;
+  Lista_Negra: string;
+  Whatsapp: string;
+  Celular: string;
+}
 
-    if (!rangeA || !rangeB) {
-      throw new Error("El rango inicial o final no está definido.");
-    }
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const BATCH_WRITE_SIZE = 10;
+const SEND_DELAY_MS = 200;
 
-    const fullRange = `${nameFromCampaign}!${rangeA}:${rangeB}`;
+export const runMassiveMsg = async (params: MsgParams, jobId: string): Promise<void> => {
+  const {
+    spreadsheetId,
+    sheetName,
+    rangeA,
+    rangeB,
+    templateSid,
+    camposTemp,
+    twilioAccountSid,
+    twilioAuthToken,
+    twilioSenderNumber,
+  } = params;
 
-    const headers = await getHeaders(sidFromCampaign, nameFromCampaign);
+  if (!rangeA || !rangeB) throw new Error("El rango inicial o final no está definido.");
 
-    const values = await getData(sidFromCampaign, fullRange);
+  const fullRange = `${sheetName}!${rangeA}:${rangeB}`;
+  const headers = await getHeaders(spreadsheetId, sheetName);
+  const values = await getData(spreadsheetId, fullRange);
 
-    if (!values.length) {
-      return;
-    }
-
-    interface RowData {
-      [key: string]: string;
-      Lista_Negra: string;
-      Whatsapp: string;
-      Celular: string;
-    }
-
-    const data: RowData[] = values.map((row: string[]) => {
-      const obj: RowData = { Lista_Negra: "", Whatsapp: "", Celular: "" };
-      headers.forEach((header: string, i: number) => {
-        obj[header] = row[i] ?? "";
-      });
-      return obj;
-    });
-
-    let enviados = 0;
-    let errores = 0;
-
-    for (const [index, row] of data.entries()) {
-
-
-      if (row["Lista_Negra"]?.toUpperCase() === "LISTA_NEGRA") {
-
-        continue;
-      }
-
-      if (row["Whatsapp"]?.toUpperCase() !== "ENVIAR") {
-
-        continue;
-      }
-
-
-
-      const replacements: { [key: string]: string } = {};
-      for (let i = 1; i <= 20; i++) {
-        const campo = camposTemp[i.toString()];
-        replacements[i.toString()] = campo ? row[campo] || "" : "";
-      }
-
-      const numero = `whatsapp:+521${row["Celular"]}`.trim();
-
-      try {
-        const mensaje = await sendMessage(
-          numero,
-          templateSid,
-          replacements,
-          twilioSenderNumber,
-          twilioAccountSid,
-          twilioAuthToken
-        );
-        row["Whatsapp"] = "Enviado";
-        enviados++;
-        console.log(`Mensaje enviado a ${numero}:`, mensaje);
-      } catch (err) {
-
-        row["Whatsapp"] = "Error";
-        errores++;
-      }
-      console.log(`Progreso: ${enviados + errores} de ${data.length} (Enviados: ${enviados}, Errores: ${errores})`);
-    }
-
-    const updatedValues = data.map((row) => headers.map((header) => row[header] ?? ""));
-
-    await updateData(sidFromCampaign, fullRange, updatedValues);
-  } catch (err) {
+  if (!values.length) {
+    updateJob(jobId, { status: 'done', total: 0, message: 'Sin filas para procesar.' });
+    return;
   }
+
+  const data: RowData[] = values.map((row: string[]) => {
+    const obj: RowData = { Lista_Negra: "", Whatsapp: "", Celular: "" };
+    headers.forEach((header: string, i: number) => { obj[header] = row[i] ?? ""; });
+    return obj;
+  });
+
+  const eligibles = data.filter(
+    row => row["Lista_Negra"]?.toUpperCase() !== "LISTA_NEGRA" && row["Whatsapp"]?.toUpperCase() === "ENVIAR"
+  ).length;
+
+  updateJob(jobId, { total: eligibles });
+
+  let sent = 0;
+  let errors = 0;
+  let processed = 0;
+
+  const flushToSheets = async () => {
+    const updatedValues = data.map(row => headers.map((h: string) => row[h] ?? ""));
+    await updateData(spreadsheetId, fullRange, updatedValues);
+  };
+
+  for (const row of data) {
+    if (row["Lista_Negra"]?.toUpperCase() === "LISTA_NEGRA") continue;
+    if (row["Whatsapp"]?.toUpperCase() !== "ENVIAR") continue;
+
+    const replacements: { [key: string]: string } = {};
+    for (let i = 1; i <= 20; i++) {
+      const campo = camposTemp[i.toString()];
+      replacements[i.toString()] = campo ? row[campo] || "" : "";
+    }
+
+    const numero = `whatsapp:+521${row["Celular"]}`.trim();
+
+    try {
+      await sendMessage(numero, templateSid, replacements, twilioSenderNumber, twilioAccountSid, twilioAuthToken);
+      row["Whatsapp"] = "Enviado";
+      sent++;
+    } catch (err: any) {
+      row["Whatsapp"] = "Error";
+      errors++;
+      console.error(`Error enviando a ${numero}:`, err?.message || err);
+    }
+
+    processed++;
+    updateJob(jobId, { processed, sent, errors });
+
+    if (processed % BATCH_WRITE_SIZE === 0) {
+      await flushToSheets().catch(e => console.error('Error al escribir batch en Sheets:', e));
+    }
+
+    await delay(SEND_DELAY_MS);
+  }
+
+  await flushToSheets();
+  updateJob(jobId, { status: 'done', processed, sent, errors });
 };

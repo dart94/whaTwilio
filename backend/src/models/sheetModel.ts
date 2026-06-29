@@ -56,7 +56,7 @@ export const findAll = async (filter?: Partial<Sheet>): Promise<Sheet[]> => {
     }
     
     // Uso de RowDataPacket para tipar correctamente
-    const [rows] = await connection.promise().execute<RowDataPacket[]>(query, params);
+    const [rows] = await connection.execute<RowDataPacket[]>(query, params);
     
     return rows as Sheet[];
   } catch (error) {

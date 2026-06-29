@@ -29,7 +29,7 @@ class TwilioCredentialsModel extends BaseModel<TwilioCredential> {
 
   async findById(id: number): Promise<TwilioCredential | null> {
     const query = `SELECT * FROM ${this.tableName} WHERE id = ? LIMIT 1`;
-    const [rows]: any = await connection.execute(query, [name]);
+    const [rows]: any = await connection.execute(query, [id]);
     return rows.length > 0 ? rows[0] : null;
   }
 

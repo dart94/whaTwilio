@@ -2,7 +2,7 @@ import React from 'react';
 import styles from '../../styles/AsociarCredencialesView.module.css';
 
 interface Campaign {
-  ID: number;
+  id: number;
   Nombre: string;
 }
 
@@ -34,7 +34,7 @@ const BuscarCampaign: React.FC<BuscarCampaignSelectorProps> = ({
   >
     <option value={0}>Seleccione una campaña</option>
     {Campaigns.map(campaign => (
-      <option key={campaign.ID} value={campaign.ID}>
+      <option key={campaign.id} value={campaign.id}>
         {campaign.Nombre}
       </option>
     ))}

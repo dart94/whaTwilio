@@ -64,10 +64,18 @@ const DestinatariosId: React.FC<Props> = ({
             placeholder="0"
             value={rangeEnd || ""}
             onChange={(e) => {
-              const value = e.target.value.slice(0, 3);
-              setRangeEnd(Number(value));
+              const value = e.target.value.slice(0, 4);
+              const numValue = Number(value);
+              if (!isNaN(numValue)) setRangeEnd(numValue);
+            }}
+            onBlur={() => {
+              if (rangeEnd !== null && rangeStart !== null && rangeEnd < rangeStart) {
+                toast.warn("El rango final debe ser mayor o igual al inicial.");
+                setRangeEnd(rangeStart);
+              }
             }}
             disabled={!campañaSeleccionada}
+            min={rangeStart ?? 1}
           />
         </div>
       </div>
