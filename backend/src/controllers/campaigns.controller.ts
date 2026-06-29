@@ -20,12 +20,12 @@ export const getCampaigns = async (
         DATE_FORMAT(c.created_at, '%d/%m/%Y, %H:%i:%s') AS Creado,
         DATE_FORMAT(c.updated_at, '%d/%m/%Y, %H:%i:%s') AS Actualizado,
         'Editar' AS Acciones
-      FROM 
-        Campaign c
-      LEFT JOIN 
-        Templates t ON c.id = t.campaign_id
-      LEFT JOIN 
-        Sheets s ON c.id = s.campaign_id
+      FROM
+        campaign c
+      LEFT JOIN
+        templates t ON c.id = t.campaign_id
+      LEFT JOIN
+        sheets s ON c.id = s.campaign_id
       GROUP BY 
         c.id, c.name, c.description, c.sub_account_id, c.created_at, c.updated_at
       ORDER BY 

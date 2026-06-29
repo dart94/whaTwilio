@@ -20,7 +20,7 @@ export interface Sheet {
 export const create = async (sheet: Sheet): Promise<number> => {
     try {
       const query = `
-        INSERT INTO Sheets 
+        INSERT INTO sheets 
         (sheet_id, sheet_sheet, sheet_range, field_blacklist, field_status, field_contact, created_at, updated_at, campaign_id)
         VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?)
       `;
@@ -41,10 +41,10 @@ export const create = async (sheet: Sheet): Promise<number> => {
     }
   };
 
-// Método para obtener todas las Sheets.
+// Método para obtener todas las sheets.
 export const findAll = async (filter?: Partial<Sheet>): Promise<Sheet[]> => {
   try {
-    let query = 'SELECT * FROM Sheets';
+    let query = 'SELECT * FROM sheets';
     const params: any[] = [];
     
     if (filter && Object.keys(filter).length > 0) {
@@ -60,7 +60,7 @@ export const findAll = async (filter?: Partial<Sheet>): Promise<Sheet[]> => {
     
     return rows as Sheet[];
   } catch (error) {
-    console.error('Error al obtener Sheets:', error);
+    console.error('Error al obtener sheets:', error);
     throw error;
   }
 };
