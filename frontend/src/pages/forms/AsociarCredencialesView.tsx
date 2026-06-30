@@ -105,11 +105,6 @@ const AsociarCredencialesView: React.FC = () => {
 
   const handleSubcuentasEncontradas = (subcuentas: any[]) => {
     setUserSubcuentas(subcuentas);
-    if (subcuentas.length === 0) {
-      toast.error('No se encontró ninguna subcuenta para este usuario');
-    } else {
-      toast.success(`Se encontró ${subcuentas.length} subcuenta(s) para este usuario`);
-    }
   };
 
   const handleBuscarCredencial = async (email: string) => {
