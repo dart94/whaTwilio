@@ -18,7 +18,7 @@ export const getSheetHeadersById = async (
 
     // Usamos la versión con promesas de `mysql2`
     const [rows] = await connection.query<any[]>(
-      "SELECT sheet_id, sheet_sheet, sheet_range FROM sheets WHERE id = ?",
+      "SELECT sheet_id, sheet_sheet, sheet_range FROM Sheets WHERE id = ?",
       [sheetId]
     );
 
@@ -75,7 +75,7 @@ export const getSheetsByCampaign = async (
     const [results] = await connection.query(
       `
         SELECT id, sheet_id, sheet_sheet, sheet_range, field_blacklist, field_status, field_contact
-        FROM sheets
+        FROM Sheets
         WHERE campaign_id = ?
       `,
       [campaign_id]
@@ -113,7 +113,7 @@ export const addSheet = async (req: Request, res: Response): Promise<void> => {
     }
 
     const query = `
-          INSERT INTO sheets (sheet_id, sheet_sheet, sheet_range, field_blacklist, field_status, field_contact, campaign_id, created_at, updated_at)
+          INSERT INTO Sheets (sheet_id, sheet_sheet, sheet_range, field_blacklist, field_status, field_contact, campaign_id, created_at, updated_at)
   VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
       `;
 
@@ -153,7 +153,7 @@ export const getSheetById = async (
 
     // Utilizando la versión de promesas de mysql2
     const [rows] = await connection.query<any[]>(
-      "SELECT sheet_id, sheet_sheet, sheet_range, field_blacklist, field_status, field_contact, campaign_id FROM sheets WHERE sheet_id = ?",
+      "SELECT sheet_id, sheet_sheet, sheet_range, field_blacklist, field_status, field_contact, campaign_id FROM Sheets WHERE sheet_id = ?",
       [sheetId]
     );
 

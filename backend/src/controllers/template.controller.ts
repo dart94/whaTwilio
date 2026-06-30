@@ -123,7 +123,7 @@ export const associateFieldsToTemplate = async (
     // 1. Actualizar la tabla Sheets con la información de los campos
     await connection.query(
       `
-      UPDATE sheets
+      UPDATE Sheets
       SET field_blacklist = JSON_ARRAY(?),
           field_status = ?,
           field_contact = ?,

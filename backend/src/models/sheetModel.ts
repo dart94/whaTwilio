@@ -20,7 +20,7 @@ export interface Sheet {
 export const create = async (sheet: Sheet): Promise<number> => {
     try {
       const query = `
-        INSERT INTO sheets 
+        INSERT INTO Sheets
         (sheet_id, sheet_sheet, sheet_range, field_blacklist, field_status, field_contact, created_at, updated_at, campaign_id)
         VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?)
       `;
@@ -44,7 +44,7 @@ export const create = async (sheet: Sheet): Promise<number> => {
 // Método para obtener todas las sheets.
 export const findAll = async (filter?: Partial<Sheet>): Promise<Sheet[]> => {
   try {
-    let query = 'SELECT * FROM sheets';
+    let query = 'SELECT * FROM Sheets';
     const params: any[] = [];
     
     if (filter && Object.keys(filter).length > 0) {
