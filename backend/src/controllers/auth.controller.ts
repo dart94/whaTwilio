@@ -15,20 +15,15 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       const user = results[0];
       if (verifyPassword(password, user.password)) {
         const token = generateToken(user.email, user.is_staff);
-        const isProd = process.env.NODE_ENV === 'production';
-        res.cookie('token', token, {
-          httpOnly: true,
-          secure: isProd,
-          sameSite: isProd ? 'none' : 'lax',
-          maxAge: 8 * 60 * 60 * 1000,
-        });
-        res.status(200).json({ message: 'Inicio de sesión exitoso',
-          user:{
+        res.status(200).json({
+          message: 'Inicio de sesión exitoso',
+          token,
+          user: {
             id: user.id,
             email: user.email,
             is_staff: user.is_staff,
-          }
-         });
+          },
+        });
       } else {
         res.status(401).json({ message: 'Correo electrónico o contraseña incorrectos.' });
         console.error('Contraseña incorrecta para el usuario:', email);
@@ -45,7 +40,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
 // Middleware para verificar el token
 export const getUserEmail = (req: Request, res: Response): void => {
-  const token = req.cookies.token;
+  const authHeader = req.headers['authorization'];
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
   if (!token) {
     res.status(401).json({ message: 'No se proporcionó token.' });
     return;

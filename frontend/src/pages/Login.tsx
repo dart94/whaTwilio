@@ -19,8 +19,8 @@ const Login = () => {
     setErrorMessage('');
   
     try {
-      const userData = await login(email, password);
-      localStorage.setItem('user', JSON.stringify(userData));
+      const { token, user: userData } = await login(email, password);
+      localStorage.setItem('user', JSON.stringify({ user: userData, token }));
 
       navigate('/mesaje');
     } catch (error: any) {

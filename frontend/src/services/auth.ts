@@ -1,7 +1,7 @@
-import { apiFetch } from '../utils/apiFetch';
+import { BASE_URL } from '../config/apiConfig';
 
 export async function login(email: string, password: string): Promise<any> {
-  const response = await apiFetch('/api/login', {
+  const response = await fetch(`${BASE_URL}/api/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
