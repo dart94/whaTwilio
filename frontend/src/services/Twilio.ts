@@ -4,6 +4,7 @@ export interface TwilioTemplate {
   friendly_name: string;
   body: string;
   variables: any;
+  type: 'twilio/text' | 'twilio/quick-reply';
 }
 
 interface TwilioTemplateResponse {

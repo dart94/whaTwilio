@@ -221,14 +221,12 @@ export const getTemplateFieldsByCampaignId = async (
 export const getTemplates: RequestHandler = async (req, res) => {
   try {
     const { name } = req.query;
-
     if (!name) {
       res.status(400).json({ message: 'El parámetro "name" es requerido.' });
       return;
     }
 
     const credentials = await twilioCredentialsModel.findByName(name as string);
-
     if (!credentials) {
       res.status(404).json({
         message: `No se encontró una credencial con el nombre "${name}".`,
@@ -236,24 +234,43 @@ export const getTemplates: RequestHandler = async (req, res) => {
       return;
     }
 
-    // Extraer y parsear la columna "json"
     const { json } = credentials;
-    const parsedCredentials =
-      typeof json === "string" ? JSON.parse(json) : json;
-
+    const parsedCredentials = typeof json === "string" ? JSON.parse(json) : json;
     const { account_sid, auth_token } = parsedCredentials;
 
-    const twilioUrl = "https://content.twilio.com/v1/Content";
-
-    // Obtener plantillas desde Twilio usando las credenciales dinámicas
+    // 1️⃣ Obtener TODAS las plantillas (sin body)
     const templates = await getContentTemplates(account_sid, auth_token);
 
-    const filteredTemplates = templates.map((template: any) => ({
-      sid: template.sid,
-      friendly_name: template.friendly_name,
-      body: template.types?.["twilio/quick-reply"]?.body || "",
-      variables: template.variables || {},
-    }));
+    // 2️⃣ Para CADA una, obtener sus detalles (CON body)
+    const filteredTemplates = await Promise.all(
+      templates.map(async (template: any) => {
+        try {
+          const details = await getTemplateDetails(
+            account_sid,
+            auth_token,
+            template.sid
+          );
+          
+          return {
+            sid: template.sid,
+            friendly_name: details.friendly_name,
+            body: details.body,  // ✅ Ahora SÍ trae el body
+            variables: details.variables || {},
+            type: details.type
+          };
+        } catch (error) {
+          console.error(`Error obteniendo detalles de ${template.sid}:`, error);
+          // Fallback si falla
+          return {
+            sid: template.sid,
+            friendly_name: template.friendly_name,
+            body: '',
+            variables: {},
+            type: 'twilio/text'
+          };
+        }
+      })
+    );
 
     res.json(filteredTemplates);
   } catch (error) {
