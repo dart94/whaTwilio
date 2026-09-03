@@ -1,43 +1,31 @@
 import axios from 'axios';
 
-// Definimos la interfaz para la API de Twilio
-export async function getContentTemplates(accountSid: string, authToken: string) {
-  const url = 'https://content.twilio.com/v1/Content';
-  
-  try {
-    const response = await axios.get<{ contents: any[] }>(url, {
-      auth: { username: accountSid, password: authToken }
-    });
-    return response.data.contents;
-  } catch (error) {
-    console.error('❌ Error al obtener las plantillas:', error);
-    throw error;
-  }
-}
 interface TwilioTemplate {
   friendly_name: string;
   body: string;
   variables: any;
 }
 
-// Defino una interfaz para la respuesta de la API de Twilio
 interface TwilioTemplateResponse {
   friendly_name: string;
+  language: string;
   variables?: any;
   types?: {
-    'twilio/quick-reply'?: { body: string };
     'twilio/text'?: { body: string };
+    'twilio/quick-reply'?: { body: string };
     [key: string]: any;
   };
 }
 
-// Defino una función para obtener los detalles de una plantilla específica
+// ✅ FUNCIÓN CORREGIDA
 export async function getTemplateDetails(
   accountSid: string,
   authToken: string,
   templateId: string
 ): Promise<TwilioTemplate> {
-  const url = `https://content.twilio.com/v1/ContentTemplates/${templateId}`;
+  // ✅ AQUÍ CAMBIÓ: ContentTemplates → Content
+  const url = `https://content.twilio.com/v1/Content/${templateId}`;
+  
   try {
     const response = await axios.get(url, {
       auth: {
@@ -46,7 +34,6 @@ export async function getTemplateDetails(
       }
     });
     
-    // Tipifico la respuesta
     const template = response.data as TwilioTemplateResponse;
     
     const body =
@@ -60,7 +47,10 @@ export async function getTemplateDetails(
       variables: template.variables || {}
     };
   } catch (error: any) {
-    console.error("❌ Error al obtener plantilla desde Twilio API:", error.response?.data || error.message);
+    console.error(
+      "❌ Error al obtener plantilla desde Twilio API:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 }
