@@ -48,6 +48,16 @@ export async function getTemplateDetails(
     
     const template = response.data;
     
+    // 🔍 LOGS DE DEBUG
+    console.log('=== DEBUG LOGS ===');
+    console.log('📦 Response data:', JSON.stringify(template, null, 2));
+    console.log('🔑 Keys del objeto:', Object.keys(template));
+    console.log('📝 Tiene types?:', !!template.types);
+    console.log('📋 Keys de types:', template.types ? Object.keys(template.types) : 'NO TIENE');
+    console.log('✓ Quick-reply?:', !!template.types?.['twilio/quick-reply']);
+    console.log('✓ Text?:', !!template.types?.['twilio/text']);
+    console.log('=== FIN DEBUG ===\n');
+    
     // ✅ Buscar en AMBOS tipos
     let body = '';
     let templateType: 'twilio/text' | 'twilio/quick-reply' = 'twilio/text';
@@ -55,9 +65,13 @@ export async function getTemplateDetails(
     if (template.types?.['twilio/quick-reply']?.body) {
       body = template.types['twilio/quick-reply'].body;
       templateType = 'twilio/quick-reply';
+      console.log('✅ Encontró quick-reply');
     } else if (template.types?.['twilio/text']?.body) {
       body = template.types['twilio/text'].body;
       templateType = 'twilio/text';
+      console.log('✅ Encontró text');
+    } else {
+      console.log('❌ NO encontró body en ninguno');
     }
     
     return {
@@ -69,79 +83,6 @@ export async function getTemplateDetails(
     };
   } catch (error: any) {
     console.error('❌ Error al obtener plantilla:', error.response?.data || error.message);
-    throw error;
-  }
-}
-
-/**
- * Obtener el status de aprobación
- */
-export async function getTemplateStatus(
-  accountSid: string,
-  authToken: string,
-  templateId: string
-): Promise<{
-  status: string;
-  category: string;
-  rejection_reason?: string;
-}> {
-  const url = `https://content.twilio.com/v1/Content/${templateId}/ApprovalRequests`;
-  
-  try {
-    const response = await axios.get(url, {
-      auth: { username: accountSid, password: authToken }
-    });
-    
-    const approval = response.data.whatsapp;
-    
-    return {
-      status: approval?.status || 'unknown',
-      category: approval?.category || 'UNKNOWN',
-      rejection_reason: approval?.rejection_reason || ''
-    };
-  } catch (error: any) {
-    console.error('❌ Error al obtener status:', error.message);
-    throw error;
-  }
-}
-
-/**
- * Obtener TODO: detalles + status
- */
-export async function getFullTemplateInfo(
-  accountSid: string,
-  authToken: string,
-  templateId: string
-): Promise<TwilioTemplate & { status: string; category: string }> {
-  const [details, approval] = await Promise.all([
-    getTemplateDetails(accountSid, authToken, templateId),
-    getTemplateStatus(accountSid, authToken, templateId)
-  ]);
-  
-  return {
-    ...details,
-    status: approval.status,
-    category: approval.category
-  };
-}
-
-/**
- * Obtener TODAS las plantillas
- */
-export async function getAllTemplates(
-  accountSid: string,
-  authToken: string
-): Promise<any[]> {
-  const url = 'https://content.twilio.com/v1/Content';
-  
-  try {
-    const response = await axios.get<{ contents: any[] }>(url, {
-      auth: { username: accountSid, password: authToken }
-    });
-    
-    return response.data.contents;
-  } catch (error: any) {
-    console.error('❌ Error al obtener plantillas:', error.message);
     throw error;
   }
 }
